@@ -47,6 +47,7 @@ Recommendation + Explanation
 ---
 
 ### Project Structure
+```
 face-geometry-hairstyle-recommender/
 │
 ├── src/
@@ -63,7 +64,7 @@ face-geometry-hairstyle-recommender/
 │
 ├── requirements.txt
 └── README.md
-
+```
 ---
 
 ### Tech Stack
