@@ -47,22 +47,3 @@ class FaceLandmarkDetector:
             coords.append([x, y, z])
 
         return np.array(coords)
-    
-    def draw_landmarks(self, image, landmarks, draw_indices=True):
-        for i, (x, y, z) in enumerate(landmarks):
-            x = int(x)
-            y = int(y)
-            cv2.circle(image, (x, y), 1, (0, 255, 0), -1)
-
-            if draw_indices:
-                cv2.putText(
-                    image,
-                    str(i),
-                    (x, y),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.3,
-                    (0, 0, 255),
-                    1,
-                    cv2.LINE_AA,
-                )
-        return image
