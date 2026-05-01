@@ -46,6 +46,32 @@ Recommendation + Explanation
 
 ---
 
+### Feature Extraction
+
+The system derives interpretable, normalized facial features based on geometric relationships between landmarks. Current feature set includes:
+- **face_ratio** — vertical to horizontal face proportion
+- **jaw_ratio** — jaw width relative to face width
+- **eye_ratio** — inter-eye distance normalized by face width
+- **nose_position** — vertical position of the nose within the face
+- **symmetry** — normalized left-right facial asymmetry
+All features are scale-invariant, ensuring consistency across different image resolutions and sizes. Raw pixel measurements (e.g., face width, eye distance) are used internally but not exposed as final features.
+
+### Debug & Validation
+
+To ensure robustness and correctness, the system includes multiple validation mechanisms:
+- **Visual debugging**
+  - landmark visualization
+  - facial geometry overlays
+  - feature value rendering on image
+
+- **Self-consistency tests**
+  - feature stability under image resizing
+
+- **Cross-image comparison**
+  - evaluation of feature discriminative power across different faces
+
+---
+
 ### Project Structure
 ```
 face-geometry-hairstyle-recommender/
@@ -53,15 +79,11 @@ face-geometry-hairstyle-recommender/
 ├── src/
 │   ├── landmarks.py
 │   ├── features.py
-│   ├── face_shape.py
-│   ├── recommender.py
+│   ├── geometry.py
+│   ├── visualization.py
 │
-├── data/
-│   ├── hairstyles.json
 │
-├── demo/
-│   ├── app.py
-│
+├── test_landmark.py
 ├── requirements.txt
 └── README.md
 ```
@@ -79,14 +101,17 @@ face-geometry-hairstyle-recommender/
 
 ### Current Status
 
-Project in early development stage. Next planned steps:
-- facial landmark detection
-- feature extraction
-- rule-based face interpretation
-- hairstyle database creation
-- recommendation engine
-- explainability module
-- demo application
+Core CV pipeline implemented:
+- facial landmark detection using MediaPipe Face Landmarker
+- extraction of key geometric measurements
+- normalized feature engineering (scale-invariant ratios)
+- symmetry estimation and facial proportion metrics
+- visual debugging tools (landmarks, geometry lines, feature overlays)
+- feature validation:
+  - self-consistency tests (scale invariance)
+  - cross-image comparison (discriminative power)
+
+The system is now capable of producing stable and interpretable facial feature vectors from input images. Next steps focus on improving feature completeness and semantic understanding of facial structure.
 
 ---
 
