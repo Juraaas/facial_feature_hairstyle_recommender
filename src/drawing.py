@@ -92,3 +92,21 @@ def draw_feature_debug(image, features):
     )
 
     return img
+
+def draw_traits(image, traits):
+    img = image.copy()
+    y = 140
+
+    for k, v in traits.items():
+        cv2.putText(
+            img,
+            f"{k}: {v}",
+            (20, y),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (0, 255, 0),
+            2
+        )
+        y += 25
+
+    return img

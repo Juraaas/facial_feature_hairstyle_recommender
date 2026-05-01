@@ -61,3 +61,9 @@ class FaceGeometry:
         right_dist = np.linalg.norm(right - mid)
 
         return abs(left_dist - right_dist) / self.face_width()
+    
+    def jaw_to_height(self):
+        return self.jaw_width() / self.face_height()
+    
+    def eye_ratio(self):
+        return self.eye_dist() / self.face_width()

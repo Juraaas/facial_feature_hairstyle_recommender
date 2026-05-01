@@ -5,10 +5,9 @@ def extract_features(landmarks):
 
     return {
         "face_ratio": geo.face_ratio(),
-        "face_width": geo.face_width(),
-        "face_height": geo.face_height(),
         "jaw_ratio": geo.jaw_ratio(),
-        "eye_distance": geo.eye_dist(),
+        "jaw_to_height": geo.jaw_to_height(),
+        "eye_ratio": geo.eye_ratio(),
         "nose_position": geo.nose_position_ratio(),
         "symmetry": geo.symmetry_score(),
     }
