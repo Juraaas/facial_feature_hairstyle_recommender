@@ -1,14 +1,12 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-
 from mediapipe.tasks.python import vision
 
 BaseOptions = mp.tasks.BaseOptions
 FaceLandmarker = mp.tasks.vision.FaceLandmarker
 FaceLandmarkerOptions = mp.tasks.vision.FaceLandmarkerOptions
 VisionRunningMode = mp.tasks.vision.RunningMode
-
 
 class FaceLandmarkDetector:
     def __init__(self, model_path):
@@ -19,7 +17,6 @@ class FaceLandmarkDetector:
             min_face_detection_confidence=0.6,
             min_tracking_confidence=0.6,
         )
-
         self.landmarker =  FaceLandmarker.create_from_options(options)
     
     def detect(self, image):
@@ -31,7 +28,6 @@ class FaceLandmarkDetector:
             image_format=mp.ImageFormat.SRGB,
             data=image_rgb,
         )
-
         result = self.landmarker.detect(mp_image)
 
         if not result.face_landmarks:
@@ -45,5 +41,4 @@ class FaceLandmarkDetector:
             y = int(lm.y * h)
             z = lm.z
             coords.append([x, y, z])
-
         return np.array(coords)

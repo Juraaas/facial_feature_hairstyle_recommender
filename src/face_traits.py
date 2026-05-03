@@ -5,6 +5,7 @@ def interpret_face(features):
 
     fr = features["face_ratio"]
     jr = features["jaw_ratio"]
+    jp = features["jaw_projection"]
     er = features["eye_ratio"]
     nose_pos = features["nose_position"]
     sym = features["symmetry"]
@@ -20,6 +21,13 @@ def interpret_face(features):
         traits["jaw"] = "wide"
     else:
         traits["jaw"] = "narrow"
+
+    if jp > 0.33:
+        traits["jaw_projection"] = "strong"
+    elif jp < 0.27:
+        traits["jaw_projection"] = "weak"
+    else:
+        traits["jaw_projection"] = "balanced"
 
     if er > 0.5:
         traits["eyes"] = "wide"

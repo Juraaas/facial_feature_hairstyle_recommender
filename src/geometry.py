@@ -67,3 +67,10 @@ class FaceGeometry:
     
     def eye_ratio(self):
         return self.eye_dist() / self.face_width()
+    
+    def jaw_projection(self):
+        chin = self.chin()
+        nose = self.nose()
+        proj = self.dist(chin, nose)
+
+        return proj / self.face_height()
