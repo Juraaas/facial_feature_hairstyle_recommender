@@ -16,12 +16,12 @@ def run_pipeline(img, detector):
     landmarks = detector.detect(img)
 
     if landmarks is None:
-        return None, None, None
+        return None, None, None, None, None
 
     features = extract_features(landmarks)
     traits = interpret_face(features)
     scores = apply_rules(traits)
-    recs = generate_recommendations(scores)
+    recs = generate_recommendations(scores, traits)
 
     return landmarks, features, traits, scores, recs
 
@@ -40,13 +40,31 @@ def print_traits(traits, label):
 def print_scores(scores, label):
     print(f"\n=== STYLE SCORES ({label}) ===")
     for k, v in scores.items():
-        print(f"{k}: {v}")
+        print(f"{k}: {v:.3f}")
 
 
 def print_recommendations(recs, label):
     print(f"\n=== RECOMMENDATIONS ({label}) ===")
-    for r in recs:
-        print(f"- {r['description']} (score: {r['score']})")
+
+    print("\nFace analysis:")
+    for exp in recs["face_analysis"]:
+        print(f"   - {exp}")
+
+    print("\nTop hairstyles:")
+
+    for style in recs["top_styles"]:
+        print(f"\n{style['name']} (score: {style['score']:.3f})")
+
+        if style["contributions"]:
+            print("Key factors:")
+
+            for c in style["contributions"][:3]:
+                percent = c["percent"] * 100
+
+                print(
+                    f"   - {c['desc']} "
+                    f"({percent:.1f}% influence)"
+                )
 
 
 def compare_traits(t1, t2):
@@ -73,16 +91,16 @@ if l1 is None or l2 is None:
     exit()
 
 
-print_features(f1, "IMG1")
-print_features(f2, "IMG2")
+#print_features(f1, "IMG1")
+#print_features(f2, "IMG2")
 
-print_traits(t1, "IMG1")
-print_traits(t2, "IMG2")
+#print_traits(t1, "IMG1")
+#print_traits(t2, "IMG2")
 
-compare_traits(t1, t2)
+#compare_traits(t1, t2)
 
-print_scores(s1, "IMG1")
-print_scores(s2, "IMG2")
+#print_scores(s1, "IMG1")
+#print_scores(s2, "IMG2")
 
 print_recommendations(r1, "IMG1")
 print_recommendations(r2, "IMG2")
