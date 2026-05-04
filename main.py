@@ -6,7 +6,6 @@ from src.drawing import (
     draw_landmarks,
     draw_geometry,
     draw_features,
-    draw_feature_debug,
 )
 from src.face_traits import interpret_face
 from src.rules import apply_rules

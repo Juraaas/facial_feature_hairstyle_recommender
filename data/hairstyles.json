@@ -3,6 +3,7 @@
 
     {
       "name": "Buzz Cut",
+      "image": "images/buzz_cut.jpg",
       "category": "short",
       "tags": ["clean", "minimal"],
       "attributes": {
@@ -17,6 +18,7 @@
     },
     {
       "name": "Crew Cut",
+      "image": "images/crew_cut.jpg",
       "category": "short",
       "tags": ["clean", "practical"],
       "attributes": {
@@ -32,6 +34,7 @@
 
     {
       "name": "Side Part",
+      "image": "images/side_part.jpg",
       "category": "classic",
       "tags": ["formal", "clean"],
       "attributes": {
@@ -46,6 +49,7 @@
     },
     {
       "name": "Comb Over",
+      "image": "images/comb_over.jpg",
       "category": "classic",
       "tags": ["formal", "structured"],
       "attributes": {
@@ -60,6 +64,7 @@
     },
     {
       "name": "Slick Back",
+      "image": "images/slick_back.jpg",
       "category": "classic",
       "tags": ["formal", "clean"],
       "attributes": {
@@ -75,6 +80,7 @@
 
     {
       "name": "Pompadour",
+      "image": "images/pompadour.jpg",
       "category": "structured",
       "tags": ["bold", "volume"],
       "attributes": {
@@ -89,6 +95,7 @@
     },
     {
       "name": "Quiff",
+      "image": "images/quiff.jpg",
       "category": "structured",
       "tags": ["modern", "volume"],
       "attributes": {
@@ -103,6 +110,7 @@
     },
     {
       "name": "Classic Undercut",
+      "image": "images/classic_undercut.jpg",
       "category": "structured",
       "tags": ["modern", "contrast"],
       "attributes": {
@@ -118,6 +126,7 @@
 
     {
       "name": "Textured Fringe",
+      "image": "images/textured_fringe.jpg",
       "category": "textured",
       "tags": ["messy", "modern"],
       "attributes": {
@@ -132,6 +141,7 @@
     },
     {
       "name": "Messy Crop",
+      "image": "images/messy_crop.jpg",
       "category": "textured",
       "tags": ["messy", "casual"],
       "attributes": {
@@ -146,6 +156,7 @@
     },
     {
       "name": "French Crop",
+      "image": "images/french_crop.jpg",
       "category": "textured",
       "tags": ["modern", "fringe"],
       "attributes": {
@@ -160,6 +171,7 @@
     },
     {
       "name": "Curly Volume",
+      "image": "images/curly_volume.jpg",
       "category": "textured",
       "tags": ["curly", "volume"],
       "attributes": {
@@ -175,6 +187,7 @@
 
     {
       "name": "Layered Medium",
+      "image": "images/layered_medium.jpg",
       "category": "long",
       "tags": ["balanced", "soft"],
       "attributes": {
@@ -189,6 +202,7 @@
     },
     {
       "name": "Bro Flow",
+      "image": "images/bro_flow.jpg",
       "category": "long",
       "tags": ["flow", "natural"],
       "attributes": {
@@ -203,6 +217,7 @@
     },
     {
       "name": "Long Straight",
+      "image": "images/long_straight.jpg",
       "category": "long",
       "tags": ["clean", "minimal"],
       "attributes": {
