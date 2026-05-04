@@ -1,79 +1,39 @@
 ## Face Geometry-Based Hairstyle Recommendation System
-An explainable computer vision system that analyzes facial geometry and proportions to recommend suitable hairstyles. The project focuses on extracting meaningful facial features (such as proportions, symmetry, and structure) and mapping them to hairstyle characteristics using interpretable, rule-based logic.
 
---- 
-
-### Project Goal
-The goal of this project is to build a system that:
-- detects facial landmarks from an input image
-- extracts geometric and proportional facial features
-- interprets facial structure (e.g., face shape, symmetry, proportions)
-- recommends hairstyles based on visual balancing principles
-- provides clear explanations for each recommendation
-
-Unlike typical black-box approaches, this system emphasizes interpretability and feature-based reasoning. The system is based on three main pillars.
-
-Facial Geometry & Proportions
-- facial thirds (vertical proportions)
-- width-to-height ratios
-- jaw, cheekbone, and forehead relationships
-
-Deviation from Average
-- identifying dominant or extreme facial features
-
-Perceptual Balancing
-- recommending hairstyles that visually:
-elongate, widen, soften or balance facial structure
+An explainable computer vision system that analyzes facial geometry and recommends hairstyles based on proportions, symmetry, and structural features. Unlike black-box models, this project focuses on **interpretable features** and **transparent decision logic**.
 
 ---
 
-### System Pipeline
-Input Image
-    ↓
-Face Detection
-    ↓
-Facial Landmarks Extraction
-    ↓
-Feature Extraction (geometry & ratios)
-    ↓
-Face Traits Interpretation
-    ↓
-Hairstyle Matching & Scoring
-    ↓
-Recommendation + Explanation
+### What it does
+
+- detects facial landmarks from an image  
+- extracts normalized geometric features (ratios & proportions)  
+- interprets facial traits (e.g. face length, symmetry, jaw structure)  
+- scores and ranks hairstyles based on visual balance principles  
+- explains *why* a given hairstyle fits (feature-level contributions)
 
 ---
 
-### Feature Extraction
-The system derives interpretable, normalized facial features based on geometric relationships between landmarks. Current feature set includes:
-- **face_ratio** — vertical to horizontal face proportion
-- **jaw_ratio** — jaw width relative to face width
-- **eye_ratio** — inter-eye distance normalized by face width
-- **nose_position** — vertical position of the nose within the face
-- **symmetry** — normalized left-right facial asymmetry
-All features are scale-invariant, ensuring consistency across different image resolutions and sizes. Raw pixel measurements (e.g., face width, eye distance) are used internally but not exposed as final features.
+### Pipeline
+```
+Image → Landmarks → Features → Traits → Scoring → Recommendations
+```
 
-### Face Traits Interpretation
-The system includes an interpretation layer that maps numerical features into human-readable facial traits. Examples of traits:
-- **face_length** — short / balanced / long  
-- **jaw** — narrow / wide  
-- **eyes** — close / normal / wide  
-- **nose balance** — upper-dominant / lower-dominant  
-- **symmetry** — high / medium / low  
-This layer transforms raw geometric data into interpretable attributes that can be directly used in recommendation logic.
+---
 
-### Debug & Validation
-To ensure robustness and correctness, the system includes multiple validation mechanisms:
-- **Visual debugging**
-  - landmark visualization
-  - facial geometry overlays
-  - feature value rendering on image
+### Core Features
 
-- **Self-consistency tests**
-  - feature stability under image resizing
-
-- **Cross-image comparison**
-  - evaluation of feature discriminative power across different faces
+- **Scale-invariant geometry**
+  - face ratio, jaw ratio, eye ratio, symmetry, nose position  
+- **Semantic traits layer**
+  - transforms raw geometry into human-readable attributes  
+- **Explainable recommendations**
+  - each hairstyle is scored using weighted features  
+  - outputs percentage contribution of each factor  
+- **Debug & validation tools**
+  - visual overlays (landmarks, geometry, features)  
+  - self-consistency tests (resize invariance)  
+  - cross-image comparison
 
 ---
 
@@ -86,12 +46,14 @@ face-geometry-hairstyle-recommender/
 │   ├── face_traits.py
 │   ├── features.py
 │   ├── geometry.py
-│   └── landmarks.py
+│   ├── landmarks.py
+│   ├── rules.py
+│   └── recommender.py
 │
+data/
+└── hairstyles.json
 │
-├── main.py
-├── requirements.txt
-└── README.md
+└── main.py
 ```
 ---
 
@@ -100,39 +62,30 @@ face-geometry-hairstyle-recommender/
 - OpenCV
 - MediaPipe (Face landmarker)
 - NumPy
-- scikit-learn (planned)
-- Streamlit (demo UI)
 
 ---
 
-### Current Status
-Core explainable CV pipeline implemented:
-- facial landmark detection using MediaPipe Face Landmarker
-- extraction of key geometric measurements
-- normalized feature engineering (scale-invariant ratios)
-- semantic face traits interpretation layer
-- visual debugging tools:
-  - landmarks
-  - geometry overlays
-  - feature rendering
-  - trait overlays
-- feature validation:
-  - self-consistency tests (scale invariance)
-  - cross-image comparison (discriminative power)
-The system is now capable of producing stable, interpretable facial feature vectors and mapping them into human-readable facial traits.
+### Status
+
+Core pipeline and explainable recommendation engine implemented.  
+System produces stable, interpretable feature vectors and meaningful hairstyle rankings.
 
 ---
 
 ### Next Steps
-- rule-based hairstyle recommendation engine (scoring system)
-- hairstyle database with interpretable attributes
-- integration of hair/forehead segmentation (for improved facial thirds)
-- explanation module (why a hairstyle is recommended)
+- negative contributions (why a style *doesn't* fit)  
+- weight tuning & rule refinement  
+- hair / forehead segmentation (facial thirds)  
+- UI (Streamlit demo)  
 
 ---
 
-### Future Improvements
-- machine learning-based face shape classification
-- hairstyle visualization (overlay / simulation)
-- real-time webcam support
-- dataset-driven calibration of thresholds and rules
+### Vision
+
+Move towards a fully explainable facial analysis system:
+- facial proportions & thirds  
+- masculinity / femininity spectrum  
+- feature-level analysis (eyes, jaw, cheekbones, etc.)  
+- personalized visual recommendations
+
+---
