@@ -1,88 +1,220 @@
 {
-    "styles": [
-        {
-            "name": "Buzz Cut",
-            "attributes": {
-                "volume_top": 0.1,
-                "volume_sides": 0.1,
-                "short_sides": 1.0,
-                "longer_hair": 0.0,
-                "fringe": 0.0,
-                "symmetry": 1.0,
-                "soft_texture": 0.1
-            }
-        },
-        {
-            "name": "Classic Undercut",
-            "attributes": {
-                "volume_top": 1.0,
-                "volume_sides": 0.2,
-                "short_sides": 1.0,
-                "longer_hair": 0.2,
-                "fringe": 0.0,
-                "symmetry": 0.9,
-                "soft_texture": 0.2
-            }
-        },
-        {
-            "name": "Curly Volume",
-            "attributes": {
-                "volume_top": 0.9,
-                "volume_sides": 0.9,
-                "short_sides": 0.2,
-                "longer_hair": 0.8,
-                "fringe": 0.6,
-                "symmetry": 0.3,
-                "soft_texture": 1.0
-            }
-        },
-        {
-            "name": "Layered Medium",
-            "attributes": {
-                "volume_top": 0.6,
-                "volume_sides": 0.6,
-                "short_sides": 0.2,
-                "longer_hair": 1.0,
-                "fringe": 0.5,
-                "symmetry": 0.5,
-                "soft_texture": 0.9
-            }
-        },
-        {
-            "name": "Side Part",
-            "attributes": {
-                "volume_top": 0.7,
-                "volume_sides": 0.4,
-                "short_sides": 0.6,
-                "longer_hair": 0.5,
-                "fringe": 0.2,
-                "symmetry": 0.8,
-                "soft_texture": 0.4
-            }
-        },
-        {
-            "name": "Slick Back",
-            "attributes": {
-                "volume_top": 0.8,
-                "volume_sides": 0.3,
-                "short_sides": 0.7,
-                "longer_hair": 0.7,
-                "fringe": 0.0,
-                "symmetry": 1.0,
-                "soft_texture": 0.2
-            }
-        },
-        {
-            "name": "Textured Fringe",
-            "attributes": {
-                "volume_top": 0.3,
-                "volume_sides": 0.8,
-                "short_sides": 0.3,
-                "longer_hair": 0.6,
-                "fringe": 1.0,
-                "symmetry": 0.4,
-                "soft_texture": 1.0
-            }
-        }
-    ]
+  "styles": [
+
+    {
+      "name": "Buzz Cut",
+      "category": "short",
+      "tags": ["clean", "minimal"],
+      "attributes": {
+        "volume_top": 0.1,
+        "volume_sides": 0.1,
+        "short_sides": 1.0,
+        "longer_hair": 0.0,
+        "fringe": 0.0,
+        "symmetry": 1.0,
+        "soft_texture": 0.1
+      }
+    },
+    {
+      "name": "Crew Cut",
+      "category": "short",
+      "tags": ["clean", "practical"],
+      "attributes": {
+        "volume_top": 0.4,
+        "volume_sides": 0.2,
+        "short_sides": 1.0,
+        "longer_hair": 0.1,
+        "fringe": 0.0,
+        "symmetry": 0.9,
+        "soft_texture": 0.2
+      }
+    },
+
+    {
+      "name": "Side Part",
+      "category": "classic",
+      "tags": ["formal", "clean"],
+      "attributes": {
+        "volume_top": 0.7,
+        "volume_sides": 0.4,
+        "short_sides": 0.6,
+        "longer_hair": 0.5,
+        "fringe": 0.2,
+        "symmetry": 0.8,
+        "soft_texture": 0.4
+      }
+    },
+    {
+      "name": "Comb Over",
+      "category": "classic",
+      "tags": ["formal", "structured"],
+      "attributes": {
+        "volume_top": 0.8,
+        "volume_sides": 0.3,
+        "short_sides": 0.8,
+        "longer_hair": 0.5,
+        "fringe": 0.1,
+        "symmetry": 0.9,
+        "soft_texture": 0.3
+      }
+    },
+    {
+      "name": "Slick Back",
+      "category": "classic",
+      "tags": ["formal", "clean"],
+      "attributes": {
+        "volume_top": 0.8,
+        "volume_sides": 0.3,
+        "short_sides": 0.7,
+        "longer_hair": 0.7,
+        "fringe": 0.0,
+        "symmetry": 1.0,
+        "soft_texture": 0.2
+      }
+    },
+
+    {
+      "name": "Pompadour",
+      "category": "structured",
+      "tags": ["bold", "volume"],
+      "attributes": {
+        "volume_top": 1.0,
+        "volume_sides": 0.2,
+        "short_sides": 0.7,
+        "longer_hair": 0.6,
+        "fringe": 0.0,
+        "symmetry": 0.8,
+        "soft_texture": 0.3
+      }
+    },
+    {
+      "name": "Quiff",
+      "category": "structured",
+      "tags": ["modern", "volume"],
+      "attributes": {
+        "volume_top": 0.9,
+        "volume_sides": 0.4,
+        "short_sides": 0.6,
+        "longer_hair": 0.5,
+        "fringe": 0.3,
+        "symmetry": 0.6,
+        "soft_texture": 0.6
+      }
+    },
+    {
+      "name": "Classic Undercut",
+      "category": "structured",
+      "tags": ["modern", "contrast"],
+      "attributes": {
+        "volume_top": 1.0,
+        "volume_sides": 0.2,
+        "short_sides": 1.0,
+        "longer_hair": 0.2,
+        "fringe": 0.0,
+        "symmetry": 0.9,
+        "soft_texture": 0.2
+      }
+    },
+
+    {
+      "name": "Textured Fringe",
+      "category": "textured",
+      "tags": ["messy", "modern"],
+      "attributes": {
+        "volume_top": 0.3,
+        "volume_sides": 0.8,
+        "short_sides": 0.3,
+        "longer_hair": 0.6,
+        "fringe": 1.0,
+        "symmetry": 0.4,
+        "soft_texture": 1.0
+      }
+    },
+    {
+      "name": "Messy Crop",
+      "category": "textured",
+      "tags": ["messy", "casual"],
+      "attributes": {
+        "volume_top": 0.5,
+        "volume_sides": 0.6,
+        "short_sides": 0.5,
+        "longer_hair": 0.4,
+        "fringe": 0.8,
+        "symmetry": 0.3,
+        "soft_texture": 1.0
+      }
+    },
+    {
+      "name": "French Crop",
+      "category": "textured",
+      "tags": ["modern", "fringe"],
+      "attributes": {
+        "volume_top": 0.4,
+        "volume_sides": 0.5,
+        "short_sides": 0.7,
+        "longer_hair": 0.3,
+        "fringe": 0.9,
+        "symmetry": 0.6,
+        "soft_texture": 0.7
+      }
+    },
+    {
+      "name": "Curly Volume",
+      "category": "textured",
+      "tags": ["curly", "volume"],
+      "attributes": {
+        "volume_top": 0.9,
+        "volume_sides": 0.9,
+        "short_sides": 0.2,
+        "longer_hair": 0.8,
+        "fringe": 0.6,
+        "symmetry": 0.3,
+        "soft_texture": 1.0
+      }
+    },
+
+    {
+      "name": "Layered Medium",
+      "category": "long",
+      "tags": ["balanced", "soft"],
+      "attributes": {
+        "volume_top": 0.6,
+        "volume_sides": 0.6,
+        "short_sides": 0.2,
+        "longer_hair": 1.0,
+        "fringe": 0.5,
+        "symmetry": 0.5,
+        "soft_texture": 0.9
+      }
+    },
+    {
+      "name": "Bro Flow",
+      "category": "long",
+      "tags": ["flow", "natural"],
+      "attributes": {
+        "volume_top": 0.7,
+        "volume_sides": 0.7,
+        "short_sides": 0.1,
+        "longer_hair": 1.0,
+        "fringe": 0.3,
+        "symmetry": 0.4,
+        "soft_texture": 0.8
+      }
+    },
+    {
+      "name": "Long Straight",
+      "category": "long",
+      "tags": ["clean", "minimal"],
+      "attributes": {
+        "volume_top": 0.5,
+        "volume_sides": 0.5,
+        "short_sides": 0.0,
+        "longer_hair": 1.0,
+        "fringe": 0.2,
+        "symmetry": 0.7,
+        "soft_texture": 0.5
+      }
+    }
+
+  ]
 }
