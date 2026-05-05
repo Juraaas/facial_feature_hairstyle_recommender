@@ -101,7 +101,8 @@ def generate_recommendations(user_scores, traits, top_k=3):
         results.append({
             "name": style["name"],
             "score": score,
-            "contributions": contributions
+            "contributions": contributions,
+            "image": style.get("image", None),
         })
 
     results.sort(key=lambda x: x["score"], reverse=True)
