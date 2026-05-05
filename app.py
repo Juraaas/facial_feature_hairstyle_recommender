@@ -4,6 +4,7 @@ import numpy as np
 from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
 from src.drawing import draw_landmarks, draw_geometry, draw_features
+from ui_components import trait_bar
 
 detector = FaceLandmarkDetector(model_path="models/face_landmarker.task")
 
@@ -41,17 +42,79 @@ if uploaded:
     def norm(v):
         return max(0.0, min(1.0, v))
 
-    st.write("Face ratio")
-    st.progress(norm(features["face_ratio"] / 1.5))
+    trait_bar(
+        title="Face length",
+        value=features["face_ratio"],
+        min_val=0.9,
+        max_val=1.6,
+        avg_val=1.2,
+        min_label="Wide face",
+        max_label="Long face",
+    )
 
-    st.write("Jaw ratio")
-    st.progress(norm(features["jaw_ratio"]))
+    trait_bar(
+        title="Jaw width",
+        value=features["jaw_ratio"],
+        min_val=0.65,
+        max_val=1.05,
+        avg_val=0.85,
+        min_label="Narrow jaw",
+        max_label="Wide jaw",
+    )
 
-    st.write("Eye spacing")
-    st.progress(norm(features["eye_ratio"]))
+    trait_bar(
+        title="Eye spacing",
+        value=features["eye_ratio"],
+        min_val=0.30,
+        max_val=0.80,
+        avg_val=0.46,
+        min_label="Close-set eyes",
+        max_label="Wide-set eyes",
+        min_sub="min: 0.30",
+        max_sub="max: 0.80",
+    )
 
-    st.write("Symmetry")
-    st.progress(1 - norm(features["symmetry"] * 10))
+    trait_bar(
+        title="Lower face proportion",
+        value=features["jaw_to_height"],
+        min_val=0.50,
+        max_val=0.80,
+        avg_val=0.65,
+        min_label="Short lower face",
+        max_label="Long lower face",
+    )
+
+    trait_bar(
+        title="Jaw projection",
+        value=features["jaw_projection"],
+        min_val=0.30,
+        max_val=0.60,
+        avg_val=0.45,
+        min_label="Weak projection",
+        max_label="Strong projection",
+    )
+
+    trait_bar(
+        title="Nose position",
+        value=features["nose_position"],
+        min_val=0.40,
+        max_val=0.60,
+        avg_val=0.50,
+        min_label="Upper dominant",
+        max_label="Lower dominant",
+    )
+
+    sym = features["symmetry"]
+
+    trait_bar(
+        title="Facial symmetry",
+        value=1 - (sym * 20),
+        min_val=0.0,
+        max_val=1.0,
+        avg_val=0.7,
+        min_label="Asymmetrical",
+        max_label="Highly symmetrical",
+    )
     
     st.subheader("Top Hairstyles")
 
