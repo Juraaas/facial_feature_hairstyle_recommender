@@ -58,41 +58,6 @@ def draw_features(image, features):
 
     return img
 
-def draw_feature_debug(image, features):
-    img = image.copy()
-
-    cv2.putText(
-        img,
-        f"FR: {features['face_ratio']:.2f}",
-        (20, 40),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.8,
-        (255, 255, 255),
-        2
-    )
-
-    cv2.putText(
-        img,
-        f"JR: {features['jaw_ratio']:.2f}",
-        (20, 70),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.8,
-        (255, 255, 255),
-        2
-    )
-
-    cv2.putText(
-        img,
-        f"SYM: {features['symmetry']:.3f}",
-        (20, 100),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.8,
-        (255, 255, 255),
-        2
-    )
-
-    return img
-
 def draw_traits(image, traits):
     img = image.copy()
     y = 140
