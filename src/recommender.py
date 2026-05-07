@@ -72,13 +72,24 @@ def load_hairstyles(path="data/hairstyles.json"):
 def score_hairstyle(user_scores, style):
     score = 0.0
     total_weight = 0.0
+    matched_weight = 0.0
 
     for key, style_value in style["attributes"].items():
         user_value = user_scores.get(key, 0)
-        score += user_value * style_value
+        contribution = user_value * style_value
+        score += contribution
         total_weight += abs(style_value)
+        
+        if contribution > 0:
+            matched_weight += style_value
+    
+    if total_weight == 0:
+        return 0.0
+    
+    base_score = score / total_weight
+    match_concentration = matched_weight / total_weight
 
-    return score / total_weight if total_weight > 0 else 0.0
+    return base_score * (0.7 + 0.3 * match_concentration)
 
 def explain_match(user_scores, style, total_score):
     if total_score <= 0:
