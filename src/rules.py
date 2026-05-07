@@ -29,10 +29,6 @@ def apply_rules(traits):
     elif traits["eyes"] == "close":
         scores["volume_sides"] += 1
 
-    if traits["jaw_projection"] == "strong":
-        scores["soft_texture"] += 2
-        scores["fringe"] += 1
-
     elif traits["jaw_projection"] == "weak":
         scores["volume_top"] += 2
 

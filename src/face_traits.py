@@ -1,49 +1,84 @@
 
-
 def interpret_face(features):
     traits = {}
 
     fr = features["face_ratio"]
-    jr = features["jaw_ratio"]
-    jp = features["jaw_projection"]
-    er = features["eye_ratio"]
-    nose_pos = features["nose_position"]
-    sym = features["symmetry"]
-
-    if fr > 1.25:
+    if fr > 1.22:
         traits["face_length"] = "long"
-    elif fr < 0.95:
+    elif fr < 1.13:
         traits["face_length"] = "short"
     else:
         traits["face_length"] = "balanced"
 
-    if jr > 0.9:
+    jr = features["jaw_ratio"]
+    if jr > 0.825:
         traits["jaw"] = "wide"
-    else:
+    elif jr < 0.8:
         traits["jaw"] = "narrow"
-
-    if jp > 0.33:
-        traits["jaw_projection"] = "strong"
-    elif jp < 0.27:
-        traits["jaw_projection"] = "weak"
     else:
-        traits["jaw_projection"] = "balanced"
+        traits["jaw"] = "normal"
 
-    if er > 0.5:
+
+    jh = features["jaw_to_height"]
+    if jh > 0.71:
+        traits["jaw_height"] = "high"
+    elif jh < 0.65:
+        traits["jaw_height"] = "low"
+    else:
+        traits["jaw_height"] = "normal"
+
+    er = features["eye_ratio"]
+    if er > 0.64:
         traits["eyes"] = "wide"
-    elif er < 0.4:
+    elif er < 0.6:
         traits["eyes"] = "close"
     else:
         traits["eyes"] = "normal"
 
-    if nose_pos > 0.55:
+    eh = features["eye_height"]
+    if eh > 0.36:
+        traits["eye_openness"] = "open"
+    elif eh < 0.27:
+        traits["eye_openness"] = "narrow"
+    else:
+        traits["eye_openness"] = "normal"
+
+    lr = features["lip_ratio"]
+    if lr > 0.43:
+        traits["lips"] = "wide"
+    elif lr < 0.35:
+        traits["lips"] = "narrow"
+    else:
+        traits["lips"] = "normal"
+
+    np_ = features["nose_position"]
+    if np_ > 0.58:
+        traits["nose"] = "lower-dominant"
+    elif np_ < 0.53:
         traits["nose"] = "upper-dominant"
     else:
-        traits["nose"] = "lower-dominant"
+        traits["nose"] = "balanced"
 
-    if sym < 0.02:
+    lfr = features["lower_face_ratio"]
+    if lfr > 0.34:
+        traits["lower_face"] = "long"
+    elif lfr < 0.29:
+        traits["lower_face"] = "short"
+    else:
+        traits["lower_face"] = "normal"
+
+    cp = features["chin_prominence"]
+    if cp > 0.24:
+        traits["chin"] = "prominent"
+    elif cp < 0.19:
+        traits["chin"] = "recessed"
+    else:
+        traits["chin"] = "normal"
+
+    sym = features["symmetry"]
+    if sym < 0.032:
         traits["symmetry"] = "high"
-    elif sym < 0.05:
+    elif sym < 0.173:
         traits["symmetry"] = "medium"
     else:
         traits["symmetry"] = "low"

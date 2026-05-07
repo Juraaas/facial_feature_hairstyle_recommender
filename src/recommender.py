@@ -34,11 +34,6 @@ TRAIT_EXPLANATIONS = {
         "medium": "slight asymmetry → natural styles look better",
         "low": "asymmetry → textured styles improve harmony"
     },
-    "jaw_projection": {
-        "strong": "strong jaw → softer textures balance it",
-        "weak": "weaker jaw → structured styles add definition",
-        "balanced": "jaw projection is balanced"
-    }
 }
 
 def load_hairstyles(path="data/hairstyles.json"):

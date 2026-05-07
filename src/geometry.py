@@ -53,13 +53,9 @@ class FaceGeometry:
         return self.jaw_width() / self.face_width()
     
     def symmetry_score(self):
-        left = self._p(234)
-        right = self._p(454)
-        mid = self.nose()
-
-        left_dist = np.linalg.norm(left - mid)
-        right_dist = np.linalg.norm(right - mid)
-
+        mid = (self._p(33) + self._p(263)) / 2
+        left_dist = np.linalg.norm(self._p(234) - mid)
+        right_dist = np.linalg.norm(self._p(454) - mid)
         return abs(left_dist - right_dist) / self.face_width()
     
     def jaw_to_height(self):
@@ -68,9 +64,25 @@ class FaceGeometry:
     def eye_ratio(self):
         return self.eye_dist() / self.face_width()
     
-    def jaw_projection(self):
-        chin = self.chin()
-        nose = self.nose()
-        proj = self.dist(chin, nose)
+    def eye_height(self):
+        eye_h = self.dist(self._p(159), self._p(145))
+        eye_w = self.dist(self._p(33), self._p(133))
+        return eye_h / eye_w
 
-        return proj / self.face_height()
+    def lip_ratio(self):
+        return self.dist(self._p(61), self._p(291)) / self.face_width()
+
+    def chin_ratio(self):
+        return self.dist(self._p(152), self._p(175)) / self.face_height()
+
+    def forehead_ratio(self):
+        forehead_h = self.dist(self.forehead_top(), self._p(10))
+        return forehead_h / self.face_height()
+    
+    def lower_face_ratio(self):
+        mouth = self._p(0)
+        return self.dist(mouth, self.chin()) / self.face_height()
+    
+    def chin_prominence(self):
+        jaw_mid = (self._p(172) + self._p(397)) / 2
+        return self.dist(jaw_mid, self.chin()) / self.face_height()
