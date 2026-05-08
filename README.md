@@ -4,13 +4,14 @@ An explainable computer vision system that analyzes facial geometry and recommen
 
 ---
 
-### What it does
-
-- detects facial landmarks from an image  
-- extracts normalized geometric features (ratios & proportions)  
-- interprets facial traits (e.g. face length, symmetry, jaw structure)  
-- scores and ranks hairstyles based on visual balance principles  
-- explains *why* a given hairstyle fits (feature-level contributions)
+### Features
+- facial landmark detection
+- normalized geometric feature extraction
+- semantic face trait interpretation
+- rule-based hairstyle scoring
+- explainable recommendations with feature contributions
+- hairstyle database with visual examples
+- interactive Streamlit UI
 
 ---
 
@@ -21,19 +22,16 @@ Image → Landmarks → Features → Traits → Scoring → Recommendations
 
 ---
 
-### Core Features
+### Current status
 
-- **Scale-invariant geometry**
-  - face ratio, jaw ratio, eye ratio, symmetry, nose position  
-- **Semantic traits layer**
-  - transforms raw geometry into human-readable attributes  
-- **Explainable recommendations**
-  - each hairstyle is scored using weighted features  
-  - outputs percentage contribution of each factor  
-- **Debug & validation tools**
-  - visual overlays (landmarks, geometry, features)  
-  - self-consistency tests (resize invariance)  
-  - cross-image comparison
+Implemented:
+- explainable CV pipeline
+- facial geometry extraction
+- semantic trait layer
+- hairstyle recommendation engine
+- contribution-based explanations
+- hairstyle database with images
+- Streamlit demo UI
 
 ---
 
@@ -47,12 +45,15 @@ face-geometry-hairstyle-recommender/
 │   ├── features.py
 │   ├── geometry.py
 │   ├── landmarks.py
+│   ├── pipeline.py
 │   ├── rules.py
 │   └── recommender.py
 │
-data/
-└── hairstyles.json
+├──data/
+│   ├──hairstyles.json
 │
+├── app.py
+├── compute_norms.py
 └── main.py
 ```
 ---
@@ -62,30 +63,25 @@ data/
 - OpenCV
 - MediaPipe (Face landmarker)
 - NumPy
-
----
-
-### Status
-
-Core pipeline and explainable recommendation engine implemented.  
-System produces stable, interpretable feature vectors and meaningful hairstyle rankings.
+- Streamlit
 
 ---
 
 ### Next Steps
-- negative contributions (why a style *doesn't* fit)  
-- weight tuning & rule refinement  
-- hair / forehead segmentation (facial thirds)  
-- UI (Streamlit demo)  
+- negative contribution analysis
+- hair / forehead segmentation
+- advanced facial analysis
+- hairstyle visualization / simulation  
 
 ---
 
 ### Vision
 
-Move towards a fully explainable facial analysis system:
-- facial proportions & thirds  
-- masculinity / femininity spectrum  
-- feature-level analysis (eyes, jaw, cheekbones, etc.)  
-- personalized visual recommendations
+Build a fully explainable facial analysis system capable of:
+- detailed facial structure analysis
+- masculinity / femininity estimation
+- feature-level interpretation
+- personalized aesthetic recommendations
+- interpretable visual balancing
 
 ---
