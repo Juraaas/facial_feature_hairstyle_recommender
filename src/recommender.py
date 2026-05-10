@@ -1,14 +1,25 @@
 import json
 
 STYLE_DESCRIPTIONS = {
-    "volume_top": "volume on top",
-    "volume_sides": "volume on sides",
-    "short_sides": "short sides (fade)",
-    "longer_hair": "longer hair length",
-    "fringe": "fringe / bangs",
-    "clean_lines": "clean, symmetrical styles",
-    "soft_texture": "soft, layered texture",
-    "textured_top":  "textured top",
+    "volume_top":    "height on top balances face width",
+    "volume_sides":  "side volume softens a long face",
+    "short_sides":   "short sides create clean contrast",
+    "longer_hair":   "length elongates and refines proportions",
+    "fringe":        "fringe shortens visual face length",
+    "clean_lines":   "clean structure suits your symmetry",
+    "soft_texture":  "soft texture reduces facial sharpness",
+    "textured_top":  "textured top balances a strong chin",
+}
+
+NEGATIVE_EXPLANATIONS = {
+    "fringe":        "fringe may not suit your eye proportions",
+    "volume_sides":  "side volume may widen your face shape",
+    "volume_top":    "added height may emphasise face length",
+    "short_sides":   "fade may accentuate your jaw width",
+    "clean_lines":   "structured styles may highlight asymmetry",
+    "soft_texture":  "heavy texture may not complement your proportions",
+    "longer_hair":   "length may elongate your face further",
+    "textured_top":  "textured top may not balance your chin prominence",
 }
 
 TRAIT_EXPLANATIONS = {
@@ -93,29 +104,43 @@ def score_hairstyle(user_scores, style):
 
 def explain_match(user_scores, style, total_score):
     if total_score <= 0:
-        return []
+        return [], []
     
-    contributions = []
-    raw_total = 0.0
+    positive = []
+    negative = []
+    pos_total = 0.0
+    neg_total = 0.0
     for key, style_value in style["attributes"].items():
         user_value = user_scores.get(key, 0)
         contribution = user_value * style_value
 
         if contribution > 0:
-            percent = contribution / total_score
-
-            contributions.append({
+            positive.append({
                 "feature": key,
                 "raw": contribution,
                 "desc": STYLE_DESCRIPTIONS.get(key,key),
             })
-            raw_total += contribution
+            pos_total += contribution
+        
+        elif contribution < 0:
+            negative.append({
+                "feature": key,
+                "raw":     contribution,
+                "desc":    STYLE_DESCRIPTIONS.get(key, key),
+                "reason":  NEGATIVE_EXPLANATIONS.get(key, "may not suit your face profile"),
+            })
+            neg_total += abs(contribution)
 
-    for c in contributions:
-        c["percent"] = c["raw"] / raw_total if raw_total > 0 else 0.0
+    for c in positive:
+        c["percent"] = c["raw"] / pos_total if pos_total > 0 else 0.0
+    
+    for c in negative:
+        c["percent"] = abs(c["raw"]) / neg_total if neg_total > 0 else 0.0
 
-    contributions.sort(key=lambda x: x["percent"], reverse=True)
-    return contributions
+    positive.sort(key=lambda x: x["percent"], reverse=True)
+    negative.sort(key=lambda x: x["percent"], reverse=True)
+
+    return positive, negative
 
 def explain_from_traits(traits):
     explanations = []
@@ -137,12 +162,13 @@ def generate_recommendations(user_scores, traits, top_k=3):
 
     for style in styles:
         score = score_hairstyle(user_scores, style)
-        contributions = explain_match(user_scores, style, score)
+        positive, negative = explain_match(user_scores, style, score)
 
         results.append({
             "name": style["name"],
             "score": score,
-            "contributions": contributions,
+            "contributions": positive,
+            "negatives": negative,
             "image": style.get("image", None),
         })
 
