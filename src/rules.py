@@ -1,3 +1,7 @@
+STRONG = 3
+MEDIUM = 2
+WEAK = 1
+
 def apply_rules(traits):
     scores = {
         "volume_top": 0,
@@ -11,72 +15,98 @@ def apply_rules(traits):
     }
 
     if traits["face_length"] == "long":
-        scores["volume_sides"] += 2
-        scores["fringe"] += 2
-        scores["volume_top"] -= 1
-        scores["longer_hair"] -= 1
+        scores["volume_sides"] += STRONG
+        scores["fringe"] += STRONG
+        scores["volume_top"] -= MEDIUM
+        scores["longer_hair"] -= MEDIUM
+        scores["clean_lines"] -= WEAK
 
     elif traits["face_length"] == "short":
-        scores["volume_top"] += 2
-        scores["longer_hair"] += 1
-        scores["volume_sides"] -= 1
+        scores["volume_top"] += STRONG
+        scores["longer_hair"] += MEDIUM
+        scores["fringe"] -= MEDIUM
+        scores["volume_sides"] -= WEAK
 
     if traits["jaw"] == "wide":
-        scores["soft_texture"] += 2
-        scores["volume_top"] += 1
-        scores["short_sides"] -= 1
-    else:
-        scores["volume_sides"] += 1
-        scores["short_sides"] += 1
+        scores["soft_texture"] += STRONG
+        scores["volume_top"] += MEDIUM
+        scores["longer_hair"] += WEAK
+        scores["short_sides"] -= STRONG
+        scores["clean_lines"] -= MEDIUM
+    elif traits["jaw"] == "narrow":
+        scores["short_sides"] += STRONG
+        scores["volume_sides"] += MEDIUM
+        scores["clean_lines"] += WEAK
+        scores["soft_texture"] -= WEAK
+        
 
     if traits["jaw_height"] == "high":
-        scores["longer_hair"] += 1
-        scores["volume_top"] -= 1
+        scores["longer_hair"] += MEDIUM
+        scores["soft_texture"] += WEAK
+        scores["volume_top"] -= MEDIUM
+        scores["short_sides"] -= WEAK
     elif traits["jaw_height"] == "low":
-        scores["volume_top"] += 1
-        scores["fringe"] += 1
+        scores["volume_top"] += MEDIUM
+        scores["fringe"] += WEAK
+        scores["longer_hair"] -= WEAK
 
     if traits["eyes"] == "wide":
-        scores["volume_top"] += 1
-        scores["clean_lines"] += 1
+        scores["volume_top"] += MEDIUM
+        scores["clean_lines"] += MEDIUM
+        scores["volume_sides"] -= WEAK
     elif traits["eyes"] == "close":
-        scores["volume_sides"] += 1
-        scores["fringe"] -= 1
+        scores["volume_sides"] += MEDIUM
+        scores["soft_texture"] += WEAK
+        scores["fringe"] -= MEDIUM
+        scores["clean_lines"] -= WEAK
 
     if traits["eye_openness"] == "narrow":
-        scores["fringe"] -= 1
-        scores["volume_top"] += 1
+        scores["volume_top"] += MEDIUM
+        scores["clean_lines"] += WEAK
+        scores["fringe"] -= STRONG
     elif traits["eye_openness"] == "open":
-        scores["fringe"] += 1
+        scores["fringe"] += MEDIUM
+        scores["textured_top"] += WEAK
 
     if traits["lips"] == "wide":
-        scores["soft_texture"] += 1
-        scores["volume_top"] += 1
+        scores["soft_texture"] += MEDIUM
+        scores["volume_top"] += WEAK
+        scores["clean_lines"] -= WEAK
     elif traits["lips"] == "narrow":
-        scores["clean_lines"] += 1
+        scores["clean_lines"] += MEDIUM
+        scores["short_sides"] += WEAK
+        scores["soft_texture"] -= WEAK
 
     if traits["nose"] == "upper-dominant":
-        scores["fringe"] += 1 
-        scores["volume_top"] -= 1
+        scores["fringe"] += MEDIUM
+        scores["volume_sides"] += WEAK
+        scores["volume_top"] -= STRONG
     elif traits["nose"] == "lower-dominant":
-        scores["volume_top"] += 1
-        scores["fringe"] -= 1
+        scores["volume_top"] += STRONG
+        scores["longer_hair"] += WEAK
+        scores["fringe"] -= MEDIUM
 
     if traits["lower_face"] == "long":
-        scores["longer_hair"] += 1
-        scores["soft_texture"] += 1
+        scores["longer_hair"] += MEDIUM
+        scores["soft_texture"] += MEDIUM
+        scores["short_sides"] -= WEAK
     elif traits["lower_face"] == "short":
-        scores["short_sides"] += 1
-        scores["clean_lines"] += 1
+        scores["short_sides"] += MEDIUM
+        scores["clean_lines"] += MEDIUM
+        scores["longer_hair"] -= WEAK
 
     if traits["chin"] == "prominent":
-        scores["longer_hair"] += 1
-        scores["soft_texture"] += 1
-        scores["textured_top"] += 2
+        scores["textured_top"] += STRONG
+        scores["longer_hair"] += MEDIUM
+        scores["soft_texture"] += MEDIUM
+        scores["short_sides"] -= WEAK
+        scores["clean_lines"] -= WEAK
     elif traits["chin"] == "recessed":
-        scores["volume_top"] += 1
-        scores["short_sides"] += 1
-        scores["textured_top"] -= 1
+        scores["volume_top"] += STRONG
+        scores["short_sides"] += MEDIUM
+        scores["clean_lines"] += WEAK
+        scores["textured_top"] -= MEDIUM
+        scores["longer_hair"] -= WEAK
 
     scores = apply_symmetry_modulation(scores, traits)
 
@@ -88,13 +118,15 @@ def apply_symmetry_modulation(scores, traits):
 
     if traits["symmetry"] == "low":
         for k in TEXTURE_KEYS:
-            scores[k] = scores[k] * 1.3
+            scores[k] = scores[k] * 1.3 + 1
         for k in CLEAN_KEYS:
             scores[k] = scores[k] * 0.7
 
     elif traits["symmetry"] == "high":
         for k in CLEAN_KEYS:
             scores[k] = scores[k] * 1.2
-        scores["clean_lines"] += 1
+        scores["clean_lines"] += WEAK
+        for k in TEXTURE_KEYS:
+            scores[k] = scores[k] * 0.9
 
     return scores
