@@ -6,6 +6,7 @@ from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
 from src.drawing import draw_landmarks, draw_geometry, draw_features
 from ui_components import trait_bar
+from src.pdf_export import generate_pdf
 
 detector = FaceLandmarkDetector(model_path="models/face_landmarker.task")
 norms = pd.read_csv("male_norms_p123.csv", index_col=0)
@@ -93,11 +94,29 @@ if uploaded:
         if "image" in style:
             st.image(style["image"], width=300)
 
-        cols = st.columns(3)
+        if style["contributions"]:
+            st.markdown("**Why it works for you:**")
+            top2 = style["contributions"][:2]
+            cols = st.columns(2)
+            for i, c in enumerate(top2):
+                with cols[i]:
+                    st.metric(label=c["desc"], value=f"{c['percent']*100:.0f}%")
 
-        for i, c in enumerate(style["contributions"][:3]):
-            with cols[i]:
-                st.metric(
-                    label=c["desc"],
-                    value=f"{c['percent']*100:.1f}%"
-                )
+        if style["negatives"]:
+            with st.expander("Potential drawbacks"):
+                for c in style["negatives"][:2]:
+                    st.write(f"• **{c['desc']}** — {c['reason']}")
+
+        st.divider()
+
+    st.subheader("Export")
+    if st.button("📄 Generate PDF Report", key="generate_pdf"):
+        pdf_bytes = generate_pdf(features, traits, recs, norms)
+        st.download_button(
+            label="Save Report",
+            data=pdf_bytes,
+            file_name="hairstyle_report.pdf",
+            mime="application/pdf",
+            key="download_pdf",
+            icon=":material/download:",
+        )
