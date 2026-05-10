@@ -127,7 +127,7 @@ def generate_pdf(features, traits, recs, norms_df) -> bytes:
             pos_color = colors.HexColor("#444444")
 
         out_of_range = val < min_val or val > max_val
-        
+
         row = [
             Paragraph(lbl_left, s["small"]),
             Paragraph(
@@ -187,5 +187,3 @@ def generate_pdf(features, traits, recs, norms_df) -> bytes:
 
     doc.build(story)
     return buf.getvalue()
-
-    
