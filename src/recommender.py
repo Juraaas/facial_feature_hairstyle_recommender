@@ -9,6 +9,9 @@ STYLE_DESCRIPTIONS = {
     "clean_lines":   "clean structure suits your symmetry",
     "soft_texture":  "soft texture reduces facial sharpness",
     "textured_top":  "textured top balances a strong chin",
+    "layers":         "layered cut adds movement and softness",
+    "updo":           "updo elongates and lifts the face",
+    "curtain_fringe": "curtain fringe frames and balances eye spacing",
 }
 
 NEGATIVE_EXPLANATIONS = {
@@ -20,6 +23,9 @@ NEGATIVE_EXPLANATIONS = {
     "soft_texture":  "heavy texture may not complement your proportions",
     "longer_hair":   "length may elongate your face further",
     "textured_top":  "textured top may not balance your chin prominence",
+    "layers":         "heavy layers may not suit your face structure",
+    "updo":           "updo may elongate your face further",
+    "curtain_fringe": "curtain fringe may widen close-set eyes too much",
 }
 
 TRAIT_EXPLANATIONS = {
@@ -156,8 +162,8 @@ def explain_from_traits(traits):
 
     return explanations
 
-def generate_recommendations(user_scores, traits, top_k=3):
-    styles = load_hairstyles()
+def generate_recommendations(user_scores, traits, top_k=3, hairstyles_path="data/hairstyles.json"):
+    styles = load_hairstyles(hairstyles_path)
     results = []
 
     for style in styles:

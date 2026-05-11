@@ -33,6 +33,7 @@ def apply_rules(traits):
         scores["longer_hair"] += WEAK
         scores["short_sides"] -= STRONG
         scores["clean_lines"] -= MEDIUM
+        
     elif traits["jaw"] == "narrow":
         scores["short_sides"] += STRONG
         scores["volume_sides"] += MEDIUM
@@ -45,6 +46,7 @@ def apply_rules(traits):
         scores["soft_texture"] += WEAK
         scores["volume_top"] -= MEDIUM
         scores["short_sides"] -= WEAK
+
     elif traits["jaw_height"] == "low":
         scores["volume_top"] += MEDIUM
         scores["fringe"] += WEAK
@@ -54,6 +56,7 @@ def apply_rules(traits):
         scores["volume_top"] += MEDIUM
         scores["clean_lines"] += MEDIUM
         scores["volume_sides"] -= WEAK
+
     elif traits["eyes"] == "close":
         scores["volume_sides"] += MEDIUM
         scores["soft_texture"] += WEAK
@@ -64,6 +67,7 @@ def apply_rules(traits):
         scores["volume_top"] += MEDIUM
         scores["clean_lines"] += WEAK
         scores["fringe"] -= STRONG
+
     elif traits["eye_openness"] == "open":
         scores["fringe"] += MEDIUM
         scores["textured_top"] += WEAK
@@ -72,6 +76,7 @@ def apply_rules(traits):
         scores["soft_texture"] += MEDIUM
         scores["volume_top"] += WEAK
         scores["clean_lines"] -= WEAK
+
     elif traits["lips"] == "narrow":
         scores["clean_lines"] += MEDIUM
         scores["short_sides"] += WEAK
@@ -81,6 +86,7 @@ def apply_rules(traits):
         scores["fringe"] += MEDIUM
         scores["volume_sides"] += WEAK
         scores["volume_top"] -= STRONG
+
     elif traits["nose"] == "lower-dominant":
         scores["volume_top"] += STRONG
         scores["longer_hair"] += WEAK
@@ -90,6 +96,7 @@ def apply_rules(traits):
         scores["longer_hair"] += MEDIUM
         scores["soft_texture"] += MEDIUM
         scores["short_sides"] -= WEAK
+
     elif traits["lower_face"] == "short":
         scores["short_sides"] += MEDIUM
         scores["clean_lines"] += MEDIUM
@@ -101,6 +108,7 @@ def apply_rules(traits):
         scores["soft_texture"] += MEDIUM
         scores["short_sides"] -= WEAK
         scores["clean_lines"] -= WEAK
+
     elif traits["chin"] == "recessed":
         scores["volume_top"] += STRONG
         scores["short_sides"] += MEDIUM

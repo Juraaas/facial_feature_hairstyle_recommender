@@ -1,6 +1,8 @@
 from src.features import extract_features
 from src.face_traits import interpret_face
 from src.rules import apply_rules
+from src.face_traits_female import interpret_face_female
+from src.rules_female import apply_rules_female
 from src.recommender import generate_recommendations
 from src.validation import validate_landmarks, validate_features
 from src.logger import get_logger
@@ -8,7 +10,7 @@ from src.quality import assess_quality
 
 log = get_logger(__name__) 
 
-def run_pipeline(img, detector):
+def run_pipeline(img, detector, gender=None):
     landmarks = detector.detect(img)
     lm_check = validate_landmarks(landmarks)
 
@@ -31,8 +33,15 @@ def run_pipeline(img, detector):
     
     log.info(f"Features extracted: { {k: f'{v:.3f}' for k, v in features.items()} }")
 
-    traits = interpret_face(features)
-    scores = apply_rules(traits)
-    recs = generate_recommendations(scores, traits)
+    if gender == "Woman":
+        traits = interpret_face_female(features)
+        scores = apply_rules_female(traits)
+        recs   = generate_recommendations(scores, traits,
+                     hairstyles_path="data/hairstyles_female.json")
+    else:
+        traits = interpret_face(features)
+        scores = apply_rules(traits)
+        recs   = generate_recommendations(scores, traits,
+                     hairstyles_path="data/hairstyles.json")
 
     return landmarks, features, traits, scores, recs, quality

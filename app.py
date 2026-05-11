@@ -5,18 +5,21 @@ import pandas as pd
 from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
 from src.drawing import draw_landmarks, draw_geometry, draw_features
-from ui_components import trait_bar
+from util.ui_components import trait_bar
 from src.pdf_export import generate_pdf
 from src.feedback import save_session
+from src.gender import detect_gender
 
 detector = FaceLandmarkDetector(model_path="models/face_landmarker.task")
-norms = pd.read_csv("male_norms_p123.csv", index_col=0)
+norms = pd.read_csv("data/norms/male_norms_p123.csv", index_col=0)
+female_norms = pd.read_csv("data/norms/female_norms_p123.csv", index_col=0)
 
-def n(feature):
+def n(feature, gender=None):
+    source = female_norms if gender == "Woman" else norms
     return {
-        "min_val": float(norms.loc["p5",  feature]),
-        "max_val": float(norms.loc["p95", feature]),
-        "avg_val": float(norms.loc["mean", feature]),
+        "min_val": float(source.loc["p5",  feature]),
+        "max_val": float(source.loc["p95", feature]),
+        "avg_val": float(source.loc["mean", feature]),
     }
 
 st.title("Hairstyle AI Recommender")
@@ -32,7 +35,8 @@ if uploaded:
     file_bytes = np.asarray(bytearray(uploaded.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, 1)
 
-    landmarks, features, traits, scores, recs, quality = run_pipeline(img, detector)
+    gender = detect_gender(img)
+    landmarks, features, traits, scores, recs, quality = run_pipeline(img, detector, gender=gender)
 
     if landmarks is None:
         if quality is not None and quality.blocking:
@@ -40,6 +44,9 @@ if uploaded:
         else:
             st.error("No face detected")
         st.stop()
+    
+    if gender:
+        st.caption(f"Detected: {gender}")
     
     if quality.warnings:
         for w in quality.warnings:
@@ -73,37 +80,37 @@ if uploaded:
 
     trait_bar(title="Face shape", value=features["face_ratio"],
         min_label="Wide face", max_label="Long face",
-        **n("face_ratio"))
+        **n("face_ratio", gender))
 
     trait_bar(title="Jaw width", value=features["jaw_ratio"],
         min_label="Narrow jaw", max_label="Wide jaw",
-         **n("jaw_ratio"))
+         **n("jaw_ratio", gender))
 
     trait_bar(title="Eye spacing", value=features["eye_ratio"],
         min_label="Close-set eyes", max_label="Wide-set eyes",
-        **n("eye_ratio"))
+        **n("eye_ratio", gender))
 
     trait_bar(title="Eye openness", value=features["eye_height"],
         min_label="Narrow eyes", max_label="Wide eyes",
-        **n("eye_height"))
+        **n("eye_height", gender))
 
     trait_bar(title="Lip width", value=features["lip_ratio"],
         min_label="Narrow lips", max_label="Wide lips",
-        **n("lip_ratio"))
+        **n("lip_ratio", gender))
 
     trait_bar(title="Nose position", value=features["nose_position"],
         min_label="High nose", max_label="Low nose",
-        **n("nose_position"))
+        **n("nose_position", gender))
 
     trait_bar(title="Lower face length", value=features["lower_face_ratio"],
         min_label="Short lower face", max_label="Long lower face",
-        **n("lower_face_ratio"))
+        **n("lower_face_ratio", gender))
 
     trait_bar(title="Chin prominence", value=features["chin_prominence"],
         min_label="Flat chin", max_label="Strong chin",
-        **n("chin_prominence"))
+        **n("chin_prominence", gender))
 
-    sym_n = n("symmetry")
+    sym_n = n("symmetry", gender)
     trait_bar(title="Facial symmetry", value=features["symmetry"],
         min_label="Symmetrical", max_label="Asymmetrical",
         **sym_n)
@@ -129,7 +136,11 @@ if uploaded:
                 for c in style["negatives"][:2]:
                     st.write(f"• **{c['desc']}** — {c['reason']}")
 
-        st.divider()    
+        st.divider()   
+
+    if not st.session_state.get("session_saved"):
+        save_session(features, quality.score, recs)
+        st.session_state["session_saved"] = True 
 
     st.markdown("---")
     st.markdown("**How accurate were these recommendations?**")
@@ -149,12 +160,8 @@ if uploaded:
 
     st.subheader("Export")
     if st.button("📄 Generate PDF Report", key="generate_pdf"):
-        if not st.session_state.get("feedback_saved") and \
-        not st.session_state.get("session_saved"):
-            save_session(features, quality.score, recs)
-            st.session_state["session_saved"] = True
-
-        pdf_bytes = generate_pdf(features, traits, recs, norms)
+        pdf_bytes = generate_pdf(features, traits, recs, 
+                                 female_norms if gender == "Woman" else norms)
         st.download_button(
             label="Save Report",
             data=pdf_bytes,
