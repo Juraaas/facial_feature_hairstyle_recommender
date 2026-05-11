@@ -1,0 +1,292 @@
+{
+  "styles": [
+    {
+      "name": "Pixie Cut",
+      "image": "images/female/pixie_cut.jpg",
+      "category": "short",
+      "tags": ["bold", "clean"],
+      "attributes": {
+        "volume_top":     0.8,
+        "volume_sides":   0.0,
+        "layers":         0.3,
+        "longer_hair":    0.0,
+        "fringe":         0.3,
+        "clean_lines":    0.8,
+        "soft_texture":   0.3,
+        "textured_top":   0.5,
+        "updo":           0.0,
+        "curtain_fringe": 0.0
+      }
+    },
+    {
+      "name": "Bob Classic",
+      "image": "images/female/bob_classic.jpg",
+      "category": "short",
+      "tags": ["clean", "structured"],
+      "attributes": {
+        "volume_top":     0.5,
+        "volume_sides":   0.5,
+        "layers":         0.3,
+        "longer_hair":    0.3,
+        "fringe":         0.0,
+        "clean_lines":    1.0,
+        "soft_texture":   0.2,
+        "textured_top":   0.0,
+        "updo":           0.0,
+        "curtain_fringe": 0.0
+      }
+    },
+    {
+      "name": "Textured Bob",
+      "image": "images/female/textured_bob.jpg",
+      "category": "short",
+      "tags": ["modern", "textured"],
+      "attributes": {
+        "volume_top":     0.4,
+        "volume_sides":   0.6,
+        "layers":         0.8,
+        "longer_hair":    0.3,
+        "fringe":         0.0,
+        "clean_lines":    0.3,
+        "soft_texture":   1.0,
+        "textured_top":   0.5,
+        "updo":           0.0,
+        "curtain_fringe": 0.3
+      }
+    },
+    {
+      "name": "French Bob",
+      "image": "images/female/french_bob.jpg",
+      "category": "short",
+      "tags": ["classic", "fringe"],
+      "attributes": {
+        "volume_top":     0.3,
+        "volume_sides":   0.4,
+        "layers":         0.3,
+        "longer_hair":    0.2,
+        "fringe":         1.0,
+        "clean_lines":    0.7,
+        "soft_texture":   0.5,
+        "textured_top":   0.0,
+        "updo":           0.0,
+        "curtain_fringe": 0.0
+      }
+    },
+    {
+      "name": "Lob (Long Bob)",
+      "image": "images/female/lob.jpg",
+      "category": "medium",
+      "tags": ["versatile", "modern"],
+      "attributes": {
+        "volume_top":     0.4,
+        "volume_sides":   0.5,
+        "layers":         0.5,
+        "longer_hair":    0.7,
+        "fringe":         0.0,
+        "clean_lines":    0.6,
+        "soft_texture":   0.5,
+        "textured_top":   0.0,
+        "updo":           0.0,
+        "curtain_fringe": 0.3
+      }
+    },
+    {
+      "name": "Curtain Fringe Medium",
+      "image": "images/female/curtain_fringe_medium.jpg",
+      "category": "medium",
+      "tags": ["modern", "fringe"],
+      "attributes": {
+        "volume_top":     0.3,
+        "volume_sides":   0.6,
+        "layers":         0.7,
+        "longer_hair":    0.6,
+        "fringe":         0.5,
+        "clean_lines":    0.3,
+        "soft_texture":   0.8,
+        "textured_top":   0.3,
+        "updo":           0.0,
+        "curtain_fringe": 1.0
+      }
+    },
+    {
+      "name": "Layered Medium",
+      "image": "images/female/layered_medium.jpg",
+      "category": "medium",
+      "tags": ["soft", "balanced"],
+      "attributes": {
+        "volume_top":     0.5,
+        "volume_sides":   0.6,
+        "layers":         1.0,
+        "longer_hair":    0.6,
+        "fringe":         0.3,
+        "clean_lines":    0.3,
+        "soft_texture":   0.9,
+        "textured_top":   0.3,
+        "updo":           0.0,
+        "curtain_fringe": 0.5
+      }
+    },
+    {
+      "name": "Blunt Cut Medium",
+      "image": "images/female/blunt_cut_medium.jpg",
+      "category": "medium",
+      "tags": ["structured", "clean"],
+      "attributes": {
+        "volume_top":     0.3,
+        "volume_sides":   0.3,
+        "layers":         0.0,
+        "longer_hair":    0.6,
+        "fringe":         0.0,
+        "clean_lines":    1.0,
+        "soft_texture":   0.0,
+        "textured_top":   0.0,
+        "updo":           0.0,
+        "curtain_fringe": 0.0
+      }
+    },
+    {
+      "name": "Voluminous Blowout",
+      "image": "images/female/voluminous_blowout.jpg",
+      "category": "medium",
+      "tags": ["volume", "glamour"],
+      "attributes": {
+        "volume_top":     0.8,
+        "volume_sides":   1.0,
+        "layers":         0.6,
+        "longer_hair":    0.5,
+        "fringe":         0.0,
+        "clean_lines":    0.3,
+        "soft_texture":   0.8,
+        "textured_top":   0.3,
+        "updo":           0.0,
+        "curtain_fringe": 0.0
+      }
+    },
+    {
+      "name": "Long Layers",
+      "image": "images/female/long_layers.jpg",
+      "category": "long",
+      "tags": ["soft", "natural"],
+      "attributes": {
+        "volume_top":     0.4,
+        "volume_sides":   0.6,
+        "layers":         1.0,
+        "longer_hair":    1.0,
+        "fringe":         0.0,
+        "clean_lines":    0.3,
+        "soft_texture":   1.0,
+        "textured_top":   0.3,
+        "updo":           0.0,
+        "curtain_fringe": 0.5
+      }
+    },
+    {
+      "name": "Long Straight Blunt",
+      "image": "images/female/long_straight_blunt.jpg",
+      "category": "long",
+      "tags": ["clean", "minimal"],
+      "attributes": {
+        "volume_top":     0.2,
+        "volume_sides":   0.2,
+        "layers":         0.0,
+        "longer_hair":    1.0,
+        "fringe":         0.0,
+        "clean_lines":    1.0,
+        "soft_texture":   0.0,
+        "textured_top":   0.0,
+        "updo":           0.0,
+        "curtain_fringe": 0.0
+      }
+    },
+    {
+      "name": "Long with Curtain Fringe",
+      "image": "images/female/long_curtain_fringe.jpg",
+      "category": "long",
+      "tags": ["modern", "fringe"],
+      "attributes": {
+        "volume_top":     0.3,
+        "volume_sides":   0.5,
+        "layers":         0.7,
+        "longer_hair":    1.0,
+        "fringe":         0.5,
+        "clean_lines":    0.3,
+        "soft_texture":   0.8,
+        "textured_top":   0.0,
+        "updo":           0.0,
+        "curtain_fringe": 1.0
+      }
+    },
+    {
+      "name": "Beach Waves",
+      "image": "images/female/beach_waves.jpg",
+      "category": "long",
+      "tags": ["casual", "textured"],
+      "attributes": {
+        "volume_top":     0.4,
+        "volume_sides":   0.8,
+        "layers":         0.8,
+        "longer_hair":    0.9,
+        "fringe":         0.0,
+        "clean_lines":    0.0,
+        "soft_texture":   1.0,
+        "textured_top":   0.5,
+        "updo":           0.0,
+        "curtain_fringe": 0.3
+      }
+    },
+    {
+      "name": "Classic Updo",
+      "image": "images/female/classic_updo.jpg",
+      "category": "updo",
+      "tags": ["formal", "elegant"],
+      "attributes": {
+        "volume_top":     0.8,
+        "volume_sides":   0.0,
+        "layers":         0.0,
+        "longer_hair":    0.5,
+        "fringe":         0.0,
+        "clean_lines":    1.0,
+        "soft_texture":   0.0,
+        "textured_top":   0.0,
+        "updo":           1.0,
+        "curtain_fringe": 0.0
+      }
+    },
+    {
+      "name": "Soft Bun",
+      "image": "images/female/soft_bun.jpg",
+      "category": "updo",
+      "tags": ["casual", "soft"],
+      "attributes": {
+        "volume_top":     0.6,
+        "volume_sides":   0.3,
+        "layers":         0.3,
+        "longer_hair":    0.5,
+        "fringe":         0.3,
+        "clean_lines":    0.5,
+        "soft_texture":   0.7,
+        "textured_top":   0.3,
+        "updo":           1.0,
+        "curtain_fringe": 0.3
+      }
+    },
+    {
+      "name": "Braided Crown",
+      "image": "images/female/braided_crown.jpg",
+      "category": "updo",
+      "tags": ["romantic", "textured"],
+      "attributes": {
+        "volume_top":     0.7,
+        "volume_sides":   0.5,
+        "layers":         0.5,
+        "longer_hair":    0.5,
+        "fringe":         0.0,
+        "clean_lines":    0.5,
+        "soft_texture":   0.8,
+        "textured_top":   0.8,
+        "updo":           1.0,
+        "curtain_fringe": 0.0
+      }
+    }
+  ]
+}
