@@ -67,8 +67,8 @@ detector = FaceLandmarkDetector(
     model_path="models/face_landmarker.task"
 )
 
-l1, f1, t1, s1, r1 = run_pipeline(img1, detector)
-l2, f2, t2, s2, r2 = run_pipeline(img2, detector)
+l1, f1, t1, s1, r1, q1 = run_pipeline(img1, detector)
+l2, f2, t2, s2, r2, q2 = run_pipeline(img2, detector)
 
 if l1 is None or l2 is None:
     print("No face detected")
