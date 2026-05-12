@@ -1,17 +1,17 @@
 import json
 
 STYLE_DESCRIPTIONS = {
-    "volume_top":    "height on top balances face width",
-    "volume_sides":  "side volume softens a long face",
-    "short_sides":   "short sides create clean contrast",
-    "longer_hair":   "length elongates and refines proportions",
-    "fringe":        "fringe shortens visual face length",
-    "clean_lines":   "clean structure suits your symmetry",
-    "soft_texture":  "soft texture reduces facial sharpness",
-    "textured_top":  "textured top balances a strong chin",
-    "layers":         "layered cut adds movement and softness",
-    "updo":           "updo elongates and lifts the face",
-    "curtain_fringe": "curtain fringe frames and balances eye spacing",
+    "volume_top":     "height on top",
+    "volume_sides":   "side volume",
+    "short_sides":    "short sides",
+    "longer_hair":    "length",
+    "fringe":         "fringe",
+    "clean_lines":    "clean structure",
+    "soft_texture":   "soft texture",
+    "textured_top":   "textured top",
+    "layers":         "layers",
+    "updo":           "updo lift",
+    "curtain_fringe": "curtain fringe",
 }
 
 NEGATIVE_EXPLANATIONS = {
