@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
-from src.drawing import draw_landmarks, draw_geometry, draw_features
-from util.ui_components import trait_bar
+from util.ui_components import trait_bar, style_card
+from src.drawing import draw_landmarks, draw_geometry
 from src.pdf_export import generate_pdf
 from src.feedback import save_session
 from src.gender import detect_gender
@@ -23,7 +23,7 @@ def n(feature, gender=None):
     }
 
 st.title("Hairstyle AI Recommender")
-uploaded = st.file_uploader("Upload image", type=["jpg", "png"])
+uploaded = st.file_uploader("Upload a front-facing photo", type=["jpg", "png"])
 
 if uploaded:
     if "last_file" not in st.session_state or \
@@ -42,108 +42,109 @@ if uploaded:
         if quality is not None and quality.blocking:
             st.error(f"⚠️ {quality.blocking}")
         else:
-            st.error("No face detected")
+            st.error("No face detected - try a clearer front-facing photo")
         st.stop()
     
-    if gender:
-        st.caption(f"Detected: {gender}")
-    
-    if quality.warnings:
-        for w in quality.warnings:
-            st.warning(f"⚠️ {w}")
-    
-    if quality is not None:
-        confidence_color = "#2d8f4e" if quality.score > 0.7 else \
-                    "#e6a817" if quality.score > 0.4 else "#c0392b"
+    det_col1, det_col2 = st.columns([1, 3])
+    with det_col1:
+        gender_icon = "👩" if gender == "Woman" else "👨"
         st.markdown(
-            f'<p style="color:{confidence_color}; font-size:13px">'
-            f'Detection confidence: {quality.score*100:.0f}%</p>',
+            f'<div style="display:inline-flex;align-items:center;gap:6px;'
+            f'font-size:13px;padding:4px 12px;border-radius:20px;'
+            f'border:.5px solid #ddd;color:#555;margin-top:4px">'
+            f'{gender_icon} {gender or "Unknown"} detected </div>',
             unsafe_allow_html=True
         )
+    with det_col2:
+        if quality is not None:
+            score_pct = quality.score * 100
+            bar_color = "#2d8f4e" if score_pct > 70 else \
+                        "#e6a817" if score_pct > 40 else "#c0392b"
+            st.markdown(
+                f'<div style="padding-top:6px">'
+                f'<div style="display:flex;justify-content:space-between;'
+                f'font-size:12px;color:#888;margin-bottom:3px">'
+                f'<span>Detection confidence</span>'
+                f'<span style="color:{bar_color};font-weight:500">'
+                f'{score_pct:.0f}%</span></div>'
+                f'<div style="height:4px;border-radius:2px;background:#eee">'
+                f'<div style="width:{score_pct:.0f}%;height:100%;'
+                f'border-radius:2px;background:{bar_color}"></div>'
+                f'</div></div>',
+                unsafe_allow_html=True
+            )
+
+    if quality is not None and quality.warnings:
+        for w in quality.warnings:
+            st.warning(f"⚠️ {w}")
+
+    st.divider()
 
     st.subheader("Visualization")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image(img, caption="Original image", channels="BGR")
+        st.image(img, caption="Original image", channels="BGR", use_container_width=True)
     
     with col2:
-        vis = img.copy()
-        st.image(vis, caption="Processed view (future overlay)", channels="BGR")
+        vis = draw_landmarks(img.copy(), landmarks, draw_indices=False)
+        st.image(vis, caption="Detected landmarks", channels="BGR",
+                use_container_width=True)
 
-    st.subheader("Face Analysis")
-    for exp in recs["face_analysis"]:
-        st.write("•", exp)
+    st.divider()
 
-    st.markdown("### Facial proportions (normalized)")
+    if recs["face_analysis"]:
+        for exp in recs["face_analysis"]:
+            st.markdown(
+                f'<div style="font-size:13px;color:#555;padding:5px 0 5px 12px;'
+                f'border-left:2px solid #ddd;margin-bottom:6px">{exp}</div>',
+                unsafe_allow_html=True
+            )
+    else:
+        st.caption("No notable traits detected — proportions are well balanced.")
 
-    trait_bar(title="Face shape", value=features["face_ratio"],
-        min_label="Wide face", max_label="Long face",
-        **n("face_ratio", gender))
+    st.divider()
 
-    trait_bar(title="Jaw width", value=features["jaw_ratio"],
-        min_label="Narrow jaw", max_label="Wide jaw",
-         **n("jaw_ratio", gender))
+    st.subheader("Facial proportions")
 
-    trait_bar(title="Eye spacing", value=features["eye_ratio"],
-        min_label="Close-set eyes", max_label="Wide-set eyes",
-        **n("eye_ratio", gender))
+    BARS = [
+        ("face_ratio",        "Face shape",         "Wide face",        "Long face"),
+        ("jaw_ratio",         "Jaw width",           "Narrow jaw",       "Wide jaw"),
+        ("eye_ratio",         "Eye spacing",         "Close-set eyes",   "Wide-set eyes"),
+        ("eye_height",        "Eye openness",        "Narrow eyes",      "Wide eyes"),
+        ("lip_ratio",         "Lip width",           "Narrow lips",      "Wide lips"),
+        ("nose_position",     "Nose position",       "High nose",        "Low nose"),
+        ("lower_face_ratio",  "Lower face length",   "Short lower face", "Long lower face"),
+        ("chin_prominence",   "Chin prominence",     "Flat chin",        "Strong chin"),
+        ("symmetry",          "Facial symmetry",     "Symmetrical",      "Asymmetrical"),
+    ]
 
-    trait_bar(title="Eye openness", value=features["eye_height"],
-        min_label="Narrow eyes", max_label="Wide eyes",
-        **n("eye_height", gender))
+    for feat, title, min_label, max_label in BARS:
+        trait_bar(
+            title=title,
+            value=features[feat],
+            min_label=min_label,
+            max_label=max_label,
+            **n(feat, gender)
+        )
 
-    trait_bar(title="Lip width", value=features["lip_ratio"],
-        min_label="Narrow lips", max_label="Wide lips",
-        **n("lip_ratio", gender))
-
-    trait_bar(title="Nose position", value=features["nose_position"],
-        min_label="High nose", max_label="Low nose",
-        **n("nose_position", gender))
-
-    trait_bar(title="Lower face length", value=features["lower_face_ratio"],
-        min_label="Short lower face", max_label="Long lower face",
-        **n("lower_face_ratio", gender))
-
-    trait_bar(title="Chin prominence", value=features["chin_prominence"],
-        min_label="Flat chin", max_label="Strong chin",
-        **n("chin_prominence", gender))
-
-    sym_n = n("symmetry", gender)
-    trait_bar(title="Facial symmetry", value=features["symmetry"],
-        min_label="Symmetrical", max_label="Asymmetrical",
-        **sym_n)
+    st.divider()
     
-    st.subheader("Top Hairstyles")
+    st.subheader("Top hairstyles")
 
-    for style in recs["top_styles"]:
-        st.markdown(f"## {style['name']} — {style['score']:.1f} points")
+    cols = st.columns(len(recs["top_styles"]))
+    for i, style in enumerate(recs["top_styles"]):
+        with cols[i]:
+            style_card(style, rank=i)
 
-        if "image" in style:
-            st.image(style["image"], width=300)
-
-        if style["contributions"]:
-            st.markdown("**Why it works for you:**")
-            top2 = style["contributions"][:2]
-            cols = st.columns(2)
-            for i, c in enumerate(top2):
-                with cols[i]:
-                    st.metric(label=c["desc"], value=f"{c['percent']*100:.0f}%")
-
-        if style["negatives"]:
-            with st.expander("Potential drawbacks"):
-                for c in style["negatives"][:2]:
-                    st.write(f"• **{c['desc']}** — {c['reason']}")
-
-        st.divider()   
+    st.divider()  
 
     if not st.session_state.get("session_saved"):
         save_session(features, quality.score, recs)
         st.session_state["session_saved"] = True 
 
-    st.markdown("---")
-    st.markdown("**How accurate were these recommendations?**")
+    st.subheader("How accurate were our recommendations?")
     rating = st.feedback("stars", key="user_rating")
 
     if rating is not None:
