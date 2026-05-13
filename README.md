@@ -118,6 +118,14 @@ Every session is logged to `data/feedback.csv` with extracted features, quality 
 
 ---
 
+## Visual Assets Disclaimer
+
+Example hairstyle visualizations used in the demo UI were generated with Google's Gemini image generation tools for illustrative and non-commercial research purposes.
+
+Some images were cropped and resized to maintain consistent framing and UI presentation.
+
+---
+
 ## Roadmap
 
 - **Facial thirds analysis** — mid/lower face ratio scoring (implementable now with current landmarks)
