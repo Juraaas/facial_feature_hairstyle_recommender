@@ -12,14 +12,14 @@ def trait_bar(title, value, min_val, max_val, avg_val,
 
     if out_of_range == "below":
       dot_pct, dot_label, dot_color = 2, f"&lt; {min_val:.2f}", "#888"
+      interp = f"notably {min_label.lower()}" 
     elif out_of_range == "above":
       dot_pct, dot_label, dot_color = 98, f"&gt; {max_val:.2f}", "#888"
+      interp = f"notably {max_label.lower()}"
     else:
       dot_pct, dot_label, dot_color = clamped, f"{value:.2f}", "#185FA5"
 
-    if out_of_range:
-      interp = "out of range"
-    elif clamped < 33:
+    if clamped < 33:
       interp = min_label.lower()
     elif clamped > 67:
       interp = max_label.lower()
