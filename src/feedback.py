@@ -13,6 +13,11 @@ FIELDNAMES = [
     "comment",
 ]
 
+VOTES_PATH = Path("data/votes.csv")
+VOTE_FIELDS = ["timestamp", "style_name", "vote", "face_ratio", "jaw_ratio",
+               "jaw_to_height", "eye_ratio", "eye_height", "lip_ratio", "nose_position",
+               "lower_face_ratio", "chin_prominence", "symmetry", "gender"]
+
 def save_session(features, quality_score, recs, rating=None, comment=""):
     FEEDBACK_PATH.parent.mkdir(exist_ok=True)
     exists = FEEDBACK_PATH.exists()
@@ -39,4 +44,22 @@ def load_feedback():
     if not FEEDBACK_PATH.exists():
         return []
     with open(FEEDBACK_PATH, "r") as f:
-        return list(csv.DictReader(f))       
+        return list(csv.DictReader(f))
+
+def save_vote(style_name: str, vote: str, features: dict, gender: str = ""):
+    VOTES_PATH.parent.mkdir(exist_ok=True)
+    exists = VOTES_PATH.exists()
+
+    row = {
+        "timestamp":  datetime.now().isoformat(),
+        "style_name": style_name,
+        "vote":       vote,
+        "gender":     gender,
+        **{k: round(v, 4) for k, v in features.items()},
+    }
+
+    with open(VOTES_PATH, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=VOTE_FIELDS)
+        if not exists:
+            writer.writeheader()
+        writer.writerow(row)

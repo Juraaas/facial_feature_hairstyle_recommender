@@ -1,3 +1,4 @@
+import streamlit as st
 import streamlit.components.v1 as components
 import base64
 from pathlib import Path
@@ -66,7 +67,7 @@ def load_image_b64(path: str) -> str | None:
     return None
 
 
-def style_card(style, rank=0):
+def style_card(style, rank=0, card_key=""):
   is_top = rank == 0
   border = "border:.5px solid #378ADD" if is_top else "border:.5px solid #e0e0e0"
   badge = (
@@ -124,10 +125,15 @@ def style_card(style, rank=0):
         ⚠ {c['reason']}
       </div>"""
 
+  card_id = f"card_{card_key}".replace(" ", "_")
+
   html = f"""
   <style>
+    @keyframes fadeIn{{from{{opacity:0;transform:translateY(8px)}}
+                        to{{opacity:1;transform:translateY(0)}}}}
+    #{card_id}{{animation:fadeIn .35s ease forwards}}
     .sc{{font-family:sans-serif;background:#fff;border-radius:12px;
-          overflow:hidden;{border};margin-bottom:12px}}
+          overflow:hidden;{border};margin-bottom:8px}}
     .sc-img-wrap{{position:relative}}
     .sc-score{{position:absolute;top:8px;right:8px;width:30px;height:30px;
                 border-radius:50%;background:#fff;border:.5px solid #e0e0e0;
@@ -136,7 +142,7 @@ def style_card(style, rank=0):
     .sc-body{{padding:12px}}
     .sc-name{{font-size:14px;font-weight:500;color:#111;margin:0 0 6px}}
   </style>
-  <div class="sc">
+  <div class="sc" id="{card_id}"style="display:flex;flex-direction:column;min-height:480px">
     <div class="sc-img-wrap">
       {img_html}
       {badge}
@@ -150,5 +156,33 @@ def style_card(style, rank=0):
     </div>
   </div>"""
 
-  h = 450 if style.get("negatives") else 420
+  h = 500
   components.html(html, height=h)
+
+  voted = st.session_state.get("votes", {}).get(style["name"])
+
+  if voted == "up":
+    st.markdown(
+      '<div style="text-align:center;font-size:12px;color:#2d8f4e;'
+      'padding:6px;background:#f0faf4;border-radius:8px;'
+      'border:.5px solid #b7dfc7">👍 Thanks for your feedback!</div>',
+    unsafe_allow_html=True
+    )
+  elif voted == "down":
+    st.markdown(
+      '<div style="text-align:center;font-size:12px;color:#888;'
+      'padding:6px;background:#f9f9f9;border-radius:8px;'
+      'border:.5px solid #ddd">👎 Noted — showing next suggestion</div>',
+      unsafe_allow_html=True
+    )
+  else:
+    b_col1, b_col2 = st.columns(2)
+    with b_col1:
+      if st.button("👍", key=f"up_{card_key}", use_container_width=True):
+        st.session_state.setdefault("votes", {})[style["name"]] = "up"
+        return "up"
+    with b_col2:
+      if st.button("👎", key=f"down_{card_key}", use_container_width=True):
+        st.session_state.setdefault("votes", {})[style["name"]] = "down"
+        return "down"
+  return None

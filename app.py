@@ -7,7 +7,7 @@ from src.pipeline import run_pipeline
 from util.ui_components import trait_bar, style_card
 from src.drawing import draw_landmarks, draw_geometry
 from src.pdf_export import generate_pdf
-from src.feedback import save_session
+from src.feedback import save_session, save_vote
 from src.gender import detect_gender
 
 detector = FaceLandmarkDetector(model_path="models/face_landmarker.task")
@@ -31,6 +31,9 @@ if uploaded:
         st.session_state["session_saved"] = False
         st.session_state["feedback_saved"] = False
         st.session_state["last_file"] = uploaded.name
+        st.session_state["displayed_styles"] = None
+        st.session_state["queue"] = None
+        st.session_state["votes"] = {}
 
     file_bytes = np.asarray(bytearray(uploaded.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, 1)
@@ -130,13 +133,31 @@ if uploaded:
         )
 
     st.divider()
+
+    if st.session_state["displayed_styles"] is None:
+        all_styles = recs["all_styles"]
+        st.session_state["displayed_styles"] = all_styles[:3]
+        st.session_state["queue"] = all_styles[3:]
     
     st.subheader("Top hairstyles")
 
-    cols = st.columns(len(recs["top_styles"]))
-    for i, style in enumerate(recs["top_styles"]):
+    displayed = st.session_state["displayed_styles"]
+    cols = st.columns(len(displayed))
+
+    for i, style in enumerate(displayed):
         with cols[i]:
-            style_card(style, rank=i)
+            vote = style_card(style, rank=i, card_key=f"{i}_{style['name']}")
+
+            if vote is not None:
+                #prev_vote = st.session_state["votes"].get(style["name"])
+                #if prev_vote != vote:
+                    #st.session_state["votes"][style["name"]] = vote
+                save_vote(style["name"], vote, features, gender or "")
+
+                if vote == "down" and st.session_state["queue"]:
+                    next_style = st.session_state["queue"].pop(0)
+                    st.session_state["displayed_styles"][i] = next_style
+                st.rerun()
 
     st.divider()  
 
