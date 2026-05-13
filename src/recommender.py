@@ -173,6 +173,8 @@ def generate_recommendations(user_scores, traits, top_k=3, hairstyles_path="data
         results.append({
             "name": style["name"],
             "score": score,
+            "category": style.get("category", ""),
+            "tags": style.get("tags", []),
             "contributions": positive,
             "negatives": negative,
             "image": style.get("image", None),
@@ -182,5 +184,6 @@ def generate_recommendations(user_scores, traits, top_k=3, hairstyles_path="data
 
     return {
         "top_styles": results[:top_k],
+        "all_styles": results,
         "face_analysis": explain_from_traits(traits)
     }
