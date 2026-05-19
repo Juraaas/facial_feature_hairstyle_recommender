@@ -51,6 +51,14 @@ def n(feature, gender=None):
     }
 
 st.title("Hairstyle AI Recommender")
+
+gender = st.radio(
+    "Select gender for accurate recommendations",
+    ["Man", "Woman"],
+    horizontal=True,
+    key="gender_select"
+)
+
 uploaded = st.file_uploader("Upload a front-facing photo", type=["jpg", "png"])
 
 if uploaded:
@@ -66,7 +74,6 @@ if uploaded:
     file_bytes = np.asarray(bytearray(uploaded.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, 1)
 
-    gender = detect_gender(img)
     landmarks, features, traits, scores, recs, quality = run_pipeline(img, detector, gender=gender)
 
     if landmarks is None:
