@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-FEEDBACK_PATH = Path("data/feedback.csv")
+FEEDBACK_PATH = Path("data/feedback/feedback.csv")
 FIELDNAMES = [
     "timestamp", "face_ratio", "jaw_ratio", "jaw_to_height", "eye_ratio", "eye_height",
     "lip_ratio", "nose_position", "lower_face_ratio", "chin_prominence",
@@ -13,7 +13,7 @@ FIELDNAMES = [
     "comment",
 ]
 
-VOTES_PATH = Path("data/votes.csv")
+VOTES_PATH = Path("data/feedback/votes.csv")
 VOTE_FIELDS = ["timestamp", "style_name", "vote", "face_ratio", "jaw_ratio",
                "jaw_to_height", "eye_ratio", "eye_height", "lip_ratio", "nose_position",
                "lower_face_ratio", "chin_prominence", "symmetry", "gender"]
