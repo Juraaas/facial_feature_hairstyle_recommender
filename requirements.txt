@@ -1,6 +1,8 @@
-opencv-python
+streamlit>=1.32.0
+opencv-python-headless
 mediapipe
+deepface
+tf-keras
 numpy
-matplotlib
-scikit-learn
 pandas
+reportlab
