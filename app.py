@@ -10,6 +10,25 @@ from src.pdf_export import generate_pdf
 from src.feedback import save_session, save_vote
 from src.gender import detect_gender
 
+def check_password():
+    if st.session_state.get("authenticated"):
+        return True
+    
+    st.title("Hairstyle AI Recommender")
+    pwd = st.text_input("Enter Password", type="password")
+
+    if st.button("Enter"):
+        if pwd == st.secrets["password"]:
+            st.session_state["authenticated"] = True
+            st.rerun()
+        else:
+            st.error("Incorrect password")
+    
+    return False
+
+if not check_password():
+    st.stop()
+
 @st.cache_resource
 def load_detector():
     return FaceLandmarkDetector(model_path="models/face_landmarker.task")
