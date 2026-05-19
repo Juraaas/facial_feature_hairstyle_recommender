@@ -2,4 +2,4 @@
 maxUploadSize = 10
 
 [theme]
-base = "light"
+base = "auto"
