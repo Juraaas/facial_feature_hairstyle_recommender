@@ -76,6 +76,7 @@ def save_vote(style_name: str, vote: str, features: dict, gender: str = ""):
             vote,
             round(features.get("face_ratio", 0), 4),
             round(features.get("jaw_ratio", 0), 4),
+            round(features.get("jaw_to_height", 0), 4),
             round(features.get("eye_ratio", 0), 4),
             round(features.get("eye_height", 0), 4),
             round(features.get("lip_ratio", 0), 4),
