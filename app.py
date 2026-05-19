@@ -10,9 +10,18 @@ from src.pdf_export import generate_pdf
 from src.feedback import save_session, save_vote
 from src.gender import detect_gender
 
-detector = FaceLandmarkDetector(model_path="models/face_landmarker.task")
-norms = pd.read_csv("data/norms/male_norms_p123.csv", index_col=0)
-female_norms = pd.read_csv("data/norms/female_norms_p123.csv", index_col=0)
+@st.cache_resource
+def load_detector():
+    return FaceLandmarkDetector(model_path="models/face_landmarker.task")
+
+@st.cache_resource
+def load_norms():
+    male = pd.read_csv("data/norms/male_norms_p123.csv", index_col=0)
+    female = pd.read_csv("data/norms/female_norms_p123.csv", index_col=0)
+    return male, female
+
+detector = load_detector()
+norms, female_norms = load_norms()
 
 def n(feature, gender=None):
     source = female_norms if gender == "Woman" else norms
