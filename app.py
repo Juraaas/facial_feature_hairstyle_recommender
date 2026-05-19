@@ -184,9 +184,6 @@ if uploaded:
             vote = style_card(style, rank=i, card_key=f"{i}_{style['name']}")
 
             if vote is not None:
-                #prev_vote = st.session_state["votes"].get(style["name"])
-                #if prev_vote != vote:
-                    #st.session_state["votes"][style["name"]] = vote
                 save_vote(style["name"], vote, features, gender or "")
 
                 if vote == "down" and st.session_state["queue"]:

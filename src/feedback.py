@@ -1,9 +1,8 @@
-import csv 
-import json
-from pathlib import Path
+import gspread
+import streamlit as st
+from google.oauth2.service_account import Credentials
 from datetime import datetime
 
-FEEDBACK_PATH = Path("data/feedback/feedback.csv")
 FIELDNAMES = [
     "timestamp", "face_ratio", "jaw_ratio", "jaw_to_height", "eye_ratio", "eye_height",
     "lip_ratio", "nose_position", "lower_face_ratio", "chin_prominence",
@@ -13,53 +12,86 @@ FIELDNAMES = [
     "comment",
 ]
 
-VOTES_PATH = Path("data/feedback/votes.csv")
 VOTE_FIELDS = ["timestamp", "style_name", "vote", "face_ratio", "jaw_ratio",
                "jaw_to_height", "eye_ratio", "eye_height", "lip_ratio", "nose_position",
                "lower_face_ratio", "chin_prominence", "symmetry", "gender"]
 
+def _get_sheet(sheet_name):
+    creds_dict = st.secrets["gcp_service_account"]
+    creds = Credentials.from_service_account_info(
+        creds_dict,
+        scopes=["https://www.googleapis.com/auth/spreadsheets"],
+    )
+    client = gspread.authorize(creds)
+    spreadsheet = client.open_by_key(st.secrets["spreadsheet_id"])
+    try:
+        return spreadsheet.worksheet(sheet_name)
+    except gspread.WorksheetNotFound:
+        return spreadsheet.add_worksheet(sheet_name, rows=1000, cols=20)
+    
+def _ensure_header(sheet, headers):
+    existing = sheet.row_values(1)
+    if existing and existing[0] != "timestamp":
+        return
+    if not existing:
+        sheet.insert_row(headers, 1)
+
 def save_session(features, quality_score, recs, rating=None, comment=""):
-    FEEDBACK_PATH.parent.mkdir(exist_ok=True)
-    exists = FEEDBACK_PATH.exists()
-    top_styles = recs["top_styles"]
+    try:
+        sheet = _get_sheet("feedback")
+        _ensure_header(sheet, FIELDNAMES)
+        top_styles = recs["top_styles"]
 
-    row = {
-        "timestamp": datetime.now().isoformat(),
-        "quality_score": quality_score,
-        "rec_1": top_styles[0]["name"] if len(top_styles) > 0 else "",
-        "rec_2": top_styles[1]["name"] if len(top_styles) > 1 else "",
-        "rec_3": top_styles[2]["name"] if len(top_styles) > 2 else "",
-        "rating": rating or "",
-        "comment": comment,
-        **{k: round(v, 4) for k, v in features.items()},
-    }
+        row = [
+            datetime.now().isoformat(),
+            round(features.get("face_ratio", 0), 4),
+            round(features.get("jaw_ratio", 0), 4),
+            round(features.get("jaw_to_height", 0), 4),
+            round(features.get("eye_ratio", 0), 4),
+            round(features.get("eye_height", 0), 4),
+            round(features.get("lip_ratio", 0), 4),
+            round(features.get("nose_position", 0), 4),
+            round(features.get("lower_face_ratio", 0), 4),
+            round(features.get("chin_prominence", 0), 4),
+            round(features.get("symmetry", 0), 4),
+            round(quality_score, 4),
+            top_styles[0]["name"] if len(top_styles) > 0 else "",
+            top_styles[1]["name"] if len(top_styles) > 1 else "",
+            top_styles[2]["name"] if len(top_styles) > 2 else "",
+            rating or "",
+            comment,
+        ]
+        sheet.append_row(row)
+    except Exception as e:
+        pass
 
-    with open(FEEDBACK_PATH, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
-        if not exists:
-            writer.writeheader()
-        writer.writerow(row)
-
-def load_feedback():
-    if not FEEDBACK_PATH.exists():
-        return []
-    with open(FEEDBACK_PATH, "r") as f:
-        return list(csv.DictReader(f))
 
 def save_vote(style_name: str, vote: str, features: dict, gender: str = ""):
-    VOTES_PATH.parent.mkdir(exist_ok=True)
-    exists = VOTES_PATH.exists()
+    try:
+        sheet = _get_sheet("votes")
+        _ensure_header(sheet, VOTE_FIELDS)
+        row = [
+            datetime.now().isoformat(),
+            style_name,
+            vote,
+            round(features.get("face_ratio", 0), 4),
+            round(features.get("jaw_ratio", 0), 4),
+            round(features.get("eye_ratio", 0), 4),
+            round(features.get("eye_height", 0), 4),
+            round(features.get("lip_ratio", 0), 4),
+            round(features.get("nose_position", 0), 4),
+            round(features.get("lower_face_ratio", 0), 4),
+            round(features.get("chin_prominence", 0), 4),
+            round(features.get("symmetry", 0), 4),
+            gender,
+        ]
+        sheet.append_row(row)
+    except Exception as e:
+        pass
 
-    row = {
-        "timestamp":  datetime.now().isoformat(),
-        "style_name": style_name,
-        "vote":       vote,
-        "gender":     gender,
-        **{k: round(v, 4) for k, v in features.items()},
-    }
-
-    with open(VOTES_PATH, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=VOTE_FIELDS)
-        if not exists:
-            writer.writeheader()
-        writer.writerow(row)
+def load_feedback():
+    try:
+        sheet = _get_sheet("feedback")
+        return sheet.get_all_records()
+    except Exception:
+        return []
