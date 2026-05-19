@@ -208,14 +208,18 @@ __marimo__/
 
 # Data & Models
 dataset/
-images/
+models/*
+!models/*.task
+
+data/feedback.csv
+data/votes.csv
+
 runs/
-models/
 *.pt
 *.onnx
 
-# Video / images / db
 *.mp4
 *.avi
 *.db
 *.csv
+!data/norms/*.csv
