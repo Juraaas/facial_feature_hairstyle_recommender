@@ -2,7 +2,6 @@ libgomp1
 libgl1
 libegl1
 libgles2
-libglib2.0-0
 libgthread-2.0-0
 libgl1
 libsm6
