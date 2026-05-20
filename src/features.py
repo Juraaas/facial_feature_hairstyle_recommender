@@ -1,7 +1,8 @@
 from src.geometry import FaceGeometry
 
-def extract_features(landmarks):
-    geo = FaceGeometry(landmarks)
+def extract_features(landmarks, hairline_y=None):
+    geo = FaceGeometry(landmarks, hairline_y=hairline_y)
+    thirds = geo.facial_thirds_ratio()
 
     return {
         "face_ratio": geo.face_ratio(),
@@ -14,4 +15,8 @@ def extract_features(landmarks):
         "lower_face_ratio": geo.lower_face_ratio(),
         "chin_prominence": geo.chin_prominence(),
         "symmetry": geo.symmetry_score(),
+        "upper_third": thirds["upper"]  if thirds else 0.33,
+        "middle_third": thirds["middle"] if thirds else 0.33,
+        "lower_third": thirds["lower"]  if thirds else 0.33,
+        "mid_lower_ratio": geo.mid_lower_ratio(),
     }

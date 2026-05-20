@@ -23,7 +23,8 @@ def validate_features(features: dict) -> ValidationResult:
     EXPECTED_KEYS = {
         "face_ratio", "jaw_ratio", "jaw_to_height", "eye_ratio",
         "eye_height", "lip_ratio", "nose_position", "lower_face_ratio",
-        "chin_prominence", "symmetry",
+        "chin_prominence", "symmetry", "upper_third",
+        "middle_third", "lower_third", "mid_lower_ratio"
     }
 
     missing = EXPECTED_KEYS - set(features.keys())
