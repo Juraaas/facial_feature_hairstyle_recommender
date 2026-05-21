@@ -59,6 +59,29 @@ def compare_traits(t1, t2):
         if t1.get(k) != t2.get(k):
             print(f"{k}: IMG1={t1.get(k)} | IMG2={t2.get(k)}")
 
+def print_thirds(features, label):
+    print(f"\n=== FACIAL THIRDS ({label}) ===")
+    u = features.get("upper_third", 0) * 100
+    m = features.get("middle_third", 0) * 100
+    l = features.get("lower_third", 0) * 100
+    r = features.get("mid_lower_ratio", 0)
+
+    print(f"Upper  (hairline→brow):  {u:.1f}%  {'✓' if 30 <= u <= 37 else '↑' if u > 37 else '↓'}")
+    print(f"Middle (brow→nose base): {m:.1f}%  {'✓' if 30 <= m <= 37 else '↑' if m > 37 else '↓'}")
+    print(f"Lower  (nose→chin):      {l:.1f}%  {'✓' if 30 <= l <= 37 else '↑' if l > 37 else '↓'}")
+    print(f"Mid/Lower ratio:         {r:.3f}  {'balanced' if 0.85 <= r <= 1.15 else 'mid dominant' if r > 1.15 else 'lower dominant'}")
+
+
+def print_hairline(features, label):
+    print(f"\n=== HAIRLINE ({label}) ===")
+    u = features.get("upper_third", 0)
+    if u > 0.38:
+        print("⚠ Possible fallback to landmark 10 (no hair segmentation)")
+    elif u < 0.25:
+        print("⚠ Unusually small upper third — check segmentation")
+    else:
+        print("✓ Upper third looks reasonable")
+
 
 img1 = cv2.imread("dataset/test_images/004455.jpg")
 img2 = cv2.imread("dataset/test_images/konar.jpg")
@@ -74,6 +97,12 @@ if l1 is None or l2 is None:
     print("No face detected")
     exit()
 
+if f1:
+    print_features(f1, "IMG1")
+    print_thirds(f1, "IMG1")
+    print_hairline(f1, "IMG1")
+    print_traits(t1, "IMG1")
+
 
 #print_features(f1, "IMG1")
 #print_features(f2, "IMG2")
@@ -86,12 +115,12 @@ if l1 is None or l2 is None:
 #print_scores(s1, "IMG1")
 #print_scores(s2, "IMG2")
 
-print_recommendations(r1, "IMG1")
-print_recommendations(r2, "IMG2")
+#print_recommendations(r1, "IMG1")
+#print_recommendations(r2, "IMG2")
 
 
 img_resized = cv2.resize(img1, None, fx=1.5, fy=1.5)
-_, f_resized, _, _, _ = run_pipeline(img_resized, detector)
+_, f_resized, _, _, _, _ = run_pipeline(img_resized, detector)
 
 print("\n=== SELF CONSISTENCY TEST ===")
 for k in f1.keys():
