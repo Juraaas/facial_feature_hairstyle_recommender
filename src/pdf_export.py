@@ -93,15 +93,18 @@ def generate_pdf(features, traits, recs, norms_df) -> bytes:
     story.append(Paragraph("Facial Proportions", s["heading"]))
 
     BARS = [
-        ("face_ratio",       "Wide face",       "Long face"),
-        ("jaw_ratio",        "Narrow jaw",      "Wide jaw"),
-        ("eye_ratio",        "Close-set eyes",  "Wide-set eyes"),
-        ("eye_height",       "Narrow eyes",     "Wide eyes"),
-        ("lip_ratio",        "Narrow lips",     "Wide lips"),
-        ("nose_position",    "High nose",       "Low nose"),
-        ("lower_face_ratio", "Short lower face","Long lower face"),
-        ("chin_prominence",  "Flat chin",       "Strong chin"),
-        ("symmetry",         "Symmetrical",     "Asymmetrical"),
+        ("face_ratio",       "Wide face",        "Long face"),
+        ("jaw_ratio",        "Narrow jaw",       "Wide jaw"),
+        ("eye_ratio",        "Close-set eyes",   "Wide-set eyes"),
+        ("eye_height",       "Narrow eyes",      "Wide eyes"),
+        ("lip_ratio",        "Narrow lips",      "Wide lips"),
+        ("nose_position",    "High nose",        "Low nose"),
+        ("lower_face_ratio", "Short lower face", "Long lower face"),
+        ("chin_prominence",  "Flat chin",        "Strong chin"),
+        ("symmetry",         "Symmetrical",      "Asymmetrical"),
+        ("upper_third",      "Low forehead",     "High forehead"),
+        ("middle_third",     "Short mid face",   "Long mid face"),
+        ("lower_third",      "Short lower face", "Long lower face"),
     ]
 
     bar_data = []
