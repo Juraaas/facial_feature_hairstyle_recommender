@@ -81,4 +81,31 @@ def interpret_face_female(features):
     else:
         traits["symmetry"] = "low"
 
+    mlr = features["mid_lower_ratio"]
+    if mlr < 0.80:
+        traits["facial_thirds"] = "lower_dominant"
+    elif mlr > 1.20:
+        traits["facial_thirds"] = "middle_dominant"
+    else:
+        traits["facial_thirds"] = "balanced"
+
+    ut = features["upper_third"]
+    if ut < 0.27:
+        traits["forehead"] = "low"
+    elif ut > 0.38:
+        traits["forehead"] = "high"
+    else:
+        traits["forehead"] = "normal"
+
+    u = features["upper_third"]
+    m = features["middle_third"]
+    l = features["lower_third"]
+    max_dev = max(abs(u - 0.333), abs(m - 0.333), abs(l - 0.333))
+    if max_dev < 0.05:
+        traits["thirds_balance"] = "balanced"
+    elif max_dev < 0.10:
+        traits["thirds_balance"] = "slight_imbalance"
+    else:
+        traits["thirds_balance"] = "imbalanced"
+
     return traits
