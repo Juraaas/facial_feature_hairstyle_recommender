@@ -79,6 +79,21 @@ TRAIT_EXPLANATIONS = {
         "medium": "slight asymmetry — natural styles look most harmonious",
         "low":    "noticeable asymmetry — textured styles redistribute visual balance",
     },
+    "facial_thirds": {
+        "lower_dominant":  "lower face is dominant — volume on top restores balance",
+        "middle_dominant": "mid face is dominant — height on top draws the eye upward",
+        "balanced":        "facial thirds are well proportioned",
+    },
+    "forehead": {
+        "high":   "high forehead — fringe can optically lower the hairline",
+        "low":    "low forehead — avoid heavy fringe, keep the forehead open",
+        "normal": "forehead height is proportionate",
+    },
+    "thirds_balance": {
+        "balanced":         "facial thirds are well balanced",
+        "slight_imbalance": "slight imbalance in facial thirds",
+        "imbalanced":       "noticeable imbalance in facial thirds — softer styles help",
+    },
 }
 
 def load_hairstyles(path="data/hairstyles.json"):
@@ -150,7 +165,7 @@ def explain_match(user_scores, style, total_score):
 
 def explain_from_traits(traits):
     explanations = []
-    skip_values = {"normal", "balanced"}
+    skip_values = {"normal", "balanced", "slight_imbalance"}
 
     for key, value in traits.items():
         if value in skip_values:
