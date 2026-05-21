@@ -135,15 +135,18 @@ if uploaded:
 
     st.divider()
 
+    st.subheader("Face analysis")
     if recs["face_analysis"]:
         for exp in recs["face_analysis"]:
             st.markdown(
-                f'<div style="font-size:13px;color:#555;padding:5px 0 5px 12px;'
-                f'border-left:2px solid #ddd;margin-bottom:6px">{exp}</div>',
+                f'<div style="font-size:13px;color:var(--color-text-secondary,#555);'
+                f'padding:6px 0 6px 12px;'
+                f'border-left:2.5px solid #378ADD;'
+                f'margin-bottom:8px;line-height:1.5">{exp}</div>',
                 unsafe_allow_html=True
             )
     else:
-        st.caption("No notable traits detected — proportions are well balanced.")
+        st.caption("Proportions are well balanced — most styles will suit you.")
 
     st.divider()
 
