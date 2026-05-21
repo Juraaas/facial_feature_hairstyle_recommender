@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 from dataclasses import dataclass
 from typing import Optional
 from src.geometry import FaceGeometry
@@ -10,10 +11,17 @@ class QualityReport:
     warnings: list[str]
     blocking: Optional[str] = None
 
-def assess_quality(landmarks, img_shape) -> QualityReport:
-    h, w = img_shape[:2]
+def assess_quality(landmarks, img) -> QualityReport:
+    h, w = img.shape[:2]
     geo = FaceGeometry(landmarks)
     warnings = []
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    brightness = np.mean(gray)
+    if brightness < 40:
+        warnings.append("Image is too dark — try better lighting")
+    elif brightness > 230:
+        warnings.append("Image is overexposed — try softer lighting")
 
     face_width_px = geo.face_width()
     min_face_px = min(w, h) * 0.15
