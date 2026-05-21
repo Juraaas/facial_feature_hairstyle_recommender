@@ -6,15 +6,18 @@ from datetime import datetime
 FIELDNAMES = [
     "timestamp", "face_ratio", "jaw_ratio", "jaw_to_height", "eye_ratio", "eye_height",
     "lip_ratio", "nose_position", "lower_face_ratio", "chin_prominence",
-    "symmetry", "quality_score",
-    "rec_1", "rec_2", "rec_3",
-    "rating",
-    "comment",
+    "symmetry", "upper_third", "middle_third", "lower_third",
+    "mid_lower_ratio", "thirds_balance", "quality_score",
+    "rec_1", "rec_2", "rec_3", "rating", "comment",
 ]
 
-VOTE_FIELDS = ["timestamp", "style_name", "vote", "face_ratio", "jaw_ratio",
-               "jaw_to_height", "eye_ratio", "eye_height", "lip_ratio", "nose_position",
-               "lower_face_ratio", "chin_prominence", "symmetry", "gender"]
+VOTE_FIELDS = [
+    "timestamp", "style_name", "vote", "face_ratio", "jaw_ratio",
+    "jaw_to_height", "eye_ratio", "eye_height", "lip_ratio", "nose_position",
+    "lower_face_ratio", "chin_prominence", "symmetry",
+    "upper_third", "middle_third", "lower_third", "mid_lower_ratio",
+    "thirds_balance", "gender"
+]
 
 def _get_sheet(sheet_name):
     creds_dict = st.secrets["gcp_service_account"]
@@ -54,6 +57,11 @@ def save_session(features, quality_score, recs, rating=None, comment=""):
             round(features.get("lower_face_ratio", 0), 4),
             round(features.get("chin_prominence", 0), 4),
             round(features.get("symmetry", 0), 4),
+            round(features.get("upper_third", 0), 4),
+            round(features.get("middle_third", 0), 4),
+            round(features.get("lower_third", 0), 4),
+            round(features.get("mid_lower_ratio", 0), 4),
+            round(features.get("thirds_balance", 0), 4),
             round(quality_score, 4),
             top_styles[0]["name"] if len(top_styles) > 0 else "",
             top_styles[1]["name"] if len(top_styles) > 1 else "",
@@ -84,6 +92,11 @@ def save_vote(style_name: str, vote: str, features: dict, gender: str = ""):
             round(features.get("lower_face_ratio", 0), 4),
             round(features.get("chin_prominence", 0), 4),
             round(features.get("symmetry", 0), 4),
+            round(features.get("upper_third", 0), 4),
+            round(features.get("middle_third", 0), 4),
+            round(features.get("lower_third", 0), 4),
+            round(features.get("mid_lower_ratio", 0), 4),
+            round(features.get("thirds_balance", 0), 4),
             gender,
         ]
         sheet.append_row(row)
