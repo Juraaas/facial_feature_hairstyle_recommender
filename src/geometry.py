@@ -27,7 +27,6 @@ class FaceGeometry:
         return self._p(263)
 
     def forehead_top(self):
-        #return np.array([np.mean(self.lm[:, 0]), np.min(self.lm[:, 1])])
         if self.hairline_y is not None:
             mid_x = (self._p(234)[0] + self._p(454)[0]) / 2
             return np.array([mid_x, self.hairline_y])
