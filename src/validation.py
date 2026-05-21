@@ -38,11 +38,15 @@ def validate_features(features: dict) -> ValidationResult:
             return ValidationResult(False, f"Feature '{key}' is negative: {value}")
         
     SANITY_BOUNDS = {
-        "face_ratio":       (0.5, 2.5),
-        "jaw_ratio":        (0.3, 1.2),
-        "eye_ratio":        (0.2, 0.9),
-        "symmetry":         (0.0, 1.0),
-        "nose_position":    (0.2, 0.8),
+        "face_ratio": (0.5, 2.5),
+        "jaw_ratio": (0.3, 1.2),
+        "eye_ratio": (0.2, 0.9),
+        "symmetry": (0.0, 1.0),
+        "nose_position": (0.2, 0.8),
+        "upper_third": (0.1, 0.6),
+        "middle_third": (0.1, 0.6),
+        "lower_third": (0.1, 0.6),
+        "mid_lower_ratio": (0.2, 3.0),
     }
 
     for key, (lo, hi) in SANITY_BOUNDS.items():
