@@ -118,6 +118,32 @@ def apply_rules_female(traits):
         scores["clean_lines"] += WEAK
         scores["longer_hair"] -= WEAK
 
+    if traits.get("facial_thirds") == "lower_dominant":
+        scores["volume_top"] += STRONG
+        scores["updo"] += MEDIUM
+        scores["fringe"] -= MEDIUM
+        scores["longer_hair"] -= WEAK
+
+    elif traits.get("facial_thirds") == "middle_dominant":
+        scores["fringe"] += MEDIUM
+        scores["curtain_fringe"] += MEDIUM
+        scores["volume_top"] -= MEDIUM
+
+    if traits.get("forehead") == "high":
+        scores["fringe"] += STRONG
+        scores["curtain_fringe"] += MEDIUM
+        scores["volume_top"] -= MEDIUM
+
+    elif traits.get("forehead") == "low":
+        scores["updo"] += WEAK
+        scores["fringe"] -= STRONG
+        scores["curtain_fringe"] -= MEDIUM
+
+    if traits.get("thirds_balance") == "imbalanced":
+        scores["soft_texture"] += WEAK
+        scores["layers"] += WEAK
+        scores["clean_lines"] -= WEAK
+
     scores = apply_symmetry_modulation_female(scores, traits)
 
     return scores

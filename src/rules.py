@@ -116,6 +116,29 @@ def apply_rules(traits):
         scores["textured_top"] -= MEDIUM
         scores["longer_hair"] -= WEAK
 
+    if traits.get("facial_thirds") == "lower_dominant":
+        scores["volume_top"] += STRONG
+        scores["fringe"] -= MEDIUM
+        scores["longer_hair"] -= WEAK
+
+    elif traits.get("facial_thirds") == "middle_dominant":
+        scores["fringe"] += MEDIUM
+        scores["volume_sides"] += WEAK
+        scores["volume_top"] -= MEDIUM
+
+    if traits.get("forehead") == "high":
+        scores["fringe"] += STRONG
+        scores["volume_top"] -= MEDIUM
+
+    elif traits.get("forehead") == "low":
+        scores["volume_top"] += WEAK
+        scores["textured_top"] += WEAK
+        scores["fringe"] -= STRONG
+
+    if traits.get("thirds_balance") == "imbalanced":
+        scores["soft_texture"] += WEAK
+        scores["clean_lines"] -= WEAK
+
     scores = apply_symmetry_modulation(scores, traits)
 
     return scores
