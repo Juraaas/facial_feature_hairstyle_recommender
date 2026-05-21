@@ -102,7 +102,7 @@ class FaceGeometry:
     
     def upper_third(self):
         top = self.forehead_top()[1]
-        return abs(self.brow_line_y - top)
+        return abs(self.brow_line_y() - top)
     
     def middle_third(self):
         return abs(self.nose_base_y() - self.brow_line_y())

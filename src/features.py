@@ -18,5 +18,5 @@ def extract_features(landmarks, hairline_y=None):
         "upper_third": thirds["upper"]  if thirds else 0.33,
         "middle_third": thirds["middle"] if thirds else 0.33,
         "lower_third": thirds["lower"]  if thirds else 0.33,
-        "mid_lower_ratio": geo.mid_lower_ratio(),
+        "mid_lower_ratio": geo.middle_lower_ratio(),
     }
