@@ -8,7 +8,6 @@ from util.ui_components import trait_bar, style_card
 from src.drawing import draw_landmarks, draw_geometry
 from src.pdf_export import generate_pdf
 from src.feedback import save_session, save_vote
-from src.gender import detect_gender
 
 def check_password():
     if st.session_state.get("authenticated"):
@@ -147,19 +146,19 @@ if uploaded:
     st.subheader("Facial proportions")
 
     BARS = [
-        ("face_ratio",       "Wide face",        "Long face"),
-        ("jaw_ratio",        "Narrow jaw",       "Wide jaw"),
-        ("eye_ratio",        "Close-set eyes",   "Wide-set eyes"),
-        ("eye_height",       "Narrow eyes",      "Wide eyes"),
-        ("lip_ratio",        "Narrow lips",      "Wide lips"),
-        ("nose_position",    "High nose",        "Low nose"),
-        ("lower_face_ratio", "Short lower face", "Long lower face"),
-        ("chin_prominence",  "Flat chin",        "Strong chin"),
-        ("symmetry",         "Symmetrical",      "Asymmetrical"),
-        ("upper_third",      "Low forehead",     "High forehead"),
-        ("middle_third",     "Short mid face",   "Long mid face"),
-        ("lower_third",      "Short lower face", "Long lower face"),
-    ]
+    ("face_ratio",       "Face shape",          "Wide face",        "Long face"),
+    ("jaw_ratio",        "Jaw width",            "Narrow jaw",       "Wide jaw"),
+    ("eye_ratio",        "Eye spacing",          "Close-set eyes",   "Wide-set eyes"),
+    ("eye_height",       "Eye openness",         "Narrow eyes",      "Wide eyes"),
+    ("lip_ratio",        "Lip width",            "Narrow lips",      "Wide lips"),
+    ("nose_position",    "Nose position",        "High nose",        "Low nose"),
+    ("lower_face_ratio", "Lower face length",    "Short lower face", "Long lower face"),
+    ("chin_prominence",  "Chin prominence",      "Flat chin",        "Strong chin"),
+    ("symmetry",         "Facial symmetry",      "Symmetrical",      "Asymmetrical"),
+    ("upper_third",      "Forehead",             "Low forehead",     "High forehead"),
+    ("middle_third",     "Mid face",             "Short mid face",   "Long mid face"),
+    ("lower_third",      "Lower face thirds",    "Short lower",      "Long lower"),
+]
 
     for feat, title, min_label, max_label in BARS:
         trait_bar(
