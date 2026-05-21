@@ -20,7 +20,7 @@ def run_pipeline(img, detector, gender=None):
         log.error(f"Landmarks validation failed: {lm_check.error}")
         return None, None, None, None, None, None
     
-    quality = assess_quality(landmarks, img.shape)
+    quality = assess_quality(landmarks, img)
 
     if quality.blocking:
         log.warning(f"Quality check blocked: {quality.blocking}")
