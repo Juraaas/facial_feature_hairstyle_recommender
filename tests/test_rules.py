@@ -3,16 +3,19 @@ from src.rules import apply_rules
 
 def make_neutral_traits():
     return {
-        "face_length":  "balanced",
-        "jaw":          "normal",
-        "jaw_height":   "normal",
-        "eyes":         "normal",
+        "face_length": "balanced",
+        "jaw": "normal",
+        "jaw_height": "normal",
+        "eyes": "normal",
         "eye_openness": "normal",
-        "lips":         "normal",
-        "nose":         "balanced",
-        "lower_face":   "normal",
-        "chin":         "normal",
-        "symmetry":     "medium",
+        "lips": "normal",
+        "nose": "balanced",
+        "lower_face": "normal",
+        "chin": "normal",
+        "symmetry": "medium",
+        "facial_thirds": "balanced",
+        "forehead": "normal",
+        "thirds_balance": "balanced",
     }
 
 def test_neutral_traits_produce_zero_scores():
@@ -29,7 +32,7 @@ def test_long_face_penalizes_volume_top():
     assert scores["volume_top"] < 0
     assert scores["volume_sides"] > scores["volume_top"]
 
-def wide_jaw_penalizes_short_sides():
+def test_wide_jaw_penalizes_short_sides():
     traits = {**make_neutral_traits(), "jaw": "wide"}
     scores = apply_rules(traits)
     assert scores["short_sides"] < 0
@@ -66,4 +69,18 @@ def test_opposing_face_lengths_produce_different_top_styles():
 
     assert long_top != short_top, \
         f"Long and short face got same top recommendation: {long_top}"
+    
+def test_lower_dominant_thirds_boost_volume_top():
+    traits = {**make_neutral_traits(), "facial_thirds": "lower_dominant"}
+    scores = apply_rules(traits)
+    assert scores["volume_top"] > 0 
 
+def test_high_forehead_boosts_fringe():
+    traits = {**make_neutral_traits(), "forehead": "high"}
+    scores = apply_rules(traits)
+    assert scores["fringe"] > 0
+
+def test_low_forehead_penalizes_fringe():
+    traits = {**make_neutral_traits(), "forehead": "low"}
+    scores = apply_rules(traits)
+    assert scores["fringe"] < 0
