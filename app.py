@@ -6,6 +6,7 @@ from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
 from util.ui_components import trait_bar, style_card
 from src.drawing import draw_landmarks, draw_geometry
+from src.gender import detect_gender
 from src.pdf_export import generate_pdf
 from src.feedback import save_session, save_vote
 
@@ -73,7 +74,10 @@ if uploaded:
     file_bytes = np.asarray(bytearray(uploaded.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, 1)
 
-    landmarks, features, traits, scores, recs, quality = run_pipeline(img, detector, gender=gender)
+    with st.spinner("Analysing photo..."):
+        landmarks, features, traits, scores, recs, quality = run_pipeline(
+            img, detector, gender=gender
+    )
 
     if landmarks is None:
         if quality is not None and quality.blocking:
@@ -146,19 +150,19 @@ if uploaded:
     st.subheader("Facial proportions")
 
     BARS = [
-    ("face_ratio",       "Face shape",          "Wide face",        "Long face"),
-    ("jaw_ratio",        "Jaw width",            "Narrow jaw",       "Wide jaw"),
-    ("eye_ratio",        "Eye spacing",          "Close-set eyes",   "Wide-set eyes"),
-    ("eye_height",       "Eye openness",         "Narrow eyes",      "Wide eyes"),
-    ("lip_ratio",        "Lip width",            "Narrow lips",      "Wide lips"),
-    ("nose_position",    "Nose position",        "High nose",        "Low nose"),
-    ("lower_face_ratio", "Lower face length",    "Short lower face", "Long lower face"),
-    ("chin_prominence",  "Chin prominence",      "Flat chin",        "Strong chin"),
-    ("symmetry",         "Facial symmetry",      "Symmetrical",      "Asymmetrical"),
-    ("upper_third",      "Forehead",             "Low forehead",     "High forehead"),
-    ("middle_third",     "Mid face",             "Short mid face",   "Long mid face"),
-    ("lower_third",      "Lower face thirds",    "Short lower",      "Long lower"),
-]
+        ("face_ratio",       "Face shape",          "Wide face",        "Long face"),
+        ("jaw_ratio",        "Jaw width",            "Narrow jaw",       "Wide jaw"),
+        ("eye_ratio",        "Eye spacing",          "Close-set eyes",   "Wide-set eyes"),
+        ("eye_height",       "Eye openness",         "Narrow eyes",      "Wide eyes"),
+        ("lip_ratio",        "Lip width",            "Narrow lips",      "Wide lips"),
+        ("nose_position",    "Nose position",        "High nose",        "Low nose"),
+        ("lower_face_ratio", "Lower face length",    "Short lower face", "Long lower face"),
+        ("chin_prominence",  "Chin prominence",      "Flat chin",        "Strong chin"),
+        ("symmetry",         "Facial symmetry",      "Symmetrical",      "Asymmetrical"),
+        ("upper_third",      "Forehead",             "Low forehead",     "High forehead"),
+        ("middle_third",     "Mid face",             "Short mid face",   "Long mid face"),
+        ("lower_third",      "Lower face thirds",    "Short lower",      "Long lower"),
+    ]
 
     for feat, title, min_label, max_label in BARS:
         trait_bar(
