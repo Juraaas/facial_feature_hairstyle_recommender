@@ -2,9 +2,9 @@ def interpret_face_female(features):
     traits = {}
 
     fr = features["face_ratio"]
-    if fr > 1.22:
+    if fr > 1.3:
         traits["face_length"] = "long"
-    elif fr < 1.13:
+    elif fr < 1.085:
         traits["face_length"] = "short"
     else:
         traits["face_length"] = "balanced"
@@ -18,9 +18,9 @@ def interpret_face_female(features):
         traits["jaw"] = "normal"
 
     jh = features["jaw_to_height"]
-    if jh > 0.7:
+    if jh > 0.735:
         traits["jaw_height"] = "high"
-    elif jh < 0.64:
+    elif jh < 0.61:
         traits["jaw_height"] = "low"
     else:
         traits["jaw_height"] = "normal"
@@ -50,17 +50,17 @@ def interpret_face_female(features):
         traits["lips"] = "normal"
 
     np_ = features["nose_position"]
-    if np_ > 0.6:
+    if np_ > 0.62:
         traits["nose"] = "lower-dominant"
-    elif np_ < 0.55:
+    elif np_ < 0.53:
         traits["nose"] = "upper-dominant"
     else:
         traits["nose"] = "balanced"
 
     lfr = features["lower_face_ratio"]
-    if lfr > 0.34:
+    if lfr > 0.348:
         traits["lower_face"] = "long"
-    elif lfr < 0.29:
+    elif lfr < 0.28:
         traits["lower_face"] = "short"
     else:
         traits["lower_face"] = "normal"
@@ -74,9 +74,9 @@ def interpret_face_female(features):
         traits["chin"] = "normal"
 
     sym = features["symmetry"]
-    if sym < 0.041:
+    if sym < 0.038:
         traits["symmetry"] = "high"
-    elif sym < 0.218:
+    elif sym < 0.21:
         traits["symmetry"] = "medium"
     else:
         traits["symmetry"] = "low"
@@ -84,15 +84,15 @@ def interpret_face_female(features):
     mlr = features["mid_lower_ratio"]
     if mlr < 0.80:
         traits["facial_thirds"] = "lower_dominant"
-    elif mlr > 1.20:
+    elif mlr > 1:
         traits["facial_thirds"] = "middle_dominant"
     else:
         traits["facial_thirds"] = "balanced"
 
     ut = features["upper_third"]
-    if ut < 0.27:
+    if ut < 0.195:
         traits["forehead"] = "low"
-    elif ut > 0.38:
+    elif ut > 0.325:
         traits["forehead"] = "high"
     else:
         traits["forehead"] = "normal"
