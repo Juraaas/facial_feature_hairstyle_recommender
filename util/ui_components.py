@@ -98,6 +98,17 @@ def style_card(style, rank=0, card_key=""):
       for t in style.get("tags", [])[:2]
   )
 
+  desc_text = style.get("description", "")
+  desc_html = f"""
+  <div style="font-size:11px;color:#888;line-height:1.5;
+        margin-bottom:8px;padding-bottom:8px;
+        border-bottom:.5px solid #eee; display:-webkit-box;
+        -webkit-line-clamp:4;
+        -webkit-box-orient:vertical;
+        overflow:hidden;">
+    {desc_text}
+  </div>""" if desc_text else ""
+
   contribs_html = ""
   for c in style["contributions"][:2]:
       pct = c["percent"] * 100
@@ -141,7 +152,7 @@ def style_card(style, rank=0, card_key=""):
     .sc-body{{padding:12px}}
     .sc-name{{font-size:14px;font-weight:500;color:#111;margin:0 0 6px}}
   </style>
-  <div class="sc" id="{card_id}"style="display:flex;flex-direction:column;min-height:480px">
+  <div class="sc" id="{card_id}"style="display:flex;flex-direction:column;min-height:520px">
     <div class="sc-img-wrap">
       {img_html}
       {badge}
@@ -150,12 +161,13 @@ def style_card(style, rank=0, card_key=""):
     <div class="sc-body">
       <p class="sc-name">{style['name']}</p>
       <div style="margin-bottom:8px">{tags_html}</div>
+      {desc_html}
       {contribs_html}
       {neg_html}
     </div>
   </div>"""
 
-  h = 500
+  h = 900
   st.iframe(html, height=h)
 
   voted = st.session_state.get("votes", {}).get(style["name"])
