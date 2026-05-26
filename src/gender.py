@@ -17,7 +17,14 @@ def detect_gender(img) -> str:
         faces = app.get(img)
         if not faces:
             return None
-        face = max(faces, key=lambda f: f.bbox[2] * f.bbox[3])
-        return "Woman" if face.gender == 0 else "Man"
-    except Exception:
+        face = max(faces, key=lambda f: (f.bbox[2] - f.bbox[0]) * (f.bbox[3] - f.bbox[1]))
+        sex = getattr(face, 'sex', None)
+        if sex is not None:
+            return "Woman" if sex == "F" else "Man"
+
+        g = int(face.gender)
+        return "Woman" if g == 0 else "Man"
+
+    except Exception as e:
+        print(f"DEBUG error: {e}")
         return None
