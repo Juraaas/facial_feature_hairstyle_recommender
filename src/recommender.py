@@ -193,6 +193,7 @@ def generate_recommendations(user_scores, traits, top_k=3, hairstyles_path="data
             "contributions": positive,
             "negatives": negative,
             "image": style.get("image", None),
+            "description": style.get("description", ""),
         })
 
     results.sort(key=lambda x: x["score"], reverse=True)

@@ -6,6 +6,7 @@
       "image": "images/male/buzz_cut.jpg",
       "category": "short",
       "tags": ["clean", "minimal"],
+      "description": "Ultra-short and uniform all over. Highlights facial structure and head shape directly. Virtually no styling needed.",
       "attributes": {
         "volume_top": 0.0,
         "volume_sides": 0.0,
@@ -22,6 +23,7 @@
       "image": "images/male/crew_cut.jpg",
       "category": "short",
       "tags": ["clean", "practical"],
+      "description": "Short sides with slightly longer top. Clean proportions that suit most face shapes. Easy maintenance and regular trims.",
       "attributes": {
         "volume_top": 0.5,
         "volume_sides": 0.0,
@@ -39,6 +41,7 @@
       "image": "images/male/side_part.jpg",
       "category": "classic",
       "tags": ["formal", "clean"],
+      "description": "Defined side part with combed top. Classic structure suitable for formal and casual looks. Medium styling effort.",
       "attributes": {
         "volume_top": 0.7,
         "volume_sides": 0.3,
@@ -55,6 +58,7 @@
       "image": "images/male/comb_over.jpg",
       "category": "classic",
       "tags": ["formal", "structured"],
+      "description": "Hair swept to one side with faded sides. Strong contrast creates a sharper appearance. Requires styling product.",
       "attributes": {
         "volume_top": 0.8,
         "volume_sides": 0.0,
@@ -71,6 +75,7 @@
       "image": "images/male/slick_back.jpg",
       "category": "classic",
       "tags": ["formal", "clean"],
+      "description": "Hair pushed fully backward from the forehead. Clean and sleek look for straight or wavy hair. Medium styling effort.",
       "attributes": {
         "volume_top": 0.5,
         "volume_sides": 0.0,
@@ -88,6 +93,7 @@
       "image": "images/male/pompadour.jpg",
       "category": "structured",
       "tags": ["bold", "volume"],
+      "description": "Voluminous top styled upward and back. Adds height and creates a bold silhouette. High styling effort.",
       "attributes": {
         "volume_top": 1.0,
         "volume_sides": 0.0,
@@ -104,6 +110,7 @@
       "image": "images/male/quiff.jpg",
       "category": "structured",
       "tags": ["modern", "volume"],
+      "description": "Textured volume concentrated at the front. Adds movement and works well with thicker hair. Moderate styling effort.",
       "attributes": {
         "volume_top": 0.9,
         "volume_sides": 0.3,
@@ -120,6 +127,7 @@
       "image": "images/male/classic_undercut.jpg",
       "category": "structured",
       "tags": ["modern", "contrast"],
+      "description": "Longer top with disconnected short sides. Strong contrast creates a modern appearance. Moderate styling effort.",
       "attributes": {
         "volume_top": 1.0,
         "volume_sides": 0.0,
@@ -137,6 +145,7 @@
       "image": "images/male/textured_fringe.jpg",
       "category": "textured",
       "tags": ["messy", "modern"],
+      "description": "Messy fringe with textured sides. Softens facial proportions with natural movement. Minimal styling effort.",
       "attributes": {
         "volume_top": 0.3,
         "volume_sides": 0.8,
@@ -153,6 +162,7 @@
       "image": "images/male/messy_crop.jpg",
       "category": "textured",
       "tags": ["messy", "casual"],
+      "description": "Short textured top with forward fringe. Relaxed appearance with casual movement. Very low styling effort.",
       "attributes": {
         "volume_top": 0.3,
         "volume_sides": 0.5,
@@ -169,6 +179,7 @@
       "image": "images/male/french_crop.jpg",
       "category": "textured",
       "tags": ["modern", "fringe"],
+      "description": "Blunt fringe with short faded sides. Clean texture that softens facial proportions. Low styling effort.",
       "attributes": {
         "volume_top": 0.3,
         "volume_sides": 0.3,
@@ -185,6 +196,7 @@
       "image": "images/male/curly_volume.jpg",
       "category": "textured",
       "tags": ["curly", "volume"],
+      "description": "Natural curls shaped for fuller volume. Enhances texture and movement naturally. Medium styling effort.",
       "attributes": {
         "volume_top": 0.8,
         "volume_sides": 1.0,
@@ -202,6 +214,7 @@
       "image": "images/male/layered_medium.jpg",
       "category": "long",
       "tags": ["balanced", "soft"],
+      "description": "Medium layered cut with natural movement. Balanced shape that reduces heaviness. Low styling effort.",
       "attributes": {
         "volume_top": 0.5,
         "volume_sides": 0.5,
@@ -218,6 +231,7 @@
       "image": "images/male/bro_flow.jpg",
       "category": "long",
       "tags": ["flow", "natural"],
+      "description": "Long flowing hair with natural movement. Relaxed appearance suited for textured hair. Low styling effort.",
       "attributes": {
         "volume_top": 0.5,
         "volume_sides": 0.8,
@@ -234,6 +248,7 @@
       "image": "images/male/long_straight.jpg",
       "category": "long",
       "tags": ["clean", "minimal"],
+      "description": "Long straight hair worn with minimal layering. Creates a clean and structured appearance. Higher maintenance required.",
       "attributes": {
         "volume_top": 0.0,
         "volume_sides": 0.3,
