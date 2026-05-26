@@ -150,7 +150,6 @@ if raw_source:
     st.subheader("Visualization")
 
     col1, col2 = st.columns(2)
-
     with col1:
         st.image(img, caption="Original image", channels="BGR", use_container_width=True)
     
