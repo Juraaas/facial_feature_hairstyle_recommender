@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import base64
 from pathlib import Path
 
@@ -56,7 +55,7 @@ def trait_bar(title, value, min_val, max_val, avg_val,
         <span class="tb-lbl">{max_label} ≤{max_val:.2f}</span>
       </div>
     </div>"""
-    components.html(html, height=height)
+    st.iframe(html, height=height)
 
 def load_image_b64(path: str) -> str | None:
   try:
@@ -157,7 +156,7 @@ def style_card(style, rank=0, card_key=""):
   </div>"""
 
   h = 500
-  components.html(html, height=h)
+  st.iframe(html, height=h)
 
   voted = st.session_state.get("votes", {}).get(style["name"])
 
