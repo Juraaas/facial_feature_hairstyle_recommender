@@ -55,7 +55,7 @@ def preprocess_image(img, max_size=640):
     if max(h, w) <= max_size:
         return img
     scale = max_size / max(h, w)
-    return cv2.resize(img, (int(w * scale)), (int(h * scale)), interpolation=cv2.INTER_AREA)
+    return cv2.resize(img, (int(w * scale), (int(h * scale))), interpolation=cv2.INTER_AREA)
 
 def load_image_from_source(source) -> np.ndarray | None:
     if source is None:
