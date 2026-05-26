@@ -50,31 +50,57 @@ def n(feature, gender=None):
         "avg_val": float(source.loc["mean", feature]),
     }
 
+def preprocess_image(img, max_size=640):
+    h, w = img.shape[:2]
+    if max(h, w) <= max_size:
+        return img
+    scale = max_size / max(h, w)
+    return cv2.resize(img, (int(w * scale)), (int(h * scale)), interpolation=cv2.INTER_AREA)
+
+def load_image_from_source(source) -> np.ndarray | None:
+    if source is None:
+        return None
+    file_bytes = np.asarray(bytearray(source.read()), dtype=np.uint8)
+    img = cv2.imdecode(file_bytes, 1)
+    return preprocess_image(img) if img is not None else None
+
 st.title("Hairstyle AI Recommender")
 
-gender = st.radio(
-    "Select gender for accurate recommendations",
-    ["Man", "Woman"],
-    horizontal=True,
-    key="gender_select"
-)
+tab_upload, tab_camera = st.tabs(["📁 Upload photo", "📷 Take photo"])
 
-uploaded = st.file_uploader("Upload a front-facing photo", type=["jpg", "png"])
+with tab_upload:
+    uploaded = st.file_uploader(
+        "Upload a front-facing photo",
+        type=["jpg", "png"],
+        label_visibility="collapsed"
+    )
 
-if uploaded:
+with tab_camera:
+    camera = st.camera_input("Take a photo", label_visibility="collapsed")
+    if camera:
+        st.caption("Make sure your face is well lit and centred in the frame.")
+
+raw_source = camera if camera else uploaded
+source_key = (camera.name if camera else None) or \
+             (uploaded.name if uploaded else None)
+
+if raw_source:
     if "last_file" not in st.session_state or \
-    st.session_state["last_file"] != uploaded.name:
+    st.session_state["last_file"] != source_key:
         st.session_state["session_saved"] = False
         st.session_state["feedback_saved"] = False
-        st.session_state["last_file"] = uploaded.name
+        st.session_state["last_file"] = source_key
         st.session_state["displayed_styles"] = None
         st.session_state["queue"] = None
         st.session_state["votes"] = {}
 
-    file_bytes = np.asarray(bytearray(uploaded.read()), dtype=np.uint8)
-    img = cv2.imdecode(file_bytes, 1)
+    img = load_image_from_source(raw_source)
+    if img is None:
+        st.error("Could not read image — try again.")
+        st.stop()
 
     with st.spinner("Analysing photo..."):
+        gender = detect_gender(img)
         landmarks, features, traits, scores, recs, quality = run_pipeline(
             img, detector, gender=gender
     )
