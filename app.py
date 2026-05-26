@@ -93,17 +93,26 @@ if raw_source:
         st.session_state["displayed_styles"] = None
         st.session_state["queue"] = None
         st.session_state["votes"] = {}
+        st.session_state["pipeline_key"] = None
+        st.session_state["pipeline_result"] = None
 
     img = load_image_from_source(raw_source)
     if img is None:
         st.error("Could not read image — try again.")
         st.stop()
 
-    with st.spinner("Analysing photo..."):
-        gender = detect_gender(img)
-        landmarks, features, traits, scores, recs, quality = run_pipeline(
-            img, detector, gender=gender
-    )
+    if st.session_state.get("pipeline_key") != source_key:
+        with st.spinner("Analysing photo..."):
+            gender = detect_gender(img)
+            landmarks, features, traits, scores, recs, quality = run_pipeline(
+                img, detector, gender=gender
+            )
+        st.session_state["pipeline_key"] = source_key
+        st.session_state["pipeline_result"] = (landmarks, features, traits,
+                                            scores, recs, quality, gender)
+    else:
+        (landmarks, features, traits,
+        scores, recs, quality, gender) = st.session_state["pipeline_result"]
 
     if landmarks is None:
         if quality is not None and quality.blocking:
@@ -151,12 +160,12 @@ if raw_source:
 
     col1, col2 = st.columns(2)
     with col1:
-        st.image(img, caption="Original image", channels="BGR", use_container_width=True)
+        st.image(img, caption="Original image", channels="BGR", width="stretch")
     
     with col2:
         vis = draw_landmarks(img.copy(), landmarks, draw_indices=False)
         st.image(vis, caption="Detected landmarks", channels="BGR",
-                use_container_width=True)
+                width="stretch")
 
     st.divider()
 
@@ -223,7 +232,7 @@ if raw_source:
                 if vote == "down" and st.session_state["queue"]:
                     next_style = st.session_state["queue"].pop(0)
                     st.session_state["displayed_styles"][i] = next_style
-                st.rerun()
+                    st.rerun()
 
     st.divider()  
 
