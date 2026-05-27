@@ -100,16 +100,13 @@ def style_card(style, rank=0, card_key=""):
 
   desc_text = style.get("description", "")
   desc_html = f"""
-  <div style="font-size:11px;color:#888;line-height:1.5;
+  <div style="height:66px;overflow:hidden;font-size:11px;color:#888;line-height:1.5;
         margin-bottom:8px;padding-bottom:8px;
-        border-bottom:.5px solid #eee; display:-webkit-box;
-        -webkit-line-clamp:4;
-        -webkit-box-orient:vertical;
-        overflow:hidden;">
+        border-bottom:.5px solid #eee;">
     {desc_text}
   </div>""" if desc_text else ""
 
-  contribs_html = ""
+  contribs_html = '<div style="height:48px">'
   for c in style["contributions"][:2]:
       pct = c["percent"] * 100
       contribs_html += f"""
@@ -129,7 +126,7 @@ def style_card(style, rank=0, card_key=""):
   if style.get("negatives"):
       c = style["negatives"][0]
       neg_html = f"""
-      <div style="font-size:11px;color:#888;padding:5px 8px;
+      <div style="height:44px;overflow:hidden;font-size:11px;color:#888;padding:5px 8px;
             background:#f9f9f9;border-radius:6px;
             border-left:2px solid #ddd;margin-top:6px">
         ⚠ {c['reason']}
@@ -167,8 +164,7 @@ def style_card(style, rank=0, card_key=""):
     </div>
   </div>"""
 
-  h = 900
-  st.iframe(html, height=h)
+  st.iframe(html, height=550)
 
   voted = st.session_state.get("votes", {}).get(style["name"])
 
