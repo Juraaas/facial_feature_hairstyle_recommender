@@ -2,15 +2,15 @@ import json
 
 STYLE_DESCRIPTIONS = {
     "volume_top":     "height on top",
-    "volume_sides":   "side volume",
-    "short_sides":    "short sides",
-    "longer_hair":    "length",
-    "fringe":         "fringe",
-    "clean_lines":    "clean structure",
+    "volume_sides":   "fuller sides",
+    "short_sides":    "faded sides",
+    "longer_hair":    "longer length",
+    "fringe":         "front fringe",
+    "clean_lines":    "clean shape",
     "soft_texture":   "soft texture",
     "textured_top":   "textured top",
-    "layers":         "layers",
-    "updo":           "updo lift",
+    "layers":         "layered cut",
+    "updo":           "lifted style",
     "curtain_fringe": "curtain fringe",
 }
 
