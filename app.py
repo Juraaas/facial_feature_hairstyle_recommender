@@ -64,6 +64,28 @@ def load_image_from_source(source) -> np.ndarray | None:
     img = cv2.imdecode(file_bytes, 1)
     return preprocess_image(img) if img is not None else None
 
+@st.fragment
+def hairstyle_section(features, gender, recs): 
+    if st.session_state["displayed_styles"] is None:
+        all_styles = recs["all_styles"]
+        st.session_state["displayed_styles"] = all_styles[:3]
+        st.session_state["queue"] = all_styles[3:]
+    
+    st.subheader("Top hairstyles")
+    displayed = st.session_state["displayed_styles"]
+    cols = st.columns(len(displayed))
+
+    for i, style in enumerate(displayed):
+        with cols[i]:
+            vote = style_card(style, rank=i, card_key=f"{i}_{style['name']}")
+            if vote is not None:
+                save_vote(style["name"], vote, features, gender or "")
+                if vote == "down" and st.session_state["queue"]:
+                    next_style = st.session_state["queue"].pop(0)
+                    st.session_state["displayed_styles"][i] = next_style
+                st.rerun(scope="fragment")
+    st.divider()
+
 st.title("Hairstyle AI Recommender")
 
 tab_upload, tab_camera = st.tabs(["📁 Upload photo", "📷 Take photo"])
@@ -173,7 +195,8 @@ if raw_source:
     if recs["face_analysis"]:
         for exp in recs["face_analysis"]:
             st.markdown(
-                f'<div style="font-size:13px;color:var(--color-text-secondary,#555);'
+                f'<div style="font-size:13px;'
+                f'color:var(--color-text-primary);'
                 f'padding:6px 0 6px 12px;'
                 f'border-left:2.5px solid #378ADD;'
                 f'margin-bottom:8px;line-height:1.5">{exp}</div>',
@@ -212,29 +235,7 @@ if raw_source:
 
     st.divider()
 
-    if st.session_state["displayed_styles"] is None:
-        all_styles = recs["all_styles"]
-        st.session_state["displayed_styles"] = all_styles[:3]
-        st.session_state["queue"] = all_styles[3:]
-    
-    st.subheader("Top hairstyles")
-
-    displayed = st.session_state["displayed_styles"]
-    cols = st.columns(len(displayed))
-
-    for i, style in enumerate(displayed):
-        with cols[i]:
-            vote = style_card(style, rank=i, card_key=f"{i}_{style['name']}")
-
-            if vote is not None:
-                save_vote(style["name"], vote, features, gender or "")
-
-                if vote == "down" and st.session_state["queue"]:
-                    next_style = st.session_state["queue"].pop(0)
-                    st.session_state["displayed_styles"][i] = next_style
-                    st.rerun()
-
-    st.divider()  
+    hairstyle_section(features, gender, recs)
 
     if not st.session_state.get("session_saved"):
         save_session(features, quality.score, recs)
