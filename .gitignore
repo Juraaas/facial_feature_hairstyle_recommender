@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*.pyc
 *.py[codz]
 *$py.class
 
@@ -140,6 +141,7 @@ celerybeat.pid
 .venv
 env/
 venv/
+venv_norms/
 ENV/
 env.bak/
 venv.bak/
@@ -225,3 +227,7 @@ runs/
 !data/norms/*.csv
 
 .streamlit/secrets.toml
+
+frontend/node_modules/
+frontend/dist/
+frontend/.env
