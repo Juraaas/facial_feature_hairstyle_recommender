@@ -10,6 +10,7 @@ from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
 from src.gender import detect_gender
 from src.feedback import save_session, save_vote
+from fastapi.staticfiles import StaticFiles
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -35,6 +36,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/images", StaticFiles(directory="images"), name="images")
 
 @app.get("/health")
 def health():
