@@ -11,6 +11,8 @@ from src.pipeline import run_pipeline
 from src.gender import detect_gender
 from src.feedback import save_session, save_vote
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import Response
+from src.drawing import draw_landmarks
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -117,3 +119,21 @@ async def feedback(body: dict):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     return {"ok": True}
+
+@app.post("/landmarks-overlay")
+async def landmarks_overlay(file: UploadFile = File(...)):
+    contents = await file.read()
+    arr = np.frombuffer(contents, np.uint8)
+    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+
+    h, w = img.shape[:2]
+    if max(h, w) > 640:
+        scale = 640 / max(h, w)
+        img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
+    
+    landmarks = detector.detect(img)
+    if landmarks is not None:
+        img = draw_landmarks(img, landmarks, draw_indices=False)
+    
+    _, buf = cv2.imencode('.jpg', img)
+    return Response(content=buf.tobytes(), media_type="image/jpeg")
