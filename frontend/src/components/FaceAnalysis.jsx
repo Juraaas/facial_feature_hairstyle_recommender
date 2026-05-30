@@ -16,7 +16,7 @@ export function FaceAnalysis ({ analysis }) {
         <div key={i} style={{
           fontSize: 13, padding: '6px 0 6px 12px',
           borderLeft: '2.5px solid #378ADD',
-          marginBottom: 8, lineHeight: 1.5, color: '#333'
+          marginBottom: 8, lineHeight: 1.5, color: 'var(--text)', textAlign: 'left'
         }}>
           {exp}
         </div>
