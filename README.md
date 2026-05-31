@@ -1,6 +1,6 @@
 # Face Geometry-Based Hairstyle Recommendation System
 
-An explainable computer vision system that analyzes facial geometry and recommends hairstyles based on anthropometric proportions, symmetry, and structural traits. Built around **interpretable features** and **transparent decision logic** — no black-box models.
+An explainable computer vision pipeline that analyzes facial geometry and recommends hairstyles based on anthropometric proportions, symmetry, and structural traits. Built around **interpretable features** and **transparent decision logic** — no black-box models.
 
 ---
 
@@ -10,30 +10,29 @@ Image → Landmark Detection → Hair Segmentation → Geometric Feature Extract
 ```
 Each step is fully inspectable. Features are normalized ratios derived from MediaPipe Face Mesh landmarks, calibrated against a population dataset of ~21,000 faces (UTKFace). Recommendations include per-feature contribution scores and explicit drawback analysis.
 
-
 ---
 
 ## Key design decisions
 
 **Geometry over deep learning** — all facial features are computed analytically from landmark coordinates (eye spacing ratio, jaw-to-face-width ratio, facial thirds, symmetry score etc.), making the system auditable and easy to iterate on.
 
-**Population-calibrated norms** — feature thresholds (p5/p25/p75/p95 percentiles) are derived from a dataset split by gender, not hand-tuned constants. This makes trait classification statistically grounded.
-
 **Hair segmentation for accurate facial thirds** — a SegFormer model (jonathandinu/face-parsing) detects the hairline from the photo, enabling accurate facial thirds analysis including the upper third (hairline→brow). Photos without a detectable hairline are excluded from norm calibration to maintain methodological consistency.
 
 **Explainable scoring** — each hairstyle recommendation includes positive contributions (why it fits) and negative contributions (what works against it), weighted by feature importance.
 
-**Gender-aware pipeline** — automatic gender detection routes the analysis through separate trait classifiers, scoring rules, and hairstyle databases calibrated for male and female facial proportions.
+**Gender-aware pipeline** — automatic gender detection via InsightFace routes the analysis through separate trait classifiers, scoring rules, and hairstyle databases calibrated for male and female facial proportions.
+
+**React + FastAPI architecture** — clean separation between CV backend and interactive frontend. The Python pipeline is exposed via REST API, enabling smooth UI interactions, real-time overlays, and future generative features without framework constraints.
 
 ---
 
-### Pipeline
+## Pipeline
 
 ### 1. Landmark Detection
-MediaPipe Face Mesh (478 landmarks) with quality assessment — checks face size, yaw/pitch rotation, and landmark alignment confidence before processing.
+MediaPipe Face Mesh (478 landmarks) with quality assessment — checks face size, yaw/pitch rotation, brightness, and landmark alignment confidence before processing.
 
 ### 2. Hair Segmentation
-SegFormer face-parsing model detects the hairline position. Used to compute the upper facial third accurately. If hairline detection fails (hat, poor lighting, extreme angle), the pipeline falls back to landmark 10.
+SegFormer face-parsing model detects the hairline position. Used to compute the upper facial third accurately. Falls back to landmark 10 if hairline detection fails (hat, poor lighting, extreme angle).
 
 ### 3. Geometric Feature Extraction
 15 normalized ratios computed from landmark coordinates:
@@ -57,42 +56,51 @@ SegFormer face-parsing model detects the hairline position. Used to compute the 
 | `thirds_balance` | Deviation from ideal 1:1:1 thirds ratio |
 
 ### 4. Trait Interpretation
-Features are classified against population percentiles (p25/p75 as normal range boundaries) into semantic labels — e.g. `jaw: wide`, `eyes: close-set`, `face_length: long`. Separate classifiers for male and female norms.
+Features are classified against population percentiles (p25/p75 as normal range boundaries) into semantic labels — e.g. `jaw: wide`, `eyes: close-set`, `face_length: long`, `forehead: high`, `facial_thirds: lower_dominant`. Separate classifiers for male and female norms.
 
 ### 5. Rule-Based Scoring
-Each trait triggers weighted scoring adjustments across 8 hairstyle dimensions (`volume_top`, `volume_sides`, `short_sides`, `longer_hair`, `fringe`, `clean_lines`, `soft_texture`, `textured_top`). Rules encode established hairstyling principles — e.g. wide jaw → penalize short sides, boost soft texture. Female pipeline adds `layers`, `updo`, and `curtain_fringe` dimensions.
+Each trait triggers weighted scoring adjustments across hairstyle dimensions (`volume_top`, `volume_sides`, `short_sides`, `longer_hair`, `fringe`, `clean_lines`, `soft_texture`, `textured_top`). Rules encode established hairstyling principles. Female pipeline adds `layers`, `updo`, and `curtain_fringe` dimensions.
 
 ### 6. Hairstyle Matching
-Scores are matched against a JSON database of 15 male / 16 female hairstyles, each annotated with attribute weights. Final score is normalized by total attribute weight to ensure comparability across styles with different numbers of attributes.
+Scores are matched against a JSON database of 15 male / 16 female hairstyles, each annotated with attribute weights and descriptions. Final score is normalized by total attribute weight to ensure comparability across styles.
 
 ### 7. Explainability Layer
-Per-recommendation output includes:
-- positive contributions with percentage influence
-- negative contributions with human-readable reasons
-- face analysis summary derived from non-neutral traits
-- per-feature trait bars showing user position relative to population norms
+Per-recommendation output includes positive contributions with percentage influence, negative contributions with human-readable reasons, and a face analysis summary derived from non-neutral traits.
 
 ---
 
-### Project Structure
+## Project structure
 ```
-├── src/
-│   ├── geometry.py          # landmark-based geometric calculations
-│   ├── features.py          # feature extraction pipeline
-│   ├── face_traits.py       # male trait classification
-│   ├── face_traits_female.py
-│   ├── hair_segmentation.py # SegFormer hairline detection
-│   ├── rules.py             # male scoring rules
-│   ├── rules_female.py
-│   ├── recommender.py       # scoring, matching, explainability
-│   ├── pipeline.py          # end-to-end orchestration
-│   ├── landmarks.py         # MediaPipe wrapper
-│   ├── quality.py           # image quality assessment
-│   ├── validation.py        # feature sanity checks
-│   ├── gender.py            # gender detection (DeepFace)
-│   ├── feedback.py          # session logging and vote tracking (Google Sheets)
-│   ├── pdf_export.py        # report generation
-│   └── drawing.py           # visualization overlays
+├── backend/
+│   ├── main.py               # FastAPI app — analyse, vote, feedback endpoints
+│   └── src/
+│       ├── geometry.py       # landmark-based geometric calculations
+│       ├── features.py       # feature extraction pipeline
+│       ├── hair_segmentation.py  # SegFormer hairline detection
+│       ├── face_traits.py    # male trait classification
+│       ├── face_traits_female.py
+│       ├── rules.py          # male scoring rules
+│       ├── rules_female.py
+│       ├── recommender.py    # scoring, matching, explainability
+│       ├── pipeline.py       # end-to-end orchestration
+│       ├── landmarks.py      # MediaPipe wrapper
+│       ├── quality.py        # image quality assessment
+│       ├── validation.py     # feature sanity checks
+│       ├── gender.py         # InsightFace gender detection
+│       ├── feedback.py       # session and vote logging (Google Sheets)
+│       └── drawing.py        # visualization overlays
+│
+├── frontend/
+│   └── src/
+│       ├── App.jsx
+│       ├── api/client.js     # fetch wrappers for backend endpoints
+│       ├── hooks/useAnalysis.js
+│       └── components/
+│           ├── TraitBar.jsx
+│           ├── StyleCard.jsx
+│           ├── StylesSection.jsx
+│           ├── FaceAnalysis.jsx
+│           └── FaceProportions.jsx
 │
 ├── data/
 │   ├── hairstyles.json
@@ -100,14 +108,15 @@ Per-recommendation output includes:
 │   └── norms/
 │       ├── male_norms_v2.csv
 │       └── female_norms_v2.csv
+│
 ├── tests/
 │   ├── test_rules.py
 │   └── test_recommender.py
 │
-├── compute_norms.py     # GPU-accelerated dataset norm computation
-├── ui_components.py     # trait bars, style cards
-├── app.py               # Streamlit UI
-└── main.py              # CLI pipeline runner
+├── util/
+│   └── compute_norms.py      # GPU-accelerated dataset norm computation
+│
+└── main.py                   # CLI pipeline runner
 ```
 ---
 
@@ -115,13 +124,13 @@ Per-recommendation output includes:
 
 | Layer | Tools |
 |---|---|
+| Backend | FastAPI, Uvicorn |
+| Frontend | React, Vite |
 | Landmark detection | MediaPipe Face Mesh |
 | Hair segmentation | SegFormer (jonathandinu/face-parsing) |
-| Gender detection | manual select (planned -> InsightFace) |
+| Gender detection | InsightFace |
 | Feature computation | NumPy, OpenCV |
 | Norm calibration | pandas, PyTorch (GPU), UTKFace dataset |
-| UI | Streamlit |
-| Report export | ReportLab |
 | Feedback storage | Google Sheets (gspread) |
 | Testing | pytest |
 
@@ -133,7 +142,7 @@ Every session is logged to Google Sheets with extracted features, quality score,
 
 ---
 
-## Visual Assets Disclaimer
+## Visual assets disclaimer
 
 Example hairstyle visualizations used in the demo UI were generated with Google's Gemini image generation tools for illustrative and non-commercial research purposes. Some images were cropped and resized to maintain consistent framing and UI presentation.
 
@@ -141,10 +150,9 @@ Example hairstyle visualizations used in the demo UI were generated with Google'
 
 ## Roadmap
 
-- **Automatic gender detection** — InsightFace integration for automatic gender classification without user input
-- **Profile view support** — InsightFace 3D landmarks for jaw angle, chin projection, and lateral nose profile from side-view photos
-- **Multi-photo pipeline** — upload front + profile + jaw-angle photos for comprehensive 3D facial analysis
+- **Multi-photo pipeline** — upload front + profile + jaw-angle photos for comprehensive 3D facial analysis using InsightFace 3D landmarks
 - **Hair type classification** — straight / wavy / curly / coily detection from hair mask texture
-- **Weight optimization** — use collected vote data to calibrate hairstyle attribute weights empirically
+- **Receding hairline detection** — hairline shape analysis from segmentation mask to influence fringe recommendations
 - **Hairstyle simulation** — generative preview via HairFAST or SAM-based inpainting
 - **User tutorial** — guided photo capture flow with examples for optimal analysis accuracy
+- **Weight optimization** — use collected vote data to calibrate hairstyle attribute weights empirically
