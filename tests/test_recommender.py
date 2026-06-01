@@ -1,5 +1,5 @@
 import pytest
-from src.recommender import score_hairstyle, explain_match
+from backend.src.recommender import score_hairstyle, explain_match
 
 def test_score_between_zero_and_one():
     user_scores = {"volume_top": 3, "clean_lines": 2, "short_sides": -1}

@@ -5,10 +5,10 @@ import torch
 from pathlib import Path
 from PIL import Image
 from transformers import SegformerImageProcessor, SegformerForSemanticSegmentation
-from src.geometry import FaceGeometry
-from src.features import extract_features
-from src.landmarks import FaceLandmarkDetector
-from src.hair_segmentation import find_hairline_y
+from backend.src.geometry import FaceGeometry
+from backend.src.features import extract_features
+from backend.src.landmarks import FaceLandmarkDetector
+from backend.src.hair_segmentation import find_hairline_y
 
 HAIR_CLASS = 13
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
