@@ -6,13 +6,13 @@ import os
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from backend.src.landmarks import FaceLandmarkDetector
-from backend.src.pipeline import run_pipeline
-from backend.src.gender import detect_gender
-from backend.src.feedback import save_session, save_vote
+from src.landmarks import FaceLandmarkDetector
+from src.pipeline import run_pipeline
+from src.gender import detect_gender
+from src.feedback import save_session, save_vote
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response
-from backend.src.drawing import draw_landmarks
+from src.drawing import draw_landmarks
 
 sys.path.insert(0, os.path.dirname(__file__))
 
