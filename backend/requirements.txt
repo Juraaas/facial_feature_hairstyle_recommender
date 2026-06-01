@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+python-multipart
+opencv-python-headless
+mediapipe
+numpy<2
+pandas
+torch
+torchvision
+transformers
+insightface
+onnxruntime
+aiofiles
+gspread
+google-auth
+reportlab
+Pillow
