@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
-from src.landmarks import FaceLandmarkDetector
-from src.drawing import (
+from backend.src.landmarks import FaceLandmarkDetector
+from backend.src.drawing import (
     draw_landmarks,
     draw_geometry,
     draw_features,
 )
-from src.pipeline import run_pipeline
+from backend.src.pipeline import run_pipeline
 
 
 def print_features(features, label):

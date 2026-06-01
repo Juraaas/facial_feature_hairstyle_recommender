@@ -1,5 +1,5 @@
 import pytest 
-from src.rules import apply_rules
+from backend.src.rules import apply_rules
 
 def make_neutral_traits():
     return {
@@ -53,8 +53,8 @@ def test_low_symmetry_boosts_texture():
     assert scores_low["soft_texture"] > scores_high["soft_texture"]
 
 def test_opposing_face_lengths_produce_different_top_styles():
-    from src.recommender import generate_recommendations
-    from src.rules import apply_rules
+    from backend.src.recommender import generate_recommendations
+    from backend.src.rules import apply_rules
     long_traits  = {**make_neutral_traits(), "face_length": "long"}
     short_traits = {**make_neutral_traits(), "face_length": "short"}
 

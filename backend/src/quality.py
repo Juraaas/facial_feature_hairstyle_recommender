@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from dataclasses import dataclass
 from typing import Optional
-from src.geometry import FaceGeometry
+from backend.src.geometry import FaceGeometry
 
 @dataclass
 class QualityReport:
