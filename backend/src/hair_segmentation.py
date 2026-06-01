@@ -1,20 +1,24 @@
 import numpy as np
-import streamlit as st
 import cv2
 from PIL import Image
-
-@st.cache_resource
-def load_segmentation_model():
-    from transformers import SegformerImageProcessor, SegformerForSemanticSegmentation
-    processor = SegformerImageProcessor.from_pretrained("jonathandinu/face-parsing")
-    model = SegformerForSemanticSegmentation.from_pretrained("jonathandinu/face-parsing")
-    return processor, model
 
 HAIR_CLASS = 13
 SKIN_CLASS = 1
 
+_processor = None
+_model = None
+
+def load_segmentation_model():
+    global _processor, _model
+    if _processor is None: 
+        from transformers import SegformerImageProcessor, SegformerForSemanticSegmentation
+        _processor = SegformerImageProcessor.from_pretrained("jonathandinu/face-parsing")
+        _model = SegformerForSemanticSegmentation.from_pretrained("jonathandinu/face-parsing")
+    return _processor, _model
+
 def segment_face(img_bgr):
     try:
+        import torch
         processor, model = load_segmentation_model()
 
         img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
@@ -23,13 +27,11 @@ def segment_face(img_bgr):
 
         inputs = processor(images=pil_img, return_tensors="pt")
 
-        import torch
         with torch.no_grad():
             outputs = model(**inputs)
 
-        logits = outputs.logits
         upsampled = torch.nn.functional.interpolate(
-            logits, size=(h, w), mode="bilinear", align_corners=False,
+            outputs.logits, size=(h, w), mode="bilinear", align_corners=False,
         )
         seg_map = upsampled.argmax(dim=1).squeeze().numpy()
 
@@ -59,14 +61,9 @@ def find_hairline_y(hair_mask, face_width_px):
     if len(hairline_points) < 3:
         return None
     
-    ys = [p[1] for p in hairline_points]
-    hairline_y = int(np.median(ys))
-
-    return hairline_y
+    return int(np.median([p[1] for p in hairline_points]))
 
 def get_hair_coverage(hair_mask):
     if hair_mask is None:
         return 0.0
-    total = hair_mask.size
-    hair = np.sum(hair_mask > 0)
-    return hair / total
+    return np.sum(hair_mask > 0) / hair_mask.size
