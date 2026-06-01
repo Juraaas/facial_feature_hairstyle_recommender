@@ -1,4 +1,4 @@
-from backend.src.geometry import FaceGeometry
+from src.geometry import FaceGeometry
 
 def extract_features(landmarks, hairline_y=None):
     geo = FaceGeometry(landmarks, hairline_y=hairline_y)
