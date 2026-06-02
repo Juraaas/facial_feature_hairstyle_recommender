@@ -2,6 +2,9 @@ libgomp1
 libgl1
 libegl1
 libgles2
+libgles2-mesa
+libgles2-mesa-dev
+libglx-mesa0
 libgthread-2.0-0
 libgl1
 libsm6
