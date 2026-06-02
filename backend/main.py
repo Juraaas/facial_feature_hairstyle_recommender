@@ -16,6 +16,8 @@ from src.drawing import draw_landmarks
 
 sys.path.insert(0, os.path.dirname(__file__))
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 detector = None
 norms = None
 female_norms = None
