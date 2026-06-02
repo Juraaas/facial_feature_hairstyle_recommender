@@ -41,7 +41,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/images", StaticFiles(directory="images"), name="images")
+app.mount("/images", StaticFiles(directory=os.path.join(BASE_DIR, "../images")), name="images")
 
 @app.get("/health")
 def health():
