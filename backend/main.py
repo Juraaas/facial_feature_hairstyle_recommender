@@ -17,6 +17,7 @@ from src.drawing import draw_landmarks
 sys.path.insert(0, os.path.dirname(__file__))
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = BASE_DIR / "models" / "face_landmarker.task"
 
 detector = None
 norms = None
@@ -25,7 +26,7 @@ female_norms = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global detector, norms, female_norms
-    detector = FaceLandmarkDetector(model_path="models/face_landmarker.task")
+    detector = FaceLandmarkDetector(model_path=str(MODEL_PATH))
     norms = pd.read_csv("data/norms/male_norms_v2.csv", index_col=0)
     female_norms = pd.read_csv("data/norms/female_norms_v2.csv", index_col=0)
     print("Models loaded")
