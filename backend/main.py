@@ -17,7 +17,7 @@ from src.drawing import draw_landmarks
 sys.path.insert(0, os.path.dirname(__file__))
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = BASE_DIR / "models" / "face_landmarker.task"
+MODEL_PATH = os.path.join(BASE_DIR, "models", "face_landmarker.task")
 
 detector = None
 norms = None
