@@ -37,7 +37,7 @@ function App() {
     
     const form = new FormData()
     form.append('file', file)
-    const overlayPromise = fetch('/api/landmarks-overlay', {
+    const overlayPromise = fetch(`${import.meta.env.VITE_API_URL}/landmarks-overlay`, {
       method: 'POST', body: form
     }).then(r => r.blob()).then(b => URL.createObjectURL(b))
     

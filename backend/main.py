@@ -36,7 +36,10 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "https://*.vercel.app"],
+    allow_origins=["http://localhost:5173", 
+                   "http://localhost:3000",
+                   "https://*.vercel.app",
+                   "https://facial-feature-hairstyle-recommende.vercel.app",],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
