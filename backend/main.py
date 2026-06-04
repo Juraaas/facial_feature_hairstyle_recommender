@@ -76,7 +76,8 @@ async def analyse(file: UploadFile = File(...)):
         scale = 640 / max(h, w)
         img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
     
-    gender = detect_gender(img) or "Unknown"
+    #gender = detect_gender(img) or "Unknown"
+    gender = "Man"
     result = run_pipeline(img, detector, gender=gender)
     landmarks, features, traits, scores, recs, quality = result
 
