@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
-from src.gender import detect_gender
+#from src.gender import detect_gender
 from src.feedback import save_session, save_vote
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response
@@ -78,7 +78,9 @@ async def analyse(file: UploadFile = File(...)):
     
     #gender = detect_gender(img) or "Unknown"
     gender = "Man"
+    print("ANALYSE: before run_pipeline", flush=True)
     result = run_pipeline(img, detector, gender=gender)
+    print("ANALYSE: after run_pipeline", flush=True)
     landmarks, features, traits, scores, recs, quality = result
 
     if landmarks is None:
