@@ -7,7 +7,10 @@ def get_app():
     global _app
     if _app is None:
         import insightface
-        _app = insightface.app.FaceAnalysis(providers=["CPUExecutionProvider"])
+        _app = insightface.app.FaceAnalysis(
+            name="buffalo_sc",
+            providers=["CPUExecutionProvider"],
+            allowed_modules=["detection", "genderage"])
         _app.prepare(ctx_id=0, det_size=(640, 640))
     return _app
 
