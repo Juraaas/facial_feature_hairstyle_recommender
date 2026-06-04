@@ -38,7 +38,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", 
                    "http://localhost:3000",
-                   "https://*.vercel.app",
                    "https://facial-feature-hairstyle-recommende.vercel.app",],
     allow_credentials=True,
     allow_methods=["*"],
@@ -50,6 +49,18 @@ app.mount("/images", StaticFiles(directory=os.path.join(BASE_DIR, "images")), na
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+@app.head("/health")
+def health_head():
+    return Response(status_code=200)
+
+@app.get("/")
+def root():
+    return {"status": "ok", "service": "facial-feature-hairstyle-recommender"}
+
+@app.head("/")
+def root_head():
+    return None
 
 @app.post("/analyse")
 async def analyse(file: UploadFile = File(...)):
