@@ -5,10 +5,8 @@ import sys
 import os
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
-#from src.gender import detect_gender
 from src.feedback import save_session, save_vote
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response
@@ -19,20 +17,31 @@ sys.path.insert(0, os.path.dirname(__file__))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "face_landmarker.task")
 
-detector = None
-norms = None
-female_norms = None
+_detector = None
+_norms = None
+_female_norms = None
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global detector, norms, female_norms
-    detector = FaceLandmarkDetector(model_path=str(MODEL_PATH))
-    norms = pd.read_csv("data/norms/male_norms_v2.csv", index_col=0)
-    female_norms = pd.read_csv("data/norms/female_norms_v2.csv", index_col=0)
-    print("Models loaded")
-    yield
+def get_detector():
+    global _detector
+    if _detector is None:
+        _detector = FaceLandmarkDetector(
+            model_path=os.path.join(os.path.dirname(__file__), "models/face_landmarker.task")
+        )
+    return _detector
 
-app = FastAPI(lifespan=lifespan)
+def get_norms():
+    global _norms, _female_norms
+    if _norms is None:
+        base = os.path.dirname(__file__)
+        _norms = pd.read_csv(os.path.join(BASE_DIR, "data", "norms", "male_norms_v2.csv"), index_col=0)
+        _female_norms = pd.read_csv(os.path.join(BASE_DIR, "data", "norms", "female_norms_v2.csv"), index_col=0)
+    return _norms, _female_norms
+
+def get_gender(img):
+    from src.gender import detect_gender
+    return detect_gender(img) or "Unknown"
+
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -75,12 +84,12 @@ async def analyse(file: UploadFile = File(...)):
     if max(h, w) > 640:
         scale = 640 / max(h, w)
         img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
+
+    detector = get_detector()
+    norms, female_norms = get_norms()
+    gender = get_gender(img)
     
-    #gender = detect_gender(img) or "Unknown"
-    gender = "Man"
-    print("ANALYSE: before run_pipeline", flush=True)
     result = run_pipeline(img, detector, gender=gender)
-    print("ANALYSE: after run_pipeline", flush=True)
     landmarks, features, traits, scores, recs, quality = result
 
     if landmarks is None:
@@ -150,6 +159,8 @@ async def landmarks_overlay(file: UploadFile = File(...)):
     if max(h, w) > 640:
         scale = 640 / max(h, w)
         img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
+    
+    detector = get_detector()
     
     landmarks = detector.detect(img)
     if landmarks is not None:
