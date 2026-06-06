@@ -3,6 +3,7 @@ uvicorn[standard]
 python-multipart
 opencv-python-headless
 mediapipe
+huggingface_hub
 numpy<2
 pandas
 torch
