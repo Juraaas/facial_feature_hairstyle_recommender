@@ -225,7 +225,7 @@ runs/
 *.db
 *.csv
 
-backend/data/norms/
+backend/data/norms/*.csv
 
 .streamlit/secrets.toml
 

@@ -30,69 +30,41 @@ NEGATIVE_EXPLANATIONS = {
 
 TRAIT_EXPLANATIONS = {
     "face_length": {
-        "long":     "your face is long — reducing vertical length works in your favour",
-        "short":    "your face is shorter — adding height on top helps balance proportions",
-        "balanced": "your face length proportions are well balanced",
-    },
-    "jaw": {
-        "wide":   "wide jaw — softer, layered styles reduce visual harshness",
-        "narrow": "narrow jaw — adding volume on the sides improves balance",
-        "normal": "your jaw width is well proportioned",
-    },
-    "jaw_height": {
-        "high":   "jaw sits high — longer styles help elongate the lower face",
-        "low":    "jaw sits low — volume on top balances the lower face weight",
-        "normal": "jaw height is proportionate",
-    },
-    "eyes": {
-        "wide":   "wide-set eyes — vertical emphasis and clean partings work well",
-        "close":  "close-set eyes — width on the sides creates better visual spacing",
-        "normal": "eye spacing is balanced",
-    },
-    "eye_openness": {
-        "open":   "open eyes — fringe can work well without hiding your expression",
-        "narrow": "narrower eyes — avoid heavy fringe, keep the eyes visible",
-        "normal": "eye openness is average",
-    },
-    "lips": {
-        "wide":   "wider lips — soft texture on top balances the lower face",
-        "narrow": "narrower lips — clean structured styles complement well",
-        "normal": "lip width is proportionate",
-    },
-    "nose": {
-        "upper-dominant": "upper face dominant — fringe can optically shorten the upper area",
-        "lower-dominant": "lower face dominant — volume on top restores balance",
-        "balanced":       "nose position is well centred",
-    },
-    "lower_face": {
-        "long":   "longer lower face — soft texture around the jaw reduces length",
-        "short":  "shorter lower face — clean sides and structure complement well",
-        "normal": "lower face proportions are balanced",
-    },
-    "chin": {
-        "prominent": "prominent chin — textured top and longer length balance the profile",
-        "recessed":  "recessed chin — volume on top and short sides draw focus upward",
-        "normal":    "chin prominence is average",
-    },
-    "symmetry": {
-        "high":   "high facial symmetry — clean, geometric styles suit you well",
-        "medium": "slight asymmetry — natural styles look most harmonious",
-        "low":    "noticeable asymmetry — textured styles redistribute visual balance",
+        "long": "long face shape — styles with side volume and fringe work in your favour",
+        "short": "shorter face shape — height on top helps elongate proportions",
+        "balanced": "face length is well balanced",
     },
     "facial_thirds": {
-        "lower_dominant":  "lower face is dominant — volume on top restores balance",
-        "middle_dominant": "mid face is dominant — height on top draws the eye upward",
-        "balanced":        "facial thirds are well proportioned",
+        "lower_dominant": "lower face carries more visual weight — volume on top restores balance",
+        "middle_dominant": "mid face is prominent — fringe and height draw the eye upward",
+        "balanced": "facial thirds are evenly proportioned",
     },
     "forehead": {
-        "high":   "high forehead — fringe can optically lower the hairline",
-        "low":    "low forehead — avoid heavy fringe, keep the forehead open",
-        "normal": "forehead height is proportionate",
+        "high": "high forehead — fringe optically lowers the hairline",
+        "low": "low forehead — keep the forehead open, avoid heavy fringe",
     },
-    "thirds_balance": {
-        "balanced":         "facial thirds are well balanced",
-        "slight_imbalance": "slight imbalance in facial thirds",
-        "imbalanced":       "noticeable imbalance in facial thirds — softer styles help",
+    "jaw": {
+        "wide": "wide jaw — soft layered styles reduce visual sharpness",
+        "narrow": "narrow jaw — side volume improves overall balance",
+    },
+    "eyes": {
+        "wide": "wide-set eyes — vertical emphasis and clean partings suit you well",
+        "close": "close-set eyes — side width creates better visual spacing",
+    },
+    "lips": {
+        "wide": "wider lips — soft texture on top balances the lower face",
+        "narrow": "narrower lips — clean structured styles complement well",
+    },
+    "chin": {
+        "prominent": "prominent chin — textured top and length balance the profile",
+        "recessed": "recessed chin — volume on top draws focus upward",
+    },
+    "symmetry": {
+        "high": "high facial symmetry — clean geometric styles suit you well",
+        "low": "noticeable asymmetry — textured styles redistribute visual balance",
+    },
+    "eye_openness": {
+        "narrow": "narrower eyes — avoid heavy fringe to keep eyes visible",
     },
 }
 
