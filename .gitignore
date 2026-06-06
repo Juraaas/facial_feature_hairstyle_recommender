@@ -224,8 +224,8 @@ runs/
 *.avi
 *.db
 *.csv
-!data/norms/*.csv
-!backend/data/norms/*.csv
+
+backend/data/norms/
 
 .streamlit/secrets.toml
 
