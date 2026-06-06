@@ -11,6 +11,7 @@ from src.feedback import save_session, save_vote
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response
 from src.drawing import draw_landmarks
+from huggingface_hub import hf_hub_download
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -29,12 +30,30 @@ def get_detector():
         )
     return _detector
 
+HF_NORMS_REPO = "juras3k/hairstyle-norms"
+
 def get_norms():
     global _norms, _female_norms
     if _norms is None:
-        base = os.path.dirname(__file__)
-        _norms = pd.read_csv(os.path.join(BASE_DIR, "data", "norms", "male_norms_v2.csv"), index_col=0)
-        _female_norms = pd.read_csv(os.path.join(BASE_DIR, "data", "norms", "female_norms_v2.csv"), index_col=0)
+        token = os.getenv("HF_TOKEN")
+        if not token:
+            raise RuntimeError("Missing HF_TOKEN environment variable")
+
+        male_path = hf_hub_download(
+            repo_id=HF_NORMS_REPO,
+            filename="male_norms_v2.csv",
+            repo_type="dataset",
+            token=token,
+        )
+        female_path = hf_hub_download(
+            repo_id=HF_NORMS_REPO,
+            filename="female_norms_v2.csv",
+            repo_type="dataset",
+            token=token,
+        )
+        _norms = pd.read_csv(male_path, index_col=0)
+        _female_norms = pd.read_csv(female_path, index_col=0)
+
     return _norms, _female_norms
 
 def get_gender(img):
@@ -47,7 +66,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", 
                    "http://localhost:3000",
-                   "https://facial-feature-hairstyle-recommende.vercel.app",],
+                   "https://facial-feature-hairstyle-recommende.vercel.app",
+                   "https://*.hf.space",],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -72,8 +92,8 @@ def root_head():
     return None
 
 @app.post("/analyse")
-async def analyse(file: UploadFile = File(...)):
-    contents = await file.read()
+def analyse(file: UploadFile = File(...)):
+    contents = file.file.read()
     arr = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
 
@@ -98,6 +118,8 @@ async def analyse(file: UploadFile = File(...)):
             detail=quality.blocking if quality and quality.blocking else "No face detected",
         )
     
+    selected_norms = female_norms if gender == "Woman" else norms
+    
     return {
         "gender":   gender,
         "features": features,
@@ -110,15 +132,12 @@ async def analyse(file: UploadFile = File(...)):
         "styles":   recs["all_styles"],
         "norms": {
             feat: {
-                "p5":   float(norms.loc["p5",   feat]) if gender != "Woman"
-                        else float(female_norms.loc["p5",   feat]),
-                "p95":  float(norms.loc["p95",  feat]) if gender != "Woman"
-                        else float(female_norms.loc["p95",  feat]),
-                "mean": float(norms.loc["mean", feat]) if gender != "Woman"
-                        else float(female_norms.loc["mean", feat]),
+                "p5": float(selected_norms.loc["p5", feat]),
+                "p95": float(selected_norms.loc["p95", feat]),
+                "mean": float(selected_norms.loc["mean", feat]),
             }
             for feat in features.keys()
-            if feat in norms.columns
+            if feat in selected_norms.columns
         }
     }
 
@@ -150,10 +169,13 @@ async def feedback(body: dict):
     return {"ok": True}
 
 @app.post("/landmarks-overlay")
-async def landmarks_overlay(file: UploadFile = File(...)):
-    contents = await file.read()
+def landmarks_overlay(file: UploadFile = File(...)):
+    contents = file.file.read()
     arr = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+
+    if img is None:
+        raise HTTPException(status_code=400, detail="Could not decode image")
 
     h, w = img.shape[:2]
     if max(h, w) > 640:
