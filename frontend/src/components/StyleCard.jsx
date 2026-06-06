@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { sendVote } from '../api/client'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export function StyleCard({style, rank, features, gender, onReplace }) {
     const [voted, setVoted] = useState(null)
     const score = style.score.toFixed(1)
     const isTop = rank === 0
-    const imgPath = style.image ? `/images/${style.image.replace('images/', '')}` : null
+    const imgPath = style.image ? `${API_URL}/${style.image.replace(/^\/+/, "")}` : null
 
     async function handleVote(v) {
         setVoted(v)
