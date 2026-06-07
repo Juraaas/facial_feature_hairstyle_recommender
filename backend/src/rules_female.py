@@ -232,6 +232,8 @@ def apply_interaction_rules_female(scores, traits):
         scores["soft_texture"] += WEAK
         scores["clean_lines"] -= WEAK
         scores["updo"] -= WEAK
+    
+    return scores
 
 def apply_symmetry_modulation_female(scores, traits):
     TEXTURE_KEYS = ["soft_texture", "volume_sides", "fringe", "curtain_fringe", "layers"]

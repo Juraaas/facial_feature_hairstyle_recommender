@@ -241,6 +241,9 @@ def apply_symmetry_modulation(scores, traits):
     return scores
 
 def clamp_scores(scores, min_score=-5, max_score=10):
+    if scores is None:
+        raise ValueError("clamp_scores received None. Check previous scoring function return value.")
+
     return {
         key: max(min_score, min(max_score, value))
         for key, value in scores.items()
