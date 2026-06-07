@@ -68,6 +68,15 @@ TRAIT_EXPLANATIONS = {
     },
 }
 
+MISSING_SENSITIVE_FEATURES = {
+    "volume_sides",
+    "fringe",
+    "curtain_fringe",
+    "layers",
+    "short_sides",
+    "longer_hair",
+}
+
 def load_hairstyles(path="data/hairstyles.json"):
     with open(path, "r") as f:
         return json.load(f)["styles"]
@@ -90,7 +99,7 @@ def score_hairstyle(user_scores, style):
         if contribution > 0:
             matched_importance += importance * style_value
 
-        if user_value >= 3 and style_value < 0.2:
+        if key in MISSING_SENSITIVE_FEATURES and user_value >= 3 and style_value < 0.2:
             score -= user_value * 0.35
 
         if user_value <= -3 and style_value > 0.6:
@@ -139,7 +148,7 @@ def explain_match(user_scores, style, total_score):
             })
             neg_total += abs(contribution)
         
-        if user_value >= 3 and style_value < 0.2:
+        if key in MISSING_SENSITIVE_FEATURES and user_value >= 3 and style_value < 0.2:
             missing_strength = user_value * (1 - style_value)
             missing.append({
                 "feature": key,
