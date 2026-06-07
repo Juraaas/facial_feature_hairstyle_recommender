@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import sys
 import os
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
@@ -91,7 +91,8 @@ def root_head():
     return None
 
 @app.post("/analyse")
-def analyse(file: UploadFile = File(...)):
+def analyse(file: UploadFile = File(...),
+            debug: bool = Query(False)):
     contents = file.file.read()
     arr = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
@@ -119,16 +120,16 @@ def analyse(file: UploadFile = File(...)):
     
     selected_norms = female_norms if gender == "Woman" else norms
     
-    return {
-        "gender":   gender,
+    response = {
+        "gender": gender,
         "features": features,
-        "traits":   traits,
-        "quality":  {
-            "score":    quality.score,
+        "traits": traits,
+        "quality": {
+            "score": quality.score,
             "warnings": quality.warnings,
         },
         "analysis": recs["face_analysis"],
-        "styles":   recs["all_styles"],
+        "styles": recs["all_styles"],
         "norms": {
             feat: {
                 "p5": float(selected_norms.loc["p5", feat]),
@@ -137,8 +138,39 @@ def analyse(file: UploadFile = File(...)):
             }
             for feat in features.keys()
             if feat in selected_norms.columns
-        }
+        },
     }
+
+    if debug:
+        response["debug"] = {
+            "raw_scores": scores,
+            "style_ranking": [
+                {
+                    "rank": i + 1,
+                    "name": style.get("name"),
+                    "score": style.get("score"),
+                    "image": style.get("image"),
+                    "category": style.get("category"),
+                    "tags": style.get("tags", []),
+                    "description": style.get("description", ""),
+                    "contributions": style.get("contributions", []),
+                    "negatives": style.get("negatives", []),
+                }
+                for i, style in enumerate(recs["all_styles"])
+            ],
+            "top_styles": [
+                {
+                    "rank": i + 1,
+                    "name": style.get("name"),
+                    "score": style.get("score"),
+                    "contributions": style.get("contributions", []),
+                    "negatives": style.get("negatives", []),
+                }
+                for i, style in enumerate(recs.get("top_styles", []))
+            ],
+        }
+
+    return response
 
 @app.post("/vote")
 async def vote(body: dict):
