@@ -155,6 +155,7 @@ def analyse(file: UploadFile = File(...),
                     "description": style.get("description", ""),
                     "contributions": style.get("contributions", []),
                     "negatives": style.get("negatives", []),
+                    "missing": style.get("missing", []),
                 }
                 for i, style in enumerate(recs["all_styles"])
             ],
