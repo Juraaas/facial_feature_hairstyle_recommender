@@ -113,10 +113,7 @@ def score_hairstyle(user_scores, style):
 
     return base_score * (0.75 + 0.25 * match_concentration)
 
-def explain_match(user_scores, style, total_score):
-    if total_score <= 0:
-        return [], [], []
-    
+def explain_match(user_scores, style, total_score):  
     positive = []
     negative = []
     missing = []
