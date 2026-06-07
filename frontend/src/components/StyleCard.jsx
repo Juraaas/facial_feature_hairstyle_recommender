@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export function StyleCard({style, rank, features, gender, onReplace }) {
     const [voted, setVoted] = useState(null)
-    const score = style.score.toFixed(1)
+    const score = Math.max(0, Math.min(100, Math.round(style.score * 100)))
     const isTop = rank === 0
     const imgPath = style.image ? `${API_URL}/${style.image.replace(/^\/+/, "")}` : null
 
@@ -43,11 +43,11 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
             )}
             <div style={{
             position: 'absolute', top: 8, right: 8,
-            width: 30, height: 30, borderRadius: '50%',
+            width: 38, height: 30, borderRadius: '50%',
             background: '#fff', border: '0.5px solid #e0e0e0',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 11, fontWeight: 500, color: '#111'
-            }}>{score}</div>
+            }}>{score}%</div>
         </div>
 
         {/* body */}
@@ -114,6 +114,19 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
                 color: 'var(--text-muted)',
             }}>
                 ⚠ {style.negatives[0].reason}
+            </div>
+            )}
+
+            {/* missing */}
+            {style.missing?.length > 0 && (
+            <div style={{
+                fontSize: 11, padding: '5px 8px',
+                borderRadius: 6, marginBottom: 8,
+                background: 'var(--bg)',
+                borderLeft: '2px solid var(--border)',
+                color: 'var(--text-muted)',
+            }}>
+                ℹ {style.missing[0].reason}
             </div>
             )}
 
