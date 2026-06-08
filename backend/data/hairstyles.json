@@ -41,7 +41,7 @@
       "image": "images/male/side_part.jpg",
       "category": "classic",
       "tags": ["formal", "clean"],
-      "description": "Classic side-parted style with controlled shape and clean separation. Adds structure and polish, especially for formal or smart-casual looks. Medium styling effort.",
+      "description": "Classic side-parted style with controlled shape and clean separation. Adds structure and polish for formal or smart-casual looks. Medium styling effort.",
       "attributes": {
         "volume_top": 0.7,
         "volume_sides": 0.3,
@@ -58,7 +58,7 @@
       "image": "images/male/comb_over.jpg",
       "category": "classic",
       "tags": ["formal", "structured"],
-      "description": "Side-swept style with sharper faded sides and a structured finish. Creates a cleaner, more defined silhouette with noticeable contrast. Medium styling effort.",
+      "description": "Side-swept style with faded sides and a structured finish. Creates a cleaner, more defined silhouette with noticeable contrast. Medium styling effort.",
       "attributes": {
         "volume_top": 0.8,
         "volume_sides": 0.0,
@@ -145,7 +145,7 @@
       "image": "images/male/textured_fringe.jpg",
       "category": "textured",
       "tags": ["messy", "modern"],
-      "description": "Textured top with hair falling forward into a fringe. Adds softness around the forehead and works well for longer or narrower faces. Low to moderate styling effort.",
+      "description": "Textured top with hair falling forward into a fringe. Adds softness around the forehead and suits longer or narrower faces. Low to moderate styling effort.",
       "attributes": {
         "volume_top": 0.3,
         "volume_sides": 0.8,
@@ -196,7 +196,7 @@
       "image": "images/male/curly_volume.jpg",
       "category": "textured",
       "tags": ["curly", "volume"],
-      "description": "Natural curly style shaped with fuller sides and controlled volume. Adds width, texture, and movement while keeping the look relaxed. Medium styling effort.",
+      "description": "Natural curls shaped with fuller sides and controlled volume. Adds width, texture, and movement while keeping the look relaxed. Medium styling effort.",
       "attributes": {
         "volume_top": 0.8,
         "volume_sides": 1.0,
