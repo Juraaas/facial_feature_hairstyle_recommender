@@ -22,15 +22,21 @@ VOTE_FIELDS = [
 
 def _get_sheet(sheet_name):
     creds_json = os.environ.get("GCP_SERVICE_ACCOUNT")
+    spreadsheet_id = os.environ.get("SPREADSHEET_ID")
+
     if not creds_json:
         raise RuntimeError("GCP_SERVICE_ACCOUNT env var not set")
+    
+    if not spreadsheet_id:
+        raise RuntimeError("SPREADSHEET_ID env var not set")
+    
     creds_dict = json.loads(creds_json)
     creds = Credentials.from_service_account_info(
         creds_dict,
         scopes=["https://www.googleapis.com/auth/spreadsheets"],
     )
     client = gspread.authorize(creds)
-    spreadsheet = client.open_by_key(os.environ.get("SPREADSHEET_ID"))
+    spreadsheet = client.open_by_key(spreadsheet_id)
     try:
         return spreadsheet.worksheet(sheet_name)
     except gspread.WorksheetNotFound:
@@ -75,7 +81,8 @@ def save_session(features, quality_score, recs, rating=None, comment=""):
         ]
         sheet.append_row(row)
     except Exception as e:
-        pass
+        print(f"Google Sheets save_session error: {repr(e)}")
+        raise
 
 
 def save_vote(style_name: str, vote: str, features: dict, gender: str = ""):
@@ -105,7 +112,8 @@ def save_vote(style_name: str, vote: str, features: dict, gender: str = ""):
         ]
         sheet.append_row(row)
     except Exception as e:
-        pass
+        print(f"Google Sheets save_vote error: {repr(e)}")
+        raise
 
 def load_feedback():
     try:
