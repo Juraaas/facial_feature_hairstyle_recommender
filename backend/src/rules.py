@@ -147,17 +147,15 @@ def apply_rules(traits):
 
 def apply_interaction_rules(scores, traits):
     if traits.get("face_length") == "long" and traits.get("forehead") == "high":
-        scores["fringe"] += STRONG
-        scores["volume_sides"] += MEDIUM
+        scores["fringe"] += MEDIUM
+        scores["volume_sides"] += WEAK
         scores["volume_top"] -= STRONG
         scores["longer_hair"] -= MEDIUM
         scores["clean_lines"] -= WEAK
 
     if traits.get("face_length") == "long" and traits.get("jaw") == "narrow":
-        scores["volume_sides"] += MEDIUM
-        scores["fringe"] += WEAK
+        scores["volume_sides"] += WEAK
         scores["short_sides"] -= WEAK
-        scores["volume_top"] -= WEAK
 
     if traits.get("face_length") == "short" and traits.get("jaw") == "narrow":
         scores["volume_top"] += MEDIUM
@@ -190,8 +188,8 @@ def apply_interaction_rules(scores, traits):
         scores["volume_top"] -= MEDIUM
 
     if traits.get("eye_openness") == "narrow" and traits.get("face_length") == "long":
-        scores["fringe"] -= STRONG
-        scores["volume_sides"] += MEDIUM
+        scores["volume_sides"] += WEAK
+        scores["fringe"] -= MEDIUM
 
     if traits.get("eye_openness") == "narrow" and traits.get("forehead") == "high":
         scores["fringe"] += MEDIUM
@@ -209,9 +207,9 @@ def apply_interaction_rules(scores, traits):
             scores["volume_sides"] += MEDIUM
 
     if traits.get("facial_thirds") == "middle_dominant" and traits.get("face_length") == "long":
-        scores["fringe"] += MEDIUM
-        scores["volume_sides"] += MEDIUM
-        scores["volume_top"] -= MEDIUM
+        scores["fringe"] += WEAK
+        scores["volume_sides"] += WEAK
+        scores["volume_top"] -= WEAK
 
     if traits.get("symmetry") == "low" and traits.get("jaw") == "wide":
         scores["textured_top"] += MEDIUM
