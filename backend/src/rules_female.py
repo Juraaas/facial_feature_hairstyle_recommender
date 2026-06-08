@@ -132,9 +132,10 @@ def apply_rules_female(traits):
         scores["fringe"] += STRONG
         scores["curtain_fringe"] += MEDIUM
         scores["volume_top"] -= MEDIUM
+        scores["updo"] -= MEDIUM
 
     elif traits.get("forehead") == "low":
-        scores["updo"] += WEAK
+        scores["updo"] += MEDIUM
         scores["fringe"] -= STRONG
         scores["curtain_fringe"] -= MEDIUM
 
@@ -151,11 +152,11 @@ def apply_rules_female(traits):
 
 def apply_interaction_rules_female(scores, traits):
     if traits.get("face_length") == "long" and traits.get("forehead") == "high":
-        scores["fringe"] += STRONG
-        scores["curtain_fringe"] += MEDIUM
-        scores["volume_sides"] += MEDIUM
-        scores["volume_top"] -= STRONG
-        scores["updo"] -= MEDIUM
+        scores["fringe"] += WEAK
+        scores["curtain_fringe"] += WEAK
+        scores["volume_sides"] += WEAK
+        scores["volume_top"] -= MEDIUM
+        scores["updo"] -= WEAK
 
     if traits.get("face_length") == "long" and traits.get("jaw") == "narrow":
         scores["volume_sides"] += MEDIUM
@@ -180,11 +181,13 @@ def apply_interaction_rules_female(scores, traits):
         scores["updo"] -= WEAK
 
     if traits.get("jaw") == "narrow" and traits.get("chin") == "recessed":
-        scores["volume_top"] += MEDIUM
-        scores["updo"] += MEDIUM
+        scores["volume_top"] += WEAK
         scores["clean_lines"] += WEAK
         scores["longer_hair"] -= WEAK
         scores["soft_texture"] -= WEAK
+
+        if traits.get("face_length") != "long" and traits.get("forehead") != "high":
+            scores["updo"] += WEAK
 
     if traits.get("eyes") == "close" and traits.get("forehead") == "low":
         scores["curtain_fringe"] += MEDIUM
@@ -193,9 +196,8 @@ def apply_interaction_rules_female(scores, traits):
         scores["fringe"] -= STRONG
 
     if traits.get("eyes") == "wide" and traits.get("forehead") == "high":
-        scores["fringe"] += MEDIUM
-        scores["volume_top"] -= MEDIUM
-        scores["curtain_fringe"] -= WEAK
+        scores["fringe"] += WEAK
+        scores["volume_top"] -= WEAK
 
     if traits.get("eye_openness") == "narrow" and traits.get("face_length") == "long":
         scores["volume_sides"] += MEDIUM
@@ -204,7 +206,6 @@ def apply_interaction_rules_female(scores, traits):
         scores["curtain_fringe"] -= WEAK
 
     if traits.get("eye_openness") == "narrow" and traits.get("forehead") == "high":
-        scores["fringe"] += WEAK
         scores["curtain_fringe"] += WEAK
         scores["soft_texture"] += WEAK
         scores["volume_top"] -= WEAK
@@ -222,10 +223,10 @@ def apply_interaction_rules_female(scores, traits):
             scores["curtain_fringe"] += WEAK
     
     if traits.get("facial_thirds") == "middle_dominant" and traits.get("face_length") == "long":
-        scores["fringe"] += MEDIUM
-        scores["curtain_fringe"] += MEDIUM
-        scores["volume_sides"] += MEDIUM
-        scores["volume_top"] -= MEDIUM
+        scores["fringe"] += WEAK
+        scores["curtain_fringe"] += WEAK
+        scores["volume_sides"] += WEAK
+        scores["volume_top"] -= WEAK
 
     if traits.get("symmetry") == "low" and traits.get("jaw") == "wide":
         scores["layers"] += MEDIUM
