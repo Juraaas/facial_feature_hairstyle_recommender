@@ -66,7 +66,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", 
                    "http://localhost:3000",
-                   "https://facial-feature-hairstyle-recommende.vercel.app"],
+                   "https://face-fit-ai.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
