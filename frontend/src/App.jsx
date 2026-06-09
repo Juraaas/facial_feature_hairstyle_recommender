@@ -49,7 +49,11 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Hairstyle AI Recommender</h1>
+        <div className="brand">
+          <h1>FaceFit AI</h1>
+          <p>AI-powered hairstyle recommendations based on your face proportions 
+            and key facial features</p>
+        </div>
         <button
           className="theme-btn"
           onClick={() => setDark(d => !d)}
