@@ -3,6 +3,7 @@ import { useAnalysis } from './hooks/useAnalysis'
 import { FaceAnalysis }    from './components/FaceAnalysis'
 import { FaceProportions } from './components/FaceProportions'
 import { StylesSection }   from './components/StylesSection'
+import { FeedbackSection } from './components/FeedbackSection'
 import './App.css'
 
 function App() {
@@ -142,6 +143,11 @@ function App() {
               styles={result.styles}
               features={result.features}
               gender={result.gender}
+            />
+            <FeedbackSection
+              features={result.features}
+              qualityScore={result.quality.score}
+              topStyles={result.styles.slice(0, 3)}
             />
           </>
         )}
