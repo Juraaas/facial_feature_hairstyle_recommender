@@ -37,7 +37,13 @@ body {
   justify-content: space-between;
   margin-bottom: 32px;
 }
-.app-header h1 { font-size: 22px; font-weight: 500; color: var(--text);}
+.app-header h1 { font-size: 22px; font-weight: 500; color: var(--text); text-align: center;}
+
+.brand p {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
 
 .theme-btn {
   background: none;
