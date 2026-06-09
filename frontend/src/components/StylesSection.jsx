@@ -18,7 +18,7 @@ export function StylesSection({ styles, features, gender}) {
     return (
         <section style={{ marginBottom: 32 }}>
         <h2 style={{ fontSize: 18, fontWeight: 500, marginBottom: 20 }}>Top hairstyles</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div className="styles-grid">
             {displayed.map((style, i) => (
             <StyleCard
                 key={`${i}-${style.name}`}
