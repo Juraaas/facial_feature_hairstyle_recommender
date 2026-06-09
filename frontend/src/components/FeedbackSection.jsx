@@ -37,7 +37,7 @@ export function FeedbackSection({ features, qualityScore, topStyles }) {
 
     return (
         <section style={{ marginBottom: 32 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 500, marginBottom: 16 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 500, marginBottom: 16, color: 'var(--text)'}}>
                 How accurate were our recommendations?
             </h2>
 
