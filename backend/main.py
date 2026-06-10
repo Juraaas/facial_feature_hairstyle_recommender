@@ -250,26 +250,15 @@ async def debug_hair(file: UploadFile = File(...)):
     contents = await file.read()
     img = decode_and_resize_image(contents)
 
-    detector = get_detector()
-    landmarks = detector.detect(img)
-
-    if landmarks is None:
-        raise HTTPException(status_code=422, detail="No face detected")
-
     hair_mask, skin_mask = segment_face(img)
 
     if hair_mask is None:
         raise HTTPException(status_code=500, detail="Hair segmentation failed")
 
-    geo = FaceGeometry(landmarks)
-    face_w_px = geo.face_width()
-
-    hairline_y = find_hairline_y(hair_mask, face_w_px)
     hair_analysis = analyse_hair(img, hair_mask)
 
     return {
         "hair_analysis": hair_analysis,
-        "hairline_y": hairline_y,
         "hair_coverage": get_hair_coverage(hair_mask),
         "mask_shape": {
             "height": hair_mask.shape[0],
@@ -293,9 +282,9 @@ async def debug_hair_overlay(file: UploadFile = File(...)):
     if hair_mask is None:
         raise HTTPException(status_code=500, detail="Hair segmentation failed")
 
-    geo = FaceGeometry(landmarks)
-    face_w_px = geo.face_width()
-    hairline_y = find_hairline_y(hair_mask, face_w_px)
+    hair_analysis = analyse_hair(img, hair_mask)
+    metrics = hair_analysis.get("metrics", {})
+    debug_points = metrics.get("debug_points", [])
 
     overlay = img.copy()
 
@@ -303,14 +292,59 @@ async def debug_hair_overlay(file: UploadFile = File(...)):
         overlay[hair_mask > 0] * 0.55 + np.array([255, 80, 40]) * 0.45
     ).astype(np.uint8)
 
-    if hairline_y is not None:
+    for p in debug_points:
+        cv2.circle(
+            overlay,
+            (int(p["x"]), int(p["y"])),
+            3,
+            (0, 255, 255),
+            -1
+        )
+
+    left_y = metrics.get("left_hairline_y")
+    center_y = metrics.get("center_hairline_y")
+    right_y = metrics.get("right_hairline_y")
+
+    h, w = overlay.shape[:2]
+
+    if left_y is not None:
         cv2.line(
             overlay,
-            (0, int(hairline_y)),
-            (overlay.shape[1], int(hairline_y)),
+            (w // 5, int(left_y)),
+            (w // 3, int(left_y)),
+            (0, 255, 0),
+            2
+        )
+
+    if center_y is not None:
+        cv2.line(
+            overlay,
+            (w // 3, int(center_y)),
+            (2 * w // 3, int(center_y)),
             (0, 255, 255),
             2
         )
+
+    if right_y is not None:
+        cv2.line(
+            overlay,
+            (2 * w // 3, int(right_y)),
+            (4 * w // 5, int(right_y)),
+            (0, 255, 0),
+            2
+        )
+
+    label = f"{hair_analysis.get('hairline')} | gap={metrics.get('recession_gap_px')} | std={metrics.get('hairline_std_px')}"
+    cv2.putText(
+        overlay,
+        label,
+        (12, 24),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.55,
+        (0, 255, 255),
+        2,
+        cv2.LINE_AA
+    )
 
     _, buf = cv2.imencode(".jpg", overlay)
     return Response(content=buf.tobytes(), media_type="image/jpeg")
