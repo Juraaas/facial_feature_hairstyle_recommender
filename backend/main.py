@@ -8,6 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
 from src.feedback import save_session, save_vote
+from src.hair_segmentation import segment_face, find_hairline_y, get_hair_coverage
+from src.hair_analysis import analyse_hair
+from src.geometry import FaceGeometry
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response
 from src.drawing import draw_landmarks
@@ -59,6 +62,25 @@ def get_norms():
 def get_gender(img):
     from src.gender import detect_gender
     return detect_gender(img) or "Unknown"
+
+def decode_and_resize_image(contents, max_size=640):
+    arr = np.frombuffer(contents, np.uint8)
+    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+
+    if img is None:
+        raise HTTPException(status_code=400, detail="Could not decode image")
+
+    h, w = img.shape[:2]
+
+    if max(h, w) > max_size:
+        scale = max_size / max(h, w)
+        img = cv2.resize(
+            img,
+            (int(w * scale), int(h * scale)),
+            interpolation=cv2.INTER_AREA
+        )
+
+    return img
 
 app = FastAPI()
 
@@ -221,4 +243,74 @@ def landmarks_overlay(file: UploadFile = File(...)):
         img = draw_landmarks(img, landmarks, draw_indices=False)
     
     _, buf = cv2.imencode('.jpg', img)
+    return Response(content=buf.tobytes(), media_type="image/jpeg")
+
+@app.post("/debug-hair")
+async def debug_hair(file: UploadFile = File(...)):
+    contents = await file.read()
+    img = decode_and_resize_image(contents)
+
+    detector = get_detector()
+    landmarks = detector.detect(img)
+
+    if landmarks is None:
+        raise HTTPException(status_code=422, detail="No face detected")
+
+    hair_mask, skin_mask = segment_face(img)
+
+    if hair_mask is None:
+        raise HTTPException(status_code=500, detail="Hair segmentation failed")
+
+    geo = FaceGeometry(landmarks)
+    face_w_px = geo.face_width()
+
+    hairline_y = find_hairline_y(hair_mask, face_w_px)
+    hair_analysis = analyse_hair(img, hair_mask)
+
+    return {
+        "hair_analysis": hair_analysis,
+        "hairline_y": hairline_y,
+        "hair_coverage": get_hair_coverage(hair_mask),
+        "mask_shape": {
+            "height": hair_mask.shape[0],
+            "width": hair_mask.shape[1],
+        }
+    }
+
+@app.post("/debug-hair-overlay")
+async def debug_hair_overlay(file: UploadFile = File(...)):
+    contents = await file.read()
+    img = decode_and_resize_image(contents)
+
+    detector = get_detector()
+    landmarks = detector.detect(img)
+
+    if landmarks is None:
+        raise HTTPException(status_code=422, detail="No face detected")
+
+    hair_mask, skin_mask = segment_face(img)
+
+    if hair_mask is None:
+        raise HTTPException(status_code=500, detail="Hair segmentation failed")
+
+    geo = FaceGeometry(landmarks)
+    face_w_px = geo.face_width()
+    hairline_y = find_hairline_y(hair_mask, face_w_px)
+
+    overlay = img.copy()
+
+    overlay[hair_mask > 0] = (
+        overlay[hair_mask > 0] * 0.55 + np.array([255, 80, 40]) * 0.45
+    ).astype(np.uint8)
+
+    if hairline_y is not None:
+        cv2.line(
+            overlay,
+            (0, int(hairline_y)),
+            (overlay.shape[1], int(hairline_y)),
+            (0, 255, 255),
+            2
+        )
+
+    _, buf = cv2.imencode(".jpg", overlay)
     return Response(content=buf.tobytes(), media_type="image/jpeg")
