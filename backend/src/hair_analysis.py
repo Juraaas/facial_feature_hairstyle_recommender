@@ -77,7 +77,8 @@ def detect_hairline(hair_mask):
         hair_pixels = np.where(col > 0)[0]
 
         if len(hair_pixels) > 0:
-            hairline_points.append(int(np.min(hair_pixels)))
+            y = int(np.percentile(hair_pixels, 90))
+            hairline_points.append(y)
             xs.append(x)
 
     if len(hairline_points) < 5:
@@ -107,12 +108,17 @@ def detect_hairline(hair_mask):
     recession_gap = side_avg - center_mean
     std_dev = np.std(pts)
 
-    if recession_gap > 12:
+    if recession_gap > 18:
         hairline = "receding"
-    elif std_dev > 18:
+    elif std_dev > 22:
         hairline = "uneven"
     else:
         hairline = "normal"
+
+    debug_points = [
+        {"x": int(x), "y": int(y)}
+        for x, y in zip(xs, hairline_points)
+    ]
 
     return hairline, {
         "hairline_points_count": len(hairline_points),
@@ -121,5 +127,6 @@ def detect_hairline(hair_mask):
         "right_hairline_y": round(right_mean, 2),
         "recession_gap_px": round(float(recession_gap), 2),
         "hairline_std_px": round(std_dev, 2),
+        "debug_points": debug_points,
         "hairline_confidence": "medium",
     }
