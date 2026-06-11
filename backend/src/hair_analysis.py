@@ -80,53 +80,70 @@ def detect_hairline(hair_mask):
             y = int(np.percentile(hair_pixels, 90))
             hairline_points.append(y)
             xs.append(x)
-
-    if len(hairline_points) < 5:
-        return "unknown", {
-            "hairline_points_count": len(hairline_points),
-            "recession_gap_px": None,
-            "hairline_std_px": None,
-            "left_hairline_y": None,
-            "center_hairline_y": None,
-            "right_hairline_y": None,
-            "hairline_confidence": "low",
-            "hairline_reason": "too few hairline points detected",
-        }
-
-    pts = np.array(hairline_points)
-
-    n = len(pts)
-    left_pts = pts[: n // 3]
-    center_pts = pts[n // 3 : 2 * n // 3]
-    right_pts = pts[2 * n // 3 :]
-
-    left_mean = np.mean(left_pts)
-    center_mean = np.mean(center_pts)
-    right_mean = np.mean(right_pts)
-
-    side_avg = (left_mean + right_mean) / 2
-    recession_gap = side_avg - center_mean
-    std_dev = np.std(pts)
-
-    if recession_gap > 18:
-        hairline = "receding"
-    elif std_dev > 22:
-        hairline = "uneven"
-    else:
-        hairline = "normal"
-
+    
     debug_points = [
         {"x": int(x), "y": int(y)}
         for x, y in zip(xs, hairline_points)
     ]
 
+    if len(hairline_points) < 5:
+        return "unknown", {
+            "hairline_points_count": len(hairline_points),
+            "center_hairline_y": None,
+            "left_temple_y": None,
+            "right_temple_y": None,
+            "left_recession_px": None,
+            "right_recession_px": None,
+            "temple_recession_px": None,
+            "hairline_std_px": None,
+            "debug_points": debug_points,
+            "hairline_confidence": "low",
+            "hairline_reason": "too few hairline points detected",
+        }
+
+    pts = np.array(hairline_points)
+    n = len(pts)
+
+    left_temple = pts[: max(2, n // 4)]
+    center = pts[n // 3 : 2 * n // 3]
+    right_temple = pts[-max(2, n // 4):]
+
+    left_mean = float(np.percentile(left_temple, 75))
+    center_mean = float(np.percentile(center, 50))
+    right_mean = float(np.percentile(right_temple, 75))
+
+    side_avg = (left_mean + right_mean) / 2
+    recession_gap = side_avg - center_mean
+    lr_asymmetry = abs(left_mean - right_mean)
+    std_dev = float(np.std(pts))
+
+    hair_coverage = float(np.sum(hair_mask > 0) / hair_mask.size)
+
+    if hair_coverage < 0.025:
+        hairline = "unknown"
+        confidence = "low"
+    elif recession_gap > 25 and std_dev > 22:
+        hairline = "receding"
+        confidence = "medium"
+    elif recession_gap > 15 and std_dev > 18:
+        hairline = "m_shape"
+        confidence = "medium_low"
+    elif lr_asymmetry > 22:
+        hairline = "uneven"
+        confidence = "medium_low"
+    else:
+        hairline = "normal"
+        confidence = "medium"
+
     return hairline, {
         "hairline_points_count": len(hairline_points),
-        "left_hairline_y": round(left_mean, 2),
+        "left_temple_y": round(left_mean, 2),
         "center_hairline_y": round(center_mean, 2),
-        "right_hairline_y": round(right_mean, 2),
+        "right_temple_y": round(right_mean, 2),
         "recession_gap_px": round(float(recession_gap), 2),
+        "lr_asymmetry_px": round(float(lr_asymmetry), 2),
         "hairline_std_px": round(std_dev, 2),
+        "hairline_coverage": round(hair_coverage, 6),
         "debug_points": debug_points,
-        "hairline_confidence": "medium",
+        "hairline_confidence": confidence,
     }
