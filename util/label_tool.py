@@ -2,6 +2,7 @@ import cv2
 import sys 
 import os
 import pandas as pd
+import random
 
 HAIR_TYPES = ["straight", "wavy", "curly", "coily", "unknown"]
 HAIRLINES = ["normal", "receding", "uneven", "unknown"]
@@ -22,6 +23,8 @@ def label_images(images_dir, output_csv, start_from=0):
         records = []
 
     files_todo = [f for f in files if f not in labeled]
+    random.seed(42)
+    random.shuffle(files_todo)
     print(f"Remaining: {len(files_todo)} images")
 
     for i, fname in enumerate(files_todo[start_from:], start_from):
@@ -62,7 +65,7 @@ def label_images(images_dir, output_csv, start_from=0):
             if key == ord('n'): hairline = "normal"
             elif key == ord('r'): hairline = "receding"
             elif key == ord('e'): hairline = "uneven"
-            elif key == ord('u'): hair_type = "unknown"
+            elif key == ord('u'): hairline = "unknown"
             elif key == ord('q'):
                 pd.DataFrame(records).to_csv(output_csv, index=False)
                 print(f"Saved {len(records)} labels to {output_csv}")
@@ -77,7 +80,7 @@ def label_images(images_dir, output_csv, start_from=0):
             "hairline": hairline,
         })
 
-        if len(records) % 50 == 0:
+        if len(records) % 10 == 0:
             pd.DataFrame(records).to_csv(output_csv, index=False)
             print(f"Auto-saved {len(records)} lables")
         
