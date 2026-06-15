@@ -211,6 +211,7 @@ __marimo__/
 # Data & Models
 dataset/
 models/*
+backend/models/hair_classifier.onnx.data
 !models/*.task
 
 data/feedback.csv
