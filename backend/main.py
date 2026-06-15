@@ -9,7 +9,7 @@ from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
 from src.feedback import save_session, save_vote
 from src.hair_segmentation import segment_face, find_hairline_y, get_hair_coverage
-from src.hair_analysis import analyse_hair
+from src.hair_classifier import classify_hair
 from src.geometry import FaceGeometry
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response
@@ -250,16 +250,20 @@ async def debug_hair(file: UploadFile = File(...)):
     contents = await file.read()
     img = decode_and_resize_image(contents)
 
-    hair_mask, skin_mask = segment_face(img)
+    hair_mask, _ = segment_face(img)
 
     if hair_mask is None:
         raise HTTPException(status_code=500, detail="Hair segmentation failed")
 
-    hair_analysis = analyse_hair(img, hair_mask)
+    coverage = float(np.sum(hair_mask > 0) / hair_mask.size)
+    result = classify_hair(img, hair_mask)
 
     return {
-        "hair_analysis": hair_analysis,
-        "hair_coverage": get_hair_coverage(hair_mask),
+        "coverage": round(coverage, 4),
+        "hair_type": result["hair_type"],
+        "hairline": result["hairline"],
+        "hair_conf": result["hair_conf"],
+        "hairline_conf": result["hairline_conf"],
         "mask_shape": {
             "height": hair_mask.shape[0],
             "width": hair_mask.shape[1],
@@ -271,80 +275,31 @@ async def debug_hair_overlay(file: UploadFile = File(...)):
     contents = await file.read()
     img = decode_and_resize_image(contents)
 
-    detector = get_detector()
-    landmarks = detector.detect(img)
-
-    if landmarks is None:
-        raise HTTPException(status_code=422, detail="No face detected")
-
-    hair_mask, skin_mask = segment_face(img)
-
+    hair_mask, _ = segment_face(img)
     if hair_mask is None:
         raise HTTPException(status_code=500, detail="Hair segmentation failed")
 
-    hair_analysis = analyse_hair(img, hair_mask)
-    metrics = hair_analysis.get("metrics", {})
-    debug_points = metrics.get("debug_points", [])
+    result   = classify_hair(img, hair_mask)
+    coverage = float(np.sum(hair_mask > 0) / hair_mask.size)
 
     overlay = img.copy()
-
     overlay[hair_mask > 0] = (
         overlay[hair_mask > 0] * 0.55 + np.array([255, 80, 40]) * 0.45
     ).astype(np.uint8)
 
-    for p in debug_points:
-        cv2.circle(
-            overlay,
-            (int(p["x"]), int(p["y"])),
-            3,
-            (0, 255, 255),
-            -1
-        )
-
-    left_y = metrics.get("left_hairline_y")
-    center_y = metrics.get("center_hairline_y")
-    right_y = metrics.get("right_hairline_y")
-
-    h, w = overlay.shape[:2]
-
-    if left_y is not None:
-        cv2.line(
-            overlay,
-            (w // 5, int(left_y)),
-            (w // 3, int(left_y)),
-            (0, 255, 0),
-            2
-        )
-
-    if center_y is not None:
-        cv2.line(
-            overlay,
-            (w // 3, int(center_y)),
-            (2 * w // 3, int(center_y)),
-            (0, 255, 255),
-            2
-        )
-
-    if right_y is not None:
-        cv2.line(
-            overlay,
-            (2 * w // 3, int(right_y)),
-            (4 * w // 5, int(right_y)),
-            (0, 255, 0),
-            2
-        )
-
-    label = f"{hair_analysis.get('hairline')} | gap={metrics.get('recession_gap_px')} | std={metrics.get('hairline_std_px')}"
-    cv2.putText(
-        overlay,
-        label,
-        (12, 24),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.55,
-        (0, 255, 255),
-        2,
-        cv2.LINE_AA
-    )
+    h, w  = overlay.shape[:2]
+    cv2.rectangle(overlay, (0, 0), (w, int(h * 0.4)),
+                  (0, 200, 255), 2)
+    
+    lines = [
+        f"hair_type: {result['hair_type'] or 'None'} ({result['hair_conf']:.2f})",
+        f"hairline: {result['hairline']  or 'None'} ({result['hairline_conf']:.2f})",
+        f"coverage: {coverage:.3f}",
+    ]
+    for i, line in enumerate(lines):
+        cv2.putText(overlay, line, (10, 24 + i * 22),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.55,
+                    (0, 255, 255), 2, cv2.LINE_AA)
 
     _, buf = cv2.imencode(".jpg", overlay)
     return Response(content=buf.tobytes(), media_type="image/jpeg")
