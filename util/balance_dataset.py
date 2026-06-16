@@ -14,7 +14,7 @@ HAIR_CLASSES     = ["straight", "wavy", "curly", "coily"]
 HAIRLINE_CLASSES = ["normal", "receding", "uneven"]
 
 TARGET_HAIR     = 250
-TARGET_HAIRLINE = 150
+TARGET_HAIRLINE = 200
 
 np.random.seed(42)
 

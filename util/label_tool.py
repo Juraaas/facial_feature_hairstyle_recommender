@@ -93,5 +93,4 @@ if __name__ == "__main__":
         images_dir= "dataset/hair_dataset/images",
         output_csv= "dataset/hair_dataset/labels.csv",
         start_from= int(sys.argv[1]) if len(sys.argv) > 1 else 0
-    )
-
+    )    
