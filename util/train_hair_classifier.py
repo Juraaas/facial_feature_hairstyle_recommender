@@ -15,7 +15,7 @@ TRAIN_IMAGES = "dataset/hair_dataset/train_images"
 HAIR_CLASSES = ["straight", "wavy", "curly", "coily"]
 HAIRLINE_CLASSES = ["normal", "receding", "uneven"]
 
-EPOCHS = 30
+EPOCHS = 40
 LR = 1e-3
 BATCH_SIZE = 32
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -134,6 +134,8 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
     )
 
     best_acc = 0
+    patience = 8
+    no_improve = 0
     best_path = f"models/hair_{head_name}_best.pt"
     os.makedirs("models", exist_ok=True)
 
@@ -184,8 +186,14 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
 
         if val_acc > best_acc:
             best_acc = val_acc
+            no_improve = 0
             torch.save(model.state_dict(), best_path)
             print(f"  ✓ saved best model (val_acc={val_acc:.3f})")
+        else:
+            no_improve += 1
+            if no_improve >= patience:
+                print(f"  Early stopping at epoch {epoch}")
+                break
     
     print(f"\nBest val_acc for {head_name}: {best_acc:.3f}")
     model.load_state_dict(torch.load(best_path, weights_only=True))
