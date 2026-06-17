@@ -1,6 +1,6 @@
 from src.features import extract_features
 from src.face_traits import interpret_face
-from backend.src.rules import apply_rules
+from src.rules import apply_rules
 from src.face_traits_female import interpret_face_female
 from src.rules_female import apply_rules_female
 from src.recommender import generate_recommendations
@@ -48,19 +48,22 @@ def run_pipeline(img, detector, gender=None):
              f"({hair_result['hairline_conf']:.2f}), "
              f"coverage={hair_result['coverage']:.3f}")
     
-    if hair_result["hair_type"] is not None:
-        traits["hair_type"] = hair_result["hair_type"]
-    if hair_result["hairline"] is not None:
-        traits["hairline"] = hair_result["hairline"]
-    
     if gender == "Woman":
-        traits = interpret_face(features, gender="Man")
-        scores = apply_rules(traits, gender="Man")
+        traits = interpret_face(features, gender="Woman")
+        if hair_result["hair_type"] is not None:
+            traits["hair_type"] = hair_result["hair_type"]
+        if hair_result["hairline"] is not None:
+            traits["hairline"] = hair_result["hairline"]
+        scores = apply_rules(traits, gender="Woman")
         recs   = generate_recommendations(scores, traits,
                      hairstyles_path="data/hairstyles_female.json")
     else:
-        traits = interpret_face(features, gender="Woman")
-        scores = apply_rules(traits, gender="Woman")
+        traits = interpret_face(features, gender="Man")
+        if hair_result["hair_type"] is not None:
+            traits["hair_type"] = hair_result["hair_type"]
+        if hair_result["hairline"] is not None:
+            traits["hairline"] = hair_result["hairline"]
+        scores = apply_rules(traits, gender="Man")
         recs   = generate_recommendations(scores, traits,
                      hairstyles_path="data/hairstyles.json")
 
