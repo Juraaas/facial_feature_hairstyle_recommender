@@ -53,14 +53,13 @@ def prepare_hairline_crop(img_bgr, hair_mask, size=224):
         return None
     return cv2.resize(top_region, (size, size))
 
-def classify_hair(img_bgr, hair_mask, confidence_threshold=0.65):
+def classify_hair(img_bgr, hair_mask, hair_conf_threshold=0.65, hairline_conf_threshold=0.85):
     if hair_mask is None:
         return {
-            "hair_type":     None,
-            "hairline":      None,
-            "hair_conf":     0.0,
+            "hair_type": None,
+            "hairline": None,
+            "hair_conf": 0.0,
             "hairline_conf": 0.0,
-            "reason":        "no hair mask",
         }
 
     coverage = np.sum(hair_mask > 0) / hair_mask.size
@@ -72,32 +71,35 @@ def classify_hair(img_bgr, hair_mask, confidence_threshold=0.65):
     if coverage >= HAIR_TYPE_COVERAGE_MIN:
         crop = prepare_crop(img_bgr, hair_mask)
         if crop is not None:
-            inp            = _preprocess(crop)
+            inp = _preprocess(crop)
             hair_logits, _ = session.run(None, {"input": inp})
-            hair_probs     = softmax(hair_logits[0])
-            hair_conf      = float(np.max(hair_probs))
-            if hair_conf >= confidence_threshold:
+            hair_probs = softmax(hair_logits[0])
+            hair_conf = float(np.max(hair_probs))
+            if hair_conf >= hair_conf_threshold:
                 hair_type = HAIR_TYPES[np.argmax(hair_probs)]
 
-    hairline      = None
+    hairline = None
     hairline_conf = 0.0
 
     if coverage >= HAIRLINE_COVERAGE_MIN:
         crop_hl = prepare_hairline_crop(img_bgr, hair_mask)
         if crop_hl is not None:
-            inp              = _preprocess(crop_hl)
+            inp = _preprocess(crop_hl)
             _, hairline_logits = session.run(None, {"input": inp})
-            hairline_probs   = softmax(hairline_logits[0])
-            hairline_conf    = float(np.max(hairline_probs))
-            if hairline_conf >= confidence_threshold:
-                hairline = HAIRLINES[np.argmax(hairline_probs)]
+            hairline_probs = softmax(hairline_logits[0])
+            hairline_conf = float(np.max(hairline_probs))
+            hairline_pred = HAIRLINES[np.argmax(hairline_probs)]
+            if hairline_pred == "receding" and hairline_conf >= 0.90:
+                hairline = "receding"
+            elif hairline_pred in ("normal", "uneven") and hairline_conf >= hairline_conf_threshold:
+                hairline = hairline_pred
 
     return {
-        "hair_type":     hair_type,
-        "hairline":      hairline,
-        "hair_conf":     round(hair_conf, 3),
+        "hair_type": hair_type,
+        "hairline": hairline,
+        "hair_conf": round(hair_conf, 3),
         "hairline_conf": round(hairline_conf, 3),
-        "coverage":      round(float(coverage), 4),
+        "coverage": round(float(coverage), 4),
     }
 
 def _preprocess(crop_bgr):
