@@ -176,7 +176,8 @@ def analyse(file: UploadFile = File(...),
                 "influence": round(float(influence), 3),
                 "above_thresh": influence >= INFLUENCE_THRESHOLD,
                 "dims": {d: round(float(scores.get(d, 0)), 3)
-                                 for d in related_dims},
+                                 for d in related_dims
+                                 if d in scores},
             }
         response["debug"] = {
             "raw_scores": scores,

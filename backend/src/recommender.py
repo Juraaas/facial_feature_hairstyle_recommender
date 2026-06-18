@@ -81,6 +81,8 @@ TRAIT_SCORE_MAP = {
     "face_length": ["volume_sides", "fringe", "volume_top", "longer_hair"],
     "forehead": ["fringe", "volume_top", "curtain_fringe"],
     "jaw": ["soft_texture", "short_sides", "volume_sides", "clean_lines"],
+    "jaw_height": ["volume_top", "longer_hair", "fringe", "short_sides"],
+    "facial_thirds": ["volume_top", "fringe", "volume_sides", "longer_hair"],
     "eyes": ["volume_sides", "fringe", "clean_lines", "curtain_fringe"],
     "eye_openness": ["fringe", "volume_top", "curtain_fringe"],
     "lips": ["soft_texture", "clean_lines", "volume_top"],
