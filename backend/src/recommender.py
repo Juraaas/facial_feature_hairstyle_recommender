@@ -3,7 +3,7 @@ import json
 STYLE_DESCRIPTIONS = {
     "volume_top": "height on top",
     "volume_sides": "fuller sides",
-    "short_sides": "faded sides",
+    "short_sides": "tapered sides",
     "longer_hair": "longer length",
     "fringe": "front fringe",
     "clean_lines": "clean shape",
@@ -15,17 +15,17 @@ STYLE_DESCRIPTIONS = {
 }
 
 NEGATIVE_EXPLANATIONS = {
-    "fringe": "fringe may not suit your eye proportions",
+    "fringe": "fringe may not suit your eye proportions or add unwanted weight to the forehead",
     "volume_sides": "side volume may widen your face shape",
-    "volume_top": "added height may emphasise face length",
-    "short_sides": "fade may accentuate your jaw width",
-    "clean_lines": "structured styles may highlight asymmetry",
-    "soft_texture": "heavy texture may not complement your proportions",
-    "longer_hair": "length may elongate your face further",
-    "textured_top": "textured top may not balance your chin prominence",
-    "layers": "heavy layers may not suit your face structure",
-    "updo": "updo may elongate your face further",
-    "curtain_fringe": "curtain fringe may widen close-set eyes too much",
+    "volume_top": "extra height may emphasise the length of your face",
+    "short_sides": "tapered sides may draw attention to a wider jaw",
+    "clean_lines": "sharp geometric cuts can highlight facial asymmetry",
+    "soft_texture": "heavy texture may work against your face's natural structure",
+    "longer_hair": "added length risks elongating your face further",
+    "textured_top": "textured volume on top may unbalance a prominent chin",
+    "layers": "heavy layering may not suit your face proportions",
+    "updo": "lifted styles may elongate your face further",
+    "curtain_fringe": "a centre parting may emphasise close-set eyes",
 }
 
 TRAIT_EXPLANATIONS = {
@@ -33,11 +33,6 @@ TRAIT_EXPLANATIONS = {
         "long": "long face shape — styles with side volume and fringe work in your favour",
         "short": "shorter face shape — height on top helps elongate proportions",
         "balanced": "face length is well balanced",
-    },
-    "facial_thirds": {
-        "lower_dominant": "lower face carries more visual weight — volume on top restores balance",
-        "middle_dominant": "mid face is prominent — fringe and height draw the eye upward",
-        "balanced": "facial thirds are evenly proportioned",
     },
     "forehead": {
         "high": "high forehead — fringe optically lowers the hairline",
@@ -66,6 +61,34 @@ TRAIT_EXPLANATIONS = {
     "eye_openness": {
         "narrow": "narrower eyes — avoid heavy fringe to keep eyes visible",
     },
+    "thirds_vertical": {
+        "top_heavy": "forehead dominates — fringe and side volume balance the face",
+        "bottom_heavy": "lower face dominates — height on top corrects the balance",
+    },
+    "hair_type": {
+    "curly": "your natural texture can work well with styles that embrace movement and volume",
+    "coily": "your natural texture can work well with rounded shape, controlled volume, and defined texture",
+    "straight": "clean and structured styles tend to complement your natural texture",
+    "wavy": "soft textured styles can enhance your natural movement",
+    },
+    "hairline": {
+        "receding": "your hairline shape may work better with styles that avoid heavy forward fringe",
+        "uneven": "your hairline shape may benefit from softer texture and less rigid outlines",
+    },
+}
+
+TRAIT_SCORE_MAP = {
+    "face_length": ["volume_sides", "fringe", "volume_top", "longer_hair"],
+    "forehead": ["fringe", "volume_top", "curtain_fringe"],
+    "jaw": ["soft_texture", "short_sides", "volume_sides", "clean_lines"],
+    "eyes": ["volume_sides", "fringe", "clean_lines", "curtain_fringe"],
+    "eye_openness": ["fringe", "volume_top", "curtain_fringe"],
+    "lips": ["soft_texture", "clean_lines", "volume_top"],
+    "chin": ["textured_top", "longer_hair", "volume_top", "short_sides"],
+    "symmetry": ["soft_texture", "clean_lines", "textured_top"],
+    "thirds_vertical": ["fringe", "volume_top", "volume_sides"],
+    "hair_type": ["soft_texture", "textured_top", "clean_lines", "longer_hair"],
+    "hairline": ["fringe", "short_sides", "textured_top"],
 }
 
 MISSING_SENSITIVE_FEATURES = {
@@ -170,17 +193,29 @@ def explain_match(user_scores, style, total_score):
 
     return positive, negative, missing
 
-def explain_from_traits(traits):
-    explanations = []
-    skip_values = {"normal", "balanced", "slight_imbalance"}
 
+INFLUENCE_THRESHOLD = 2.0
+
+def explain_from_traits(traits, scores=None):
+    explanations = []
+    skip_values  = {"normal", "balanced", "slight_imbalance", None}
     for key, value in traits.items():
         if value in skip_values:
             continue
-        if key in TRAIT_EXPLANATIONS:
-            explanation = TRAIT_EXPLANATIONS[key].get(value)
-            if explanation:
-                explanations.append(explanation)
+        if key not in TRAIT_EXPLANATIONS:
+            continue
+        explanation = TRAIT_EXPLANATIONS[key].get(value)
+        if not explanation:
+            continue
+
+        if scores is not None:
+            related_dims = TRAIT_SCORE_MAP.get(key, [])
+            if related_dims:
+                influence = sum(abs(scores.get(dim, 0)) for dim in related_dims)
+                if influence < INFLUENCE_THRESHOLD:
+                    continue
+
+        explanations.append(explanation)
 
     return explanations
 
@@ -209,5 +244,5 @@ def generate_recommendations(user_scores, traits, top_k=3, hairstyles_path="data
     return {
         "top_styles": results[:top_k],
         "all_styles": results,
-        "face_analysis": explain_from_traits(traits)
+        "face_analysis": explain_from_traits(traits, scores=user_scores)
     }
