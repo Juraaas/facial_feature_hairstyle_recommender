@@ -180,6 +180,7 @@ def analyse(file: UploadFile = File(...),
             }
         response["debug"] = {
             "raw_scores": scores,
+            "influence_debug": influence_debug,
             "style_ranking": [
                 {
                     "rank": i + 1,
