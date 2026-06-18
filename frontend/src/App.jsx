@@ -123,6 +123,37 @@ function App() {
               <div key={i} className="warning-box">⚠️ {w}</div>
             ))}
 
+            {/* hair traits badge */}
+            {(result.traits?.hair_type || result.traits?.hairline) && (
+              <div style={{
+                display: 'flex', gap: 8, flexWrap: 'wrap',
+                marginBottom: 16
+              }}>
+                {result.traits.hair_type && (
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    fontSize: 12, padding: '4px 10px', borderRadius: 20,
+                    background: 'var(--surface)', border: '0.5px solid var(--border)',
+                    color: 'var(--text-muted)'
+                  }}>
+                    <span>💇</span>
+                    <span>{result.traits.hair_type} hair</span>
+                  </div>
+                )}
+                {result.traits.hairline && result.traits.hairline !== 'normal' && (
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    fontSize: 12, padding: '4px 10px', borderRadius: 20,
+                    background: 'var(--surface)', border: '0.5px solid var(--border)',
+                    color: 'var(--text-muted)'
+                  }}>
+                    <span>📐</span>
+                    <span>{result.traits.hairline} hairline</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* visualization */}
             <section style={{ marginBottom: 32 }}>
               <h2 className="section-title">Visualization</h2>
