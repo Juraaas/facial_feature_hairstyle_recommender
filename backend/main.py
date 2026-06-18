@@ -164,6 +164,20 @@ def analyse(file: UploadFile = File(...),
     }
 
     if debug:
+        from src.recommender import TRAIT_SCORE_MAP, INFLUENCE_THRESHOLD
+        influence_debug = {}
+        for key, value in traits.items():
+            if value in {None, "normal", "balanced", "slight_imbalance"}:
+                continue
+            related_dims = TRAIT_SCORE_MAP.get(key, [])
+            influence = sum(abs(scores.get(dim, 0)) for dim in related_dims)
+            influence_debug[key] = {
+                "value": value,
+                "influence": round(float(influence), 3),
+                "above_thresh": influence >= INFLUENCE_THRESHOLD,
+                "dims": {d: round(float(scores.get(d, 0)), 3)
+                                 for d in related_dims},
+            }
         response["debug"] = {
             "raw_scores": scores,
             "style_ranking": [
