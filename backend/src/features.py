@@ -8,7 +8,7 @@ def extract_features(landmarks, hairline_y=None):
         u = thirds["upper"]
         m = thirds["middle"]
         l = thirds["lower"]
-        max_dev   = max(abs(u - 0.333), abs(m - 0.333), abs(l - 0.333))
+        max_dev = max(abs(u - 0.333), abs(m - 0.333), abs(l - 0.333))
         if max_dev < 0.05:
             thirds_balance = 0.0
         elif max_dev < 0.10:
