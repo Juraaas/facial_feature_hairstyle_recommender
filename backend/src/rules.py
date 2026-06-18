@@ -212,31 +212,6 @@ def apply_rules(traits, gender="Man"):
         if is_female:
             scores["layers"] += MEDIUM
 
-    if traits.get("dominant_third") == "upper":
-        scores["fringe"] += MEDIUM
-        scores["volume_top"] -= WEAK
-
-    elif traits.get("dominant_third") == "lower":
-        scores["volume_top"] += MEDIUM
-        scores["fringe"] -= WEAK
-        scores["longer_hair"] -= WEAK
-
-    elif traits.get("dominant_third") == "middle":
-        scores["fringe"] += WEAK
-        scores["volume_sides"] += WEAK
-
-    if traits.get("thirds_vertical") == "top_heavy":
-        scores["fringe"] += MEDIUM
-        scores["volume_sides"] += WEAK
-        scores["volume_top"] -= MEDIUM
-        scores["clean_lines"] -= WEAK
-
-    elif traits.get("thirds_vertical") == "bottom_heavy":
-        scores["volume_top"] += MEDIUM
-        scores["textured_top"] += WEAK
-        scores["fringe"] -= STRONG
-        scores["longer_hair"] -= WEAK
-
     if traits.get("hair_type") == "curly":
         scores["soft_texture"] += MEDIUM
         scores["textured_top"] += MEDIUM
