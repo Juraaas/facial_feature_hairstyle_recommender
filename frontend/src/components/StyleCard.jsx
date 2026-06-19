@@ -28,11 +28,9 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
         {/* image */}
         <div style={{ position: 'relative' }}>
             {imgPath
-            ? <img src={imgPath} alt={style.name}
-                style={{ width: '100%', height: 'clamp(280px, 35vw, 420px)', 
-                    objectFit: 'cover', display: 'block'}} />
-            : <div style={{ width: '100%', height: 'clamp(280px, 35vw, 420px)', 
-                background: '#f4f4f4',display: 'flex', alignItems: 'center', 
+            ? <img src={imgPath} alt={style.name} className="style-card-img" />
+            : <div className="style-card-img" style={{ 
+                background: '#f4f4f4', display: 'flex', alignItems: 'center', 
                 justifyContent: 'center', fontSize: 28, color: '#ccc' }}>✂</div>
             }
             {isTop && (
