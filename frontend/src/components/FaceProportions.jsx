@@ -18,7 +18,7 @@ const BARS = [
 export function FaceProportions({ features, norms }) {
     return (
         <section style={{ marginBottom: 32}}>
-            <h2 style={{ fontSize: 18, fontWeight: 500, marginBottom: 20}}>
+            <h2 style={{ fontSize: 18, fontWeight: 500, marginBottom: 20, color: 'var(--text)'}}>
                 Facial Proportions
             </h2>
             {BARS.map(([feat, title, minLabel, maxLabel]) => {

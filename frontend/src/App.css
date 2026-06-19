@@ -173,8 +173,4 @@ body {
     .styles-grid {
         grid-template-columns: 1fr;
     }
-    .styles-grid > div img {
-    height: 80vw !important;
-    max-height: 420px;
-  }
 }
