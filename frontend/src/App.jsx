@@ -143,7 +143,7 @@ function App() {
                   display: 'inline-flex', alignItems: 'center', gap: 6,
                   fontSize: 12, padding: '4px 10px', borderRadius: 20,
                   background: 'var(--surface)', border: '0.5px dashed var(--border)',
-                  color: 'var(--text-hint)'
+                  color: 'var(--text-muted)'
                 }}>
                   <span>💇</span>
                   <span>hair type not detected</span>
