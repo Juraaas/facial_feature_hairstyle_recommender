@@ -77,22 +77,6 @@ TRAIT_EXPLANATIONS = {
     },
 }
 
-TRAIT_SCORE_MAP = {
-    "face_length": ["volume_sides", "fringe", "volume_top", "longer_hair"],
-    "forehead": ["fringe", "volume_top", "curtain_fringe"],
-    "jaw": ["soft_texture", "short_sides", "volume_sides", "clean_lines"],
-    "jaw_height": ["volume_top", "longer_hair", "fringe", "short_sides"],
-    "facial_thirds": ["volume_top", "fringe", "volume_sides", "longer_hair"],
-    "eyes": ["volume_sides", "fringe", "clean_lines", "curtain_fringe"],
-    "eye_openness": ["fringe", "volume_top", "curtain_fringe"],
-    "lips": ["soft_texture", "clean_lines", "volume_top"],
-    "chin": ["textured_top", "longer_hair", "volume_top", "short_sides"],
-    "symmetry": ["soft_texture", "clean_lines", "textured_top"],
-    "thirds_vertical": ["fringe", "volume_top", "volume_sides"],
-    "hair_type": ["soft_texture", "textured_top", "clean_lines", "longer_hair"],
-    "hairline": ["fringe", "short_sides", "textured_top"],
-}
-
 MISSING_SENSITIVE_FEATURES = {
     "volume_sides",
     "fringe",
@@ -106,6 +90,33 @@ def load_hairstyles(path="data/hairstyles.json"):
     with open(path, "r") as f:
         return json.load(f)["styles"]
     
+def compute_traits_influences(traits, gender):
+    from src.rules import apply_rules
+    base_scores = apply_rules(traits, gender=gender)
+    influences = {}
+
+    for key in traits:
+        if traits[key] in {None, "normal", "balanced", "slight_imbalance"}:
+            continue
+        traits_without = {**traits, key: "normal"}
+        scores_without = apply_rules(traits_without, gender=gender)
+        delta = {
+            dim: round(base_scores.get(dim, 0) - scores_without.get(dim, 0), 3)
+            for dim in base_scores
+            if abs(base_scores.get(dim, 0) - scores_without.get(dim, 0)) > 0.01
+        }
+        total_impact = sum(abs(v) for v in delta.values())
+        if total_impact > 0.5:
+            influences[key] = {
+                "value": traits[key],
+                "total_impact": round(total_impact, 3),
+                "delta": delta,
+            }
+    return dict(sorted(
+        influences.items(),
+        key=lambda x: x[1]["total_impact"],
+        reverse=True,
+    ))
 
 def score_hairstyle(user_scores, style):
     score = 0.0
@@ -195,34 +206,33 @@ def explain_match(user_scores, style, total_score):
 
     return positive, negative, missing
 
-
-INFLUENCE_THRESHOLD = 2.0
-
-def explain_from_traits(traits, scores=None):
+def _build_face_analysis(influences, traits):
     explanations = []
     skip_values  = {"normal", "balanced", "slight_imbalance", None}
-    for key, value in traits.items():
+    for key, info in list(influences.items())[:4]:
+        value = info["value"]
         if value in skip_values:
             continue
-        if key not in TRAIT_EXPLANATIONS:
-            continue
-        explanation = TRAIT_EXPLANATIONS[key].get(value)
-        if not explanation:
-            continue
-
-        if scores is not None:
-            related_dims = TRAIT_SCORE_MAP.get(key, [])
-            if related_dims:
-                influence = sum(abs(scores.get(dim, 0)) for dim in related_dims)
-                if influence < INFLUENCE_THRESHOLD:
-                    continue
-
-        explanations.append(explanation)
+        exp = TRAIT_EXPLANATIONS.get(key, {}).get(value)
+        if exp:
+            delta = info["delta"]
+            top_dims = sorted(delta.items(), key=lambda x: abs(x[1]), reverse=True)[:2]
+            dim_hints = []
+            for dim, change in top_dims:
+                desc = STYLE_DESCRIPTIONS.get(dim, dim)
+                if change > 0:
+                    dim_hints.append(f"favours {desc}")
+                else:
+                    dim_hints.append(f"works against {desc}")
+            if dim_hints:
+                exp = f"{exp} ({', '.join(dim_hints)})"
+            explanations.append(exp)
 
     return explanations
 
-def generate_recommendations(user_scores, traits, top_k=3, hairstyles_path="data/hairstyles.json"):
+def generate_recommendations(user_scores, traits, gender="Man", top_k=3, hairstyles_path="data/hairstyles.json"):
     styles = load_hairstyles(hairstyles_path)
+    influences = compute_traits_influences(traits, gender)
     results = []
 
     for style in styles:
@@ -246,5 +256,6 @@ def generate_recommendations(user_scores, traits, top_k=3, hairstyles_path="data
     return {
         "top_styles": results[:top_k],
         "all_styles": results,
-        "face_analysis": explain_from_traits(traits, scores=user_scores)
+        "face_analysis": _build_face_analysis(influences, traits),
+        "trait_influences": influences,
     }
