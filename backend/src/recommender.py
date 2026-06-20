@@ -208,26 +208,43 @@ def explain_match(user_scores, style, total_score):
 
 def _build_face_analysis(influences, traits):
     explanations = []
-    skip_values  = {"normal", "balanced", "slight_imbalance", None}
-    for key, info in list(influences.items())[:4]:
+    skip_values  = { None, "normal", "balanced", "slight_imbalance"}
+    seen_dims = set()
+
+    priority_order = ["hairline", "hair_type"] + [
+        k for k in influences.keys() if k not in ("hairline", "hair_type")
+    ]
+
+    for key in priority_order:
+        if key not in influences:
+            continue
+        info = influences[key]      
         value = info["value"]
         if value in skip_values:
             continue
-        exp = TRAIT_EXPLANATIONS.get(key, {}).get(value)
-        if exp:
-            delta = info["delta"]
-            top_dims = sorted(delta.items(), key=lambda x: abs(x[1]), reverse=True)[:2]
-            dim_hints = []
-            for dim, change in top_dims:
-                desc = STYLE_DESCRIPTIONS.get(dim, dim)
-                if change > 0:
-                    dim_hints.append(f"favours {desc}")
-                else:
-                    dim_hints.append(f"works against {desc}")
-            if dim_hints:
-                exp = f"{exp} ({', '.join(dim_hints)})"
-            explanations.append(exp)
 
+        exp = TRAIT_EXPLANATIONS.get(key, {}).get(value)
+        if not exp:
+            continue
+        delta = info["delta"]
+        top_dims = sorted(delta.items(), key=lambda x: abs(x[1]), reverse=True)[:2]
+        filtered_dims = [(d, c) for d, c in top_dims if d not in seen_dims]
+
+        if not filtered_dims and top_dims:
+            continue
+
+        dim_hints = []
+        for dim, change in top_dims:
+            desc = STYLE_DESCRIPTIONS.get(dim, dim)
+            dim_hints.append(f"favours {desc}" if change > 0 else f"works against {desc}")
+            seen_dims.add(dim)
+        if dim_hints:
+            exp = f"{exp} ({', '.join(dim_hints)})"
+        explanations.append(exp)
+        
+        if len(explanations) >= 5:
+            break
+        
     return explanations
 
 def generate_recommendations(user_scores, traits, gender="Man", top_k=3, hairstyles_path="data/hairstyles.json"):

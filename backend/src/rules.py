@@ -395,6 +395,12 @@ def _apply_symmetry_modulation(scores, traits, gender):
             scores[k] = scores[k] * 0.9
     return scores
 
+def _apply_hard_constraints(scores, traits):
+    if traits.get("hairline") == "receding":
+        scores["fringe"] = min(scores["fringe"], -2)
+    
+    return scores
+
 def clamp_scores(scores, min_score=-5, max_score=10):
     if scores is None:
         raise ValueError("clamp_scores received None")
