@@ -41,7 +41,7 @@ def run_pipeline(img, detector, gender=None):
     
     log.info(f"Features extracted: { {k: f'{v:.3f}' for k, v in features.items()} }")
     
-    hair_result = classify_hair(img, hair_mask)
+    hair_result = classify_hair(img, hair_mask, gender=gender or "Man", landmarks=landmarks)
     log.info(f"Hair: type={hair_result['hair_type']} "
              f"({hair_result['hair_conf']:.2f}), "
              f"hairline={hair_result['hairline']} "

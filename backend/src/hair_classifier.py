@@ -46,14 +46,21 @@ def prepare_crop(img_bgr, hair_mask, size=224):
         return None
     return cv2.resize(crop, (size, size))
 
-def prepare_hairline_crop(img_bgr, hair_mask, size=224):
+def prepare_hairline_crop(img_bgr, hair_mask, landmarks=None, size=224):
     h, w = img_bgr.shape[:2]
-    top_region = img_bgr[:int(h * 0.4), :]
-    if top_region.size == 0:
+    if landmarks is not None:
+        forehead_y = int(landmarks[10][1])
+        top_bound = max(0, forehead_y - int(h * 0.15))
+        bottom_bound = min(h, forehead_y + int(h * 0.1))
+        region = img_bgr[top_bound:bottom_bound, :]
+    else:
+        region = img_bgr[:int(h * 0.4), :]
+    if region.size == 0:
         return None
-    return cv2.resize(top_region, (size, size))
+    return cv2.resize(region, (size, size))
 
-def classify_hair(img_bgr, hair_mask, hair_conf_threshold=0.65, hairline_conf_threshold=0.85):
+def classify_hair(img_bgr, hair_mask, gender="Man", landmarks=None,
+                  hair_conf_threshold=0.65, hairline_conf_threshold=0.85):
     if hair_mask is None:
         return {
             "hair_type": None,
@@ -81,14 +88,15 @@ def classify_hair(img_bgr, hair_mask, hair_conf_threshold=0.65, hairline_conf_th
     hairline = None
     hairline_conf = 0.0
 
-    if coverage >= HAIRLINE_COVERAGE_MIN:
-        crop_hl = prepare_hairline_crop(img_bgr, hair_mask)
+    if gender != "Woman" and coverage >= HAIRLINE_COVERAGE_MIN:
+        crop_hl = prepare_hairline_crop(img_bgr, hair_mask, landmarks=landmarks)
         if crop_hl is not None:
             inp = _preprocess(crop_hl)
             _, hairline_logits = session.run(None, {"input": inp})
             hairline_probs = softmax(hairline_logits[0])
             hairline_conf = float(np.max(hairline_probs))
             hairline_pred = HAIRLINES[np.argmax(hairline_probs)]
+
             if hairline_pred == "receding" and hairline_conf >= 0.90:
                 hairline = "receding"
             elif hairline_pred in ("normal", "uneven") and hairline_conf >= hairline_conf_threshold:
