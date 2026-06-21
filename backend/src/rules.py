@@ -1,6 +1,7 @@
 STRONG = 3
 MEDIUM = 2
 WEAK = 1
+HAIR_TYPE_WEIGHT = 1.4
 
 FEMALE_DIMS = {"layers", "updo", "curtain_fringe"}
 
@@ -213,25 +214,25 @@ def apply_rules(traits, gender="Man"):
             scores["layers"] += MEDIUM
 
     if traits.get("hair_type") == "curly":
-        scores["soft_texture"] += MEDIUM
-        scores["textured_top"] += MEDIUM
-        scores["clean_lines"] -= WEAK
-        scores["longer_hair"] -= WEAK
+        scores["soft_texture"] += MEDIUM #* HAIR_TYPE_WEIGHT
+        scores["textured_top"] += MEDIUM #* HAIR_TYPE_WEIGHT
+        scores["clean_lines"] -= WEAK #* HAIR_TYPE_WEIGHT
+        scores["longer_hair"] -= WEAK #* HAIR_TYPE_WEIGHT
 
     elif traits.get("hair_type") in ("straight", "wavy"):
-        scores["clean_lines"] += WEAK
-        scores["longer_hair"] += WEAK
+        scores["clean_lines"] += WEAK #* HAIR_TYPE_WEIGHT
+        scores["longer_hair"] += WEAK #* HAIR_TYPE_WEIGHT
 
     elif traits.get("hair_type") == "coily":
-        scores["soft_texture"] += STRONG
-        scores["textured_top"] += STRONG
-        scores["volume_top"] += MEDIUM
-        scores["clean_lines"] -= MEDIUM
-        scores["longer_hair"] -= MEDIUM
+        scores["soft_texture"] += STRONG #* HAIR_TYPE_WEIGHT
+        scores["textured_top"] += STRONG #* HAIR_TYPE_WEIGHT
+        scores["volume_top"] += MEDIUM #* HAIR_TYPE_WEIGHT
+        scores["clean_lines"] -= MEDIUM #* HAIR_TYPE_WEIGHT
+        scores["longer_hair"] -= MEDIUM #* HAIR_TYPE_WEIGHT
 
     if traits.get("hairline") == "receding":
-        scores["fringe"] -= STRONG
         scores["textured_top"] += WEAK
+        scores["fringe"] -= STRONG
         scores["volume_top"] -= WEAK
         if not is_female:
             scores["short_sides"] += WEAK
