@@ -25,17 +25,29 @@ def find_image(filename):
             return path
     return None
 
+def _perspective_tilt(img, h, w, strength=0.08):
+    shift = int(w * strength)
+    src_pts = np.float32([[0,0],[w,0],[0,h],[w,h]])
+    dst_pts = np.float32([
+        [np.random.randint(0, shift), 0],
+        [w - np.random.randint(0, shift), 0],
+        [0, h],
+        [w, h],
+    ])
+    M = cv2.getPerspectiveTransform(src_pts, dst_pts)
+    return cv2.warpPerspective(img, M, (w, h))
+
 def augment(img, n):
     results = [img]
+    h, w = img.shape[:2]
     ops = [
         lambda x: cv2.flip(x, 1),
         lambda x: cv2.convertScaleAbs(x, alpha=1.2, beta=10),
         lambda x: cv2.convertScaleAbs(x, alpha=0.8, beta=-10),
         lambda x: cv2.GaussianBlur(x, (3, 3), 0),
         lambda x: cv2.convertScaleAbs(x, alpha=1.0, beta=30),
+        lambda x: _perspective_tilt(x, h, w),
         lambda x: cv2.rotate(x, cv2.ROTATE_90_COUNTERCLOCKWISE),
-        lambda x: cv2.cvtColor(cv2.cvtColor(x, cv2.COLOR_BGR2GRAY),
-                               cv2.COLOR_GRAY2BGR),
     ]
     while len(results) < n:
         op  = np.random.choice(ops)
