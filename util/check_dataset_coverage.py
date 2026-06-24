@@ -11,26 +11,29 @@ LABELS_PATH = "dataset/hair_dataset/labels.csv"
 OUT_PATH = "dataset/hair_dataset/labels_with_coverage.csv"
 PARTIAL_PATH = "dataset/hair_dataset/labels_with_coverage_partial.csv"
 
-IMAGES_DIR = "dataset/hair_dataset/images"
-TRAIN_IMAGES = "dataset/hair_dataset/train_images"
+SOURCE_DIRS = [
+    "dataset/hair_dataset/train_images",
+    "dataset/hair_dataset/images",
+    "dataset/hair_dataset/short_hair_candidates",
+]
 
 RESIZE_TO = 160
 SAVE_EVERY = 50
 PRINT_EVERY = 10
 
 def find_image_path(filename):
-    for folder in [TRAIN_IMAGES, IMAGES_DIR]:
+    for folder in SOURCE_DIRS:
         path = os.path.join(folder, filename)
         if os.path.exists(path):
             return path
     return None
 
 def coverage_to_bin(cov):
-    if cov is None:
+    if cov is None or pd.isna(cov):
         return "unknown"
-    if cov < 0.04:
+    if cov < 0.06:
         return "short"
-    if cov < 0.10:
+    if cov < 0.12:
         return "medium"
     return "long"
 
@@ -42,17 +45,26 @@ def load_existing_results():
     else:
         return {}
 
-    if "filename" not in old.columns or "coverage_bin" not in old.columns:
+    if "filename" not in old.columns or "coverage" not in old.columns:
         return {}
+    
+    existing = {}
 
-    return {
-        row["filename"]: {
-            "coverage": row.get("coverage", np.nan),
-            "coverage_bin": row.get("coverage_bin", "unknown"),
+    for _, row in old.iterrows():
+        filename = row["filename"]
+        cov = row.get("coverage", np.nan)
+        cov_bin = row.get("coverage_bin", "unknown")
+
+        if pd.isna(cov):
+            continue
+        if cov_bin == "unknown":
+            continue
+
+        existing[filename] = {
+            "coverage": cov,
+            "coverage_bin": cov_bin,
         }
-        for _, row in old.iterrows()
-        if pd.notna(row.get("coverage_bin", np.nan))
-    }
+    return existing
 
 def process_one(filename):
     path = find_image_path(filename)
@@ -91,6 +103,16 @@ def main():
 
     total = len(df)
 
+    new_files = [
+        row["filename"]
+        for _, row in df.iterrows()
+        if row["filename"] not in existing
+    ]
+
+    print(f"Total labels: {total}")
+    print(f"Already have coverage: {len(existing)}")
+    print(f"New files to process: {len(new_files)}")
+
     for i, row in df.iterrows():
         filename = row["filename"]
 
@@ -124,7 +146,8 @@ def main():
             )
 
         if (i + 1) % SAVE_EVERY == 0:
-            save_checkpoint(df.iloc[:i+1].copy(), coverages, bins, PARTIAL_PATH)
+            partial_df = df.iloc[:len(coverages)].copy()
+            save_checkpoint(partial_df, coverages, bins, PARTIAL_PATH)
             print(f"Checkpoint saved: {PARTIAL_PATH}")
 
     save_checkpoint(df, coverages, bins, OUT_PATH)

@@ -170,7 +170,7 @@ if __name__ == "__main__":
 
     else:
         label_images(
-            images_dir="dataset/hair_dataset/images",
+            images_dir="dataset/short_hair_candidates",
             output_csv="dataset/hair_dataset/labels.csv",
             start_from=int(sys.argv[1]) if len(sys.argv) > 1 else 0
         )   
