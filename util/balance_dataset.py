@@ -5,15 +5,15 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-LABELS_CSV   = "dataset/hair_dataset/labels.csv"
-IMAGES_DIR   = "dataset/hair_dataset/images"
+LABELS_CSV = "dataset/hair_dataset/labels.csv"
+IMAGES_DIR = "dataset/hair_dataset/images"
 TRAIN_IMAGES = "dataset/hair_dataset/train_images"
-OUTPUT_DIR   = "dataset/hair_dataset/balanced"
+OUTPUT_DIR = "dataset/hair_dataset/balanced"
 
-HAIR_CLASSES     = ["straight", "wavy", "curly", "coily"]
+HAIR_CLASSES = ["straight", "wavy", "curly", "coily"]
 HAIRLINE_CLASSES = ["normal", "receding", "uneven"]
 
-TARGET_HAIR     = 250
+TARGET_HAIR = 250
 TARGET_HAIRLINE = 200
 
 np.random.seed(42)
@@ -140,16 +140,78 @@ val_h.to_csv(f"{OUTPUT_DIR}/val_hair.csv", index=False)
 print(f"Train: {len(train_h)}, Val: {len(val_h)}")
 
 
-print("\n=== Dataset B: hairline ===")
+print("\n=== Dataset B: hairline (stratified by coverage) ===")
 records_hairline = []
-df_hairline = df[df["hairline"].isin(HAIRLINE_CLASSES)].copy()
+df_cov = pd.read_csv("dataset/hair_dataset/labels_with_coverage.csv")
+df_hairline = df_cov[df_cov["hairline"].isin(HAIRLINE_CLASSES)].copy()
 
-target_hl = TARGET_HAIRLINE
+BIN_PROPORTIONS = {"long": 0.40, "medium": 0.35, "short": 0.25}
+MAX_AUG_FACTOR = 5
 
 for cls in HAIRLINE_CLASSES:
-    subset = df_hairline[df_hairline["hairline"] == cls]
-    print(f"{cls}: {len(subset)}", end=" ")
-    records_hairline.extend(process_class(subset, cls, target_hl))
+    cls_df = df_hairline[df_hairline["hairline"] == cls]
+    cls_recs = []
+    print(f"{cls}: {len(cls_df)} total")
+    
+    for bin_name, proportion in BIN_PROPORTIONS.items():
+        bin_target = int(TARGET_HAIRLINE * proportion)
+        bin_df = cls_df[cls_df["coverage_bin"] == bin_name]
+        n = len(bin_df)
+
+        effective_target = min(bin_target, n * MAX_AUG_FACTOR)
+        if n == 0:
+            print(f"{bin_name}: 0 available - SKIPPING")
+            continue
+        print(f"{bin_name}: {n} available -> target {bin_target}"
+              f"(effective {effective_target})")
+        selected = bin_df.sample(min(n, effective_target), random_state=42)
+        copied = 0
+        for _, row in selected.iterrows():
+            src = find_image(row["filename"])
+            if src is None:
+                continue
+            dst = os.path.join(OUTPUT_DIR, "images", row["filename"])
+            shutil.copy2(src, dst)
+            cls_recs.append({
+                "filename": row["filename"],
+                "hair_type": row["hair_type"],
+                "hairline": row["hairline"],
+                "augumented": False,
+            })
+            copied += 1
+
+        need = effective_target - copied
+        if need > 0:
+            aug_per = max(1, int(np.ceil(need / max(n, 1))))
+            aug_done = 0
+            for _, row in bin_df.iterrows():
+                if aug_done >= need:
+                    break
+                src_path = find_image(row["filename"])
+                if src_path is None:
+                    continue
+                img = cv2.imread(src_path)
+                if img is None:
+                    continue
+                for aug_img in augment(img, aug_per + 1):
+                    if aug_done >= need:
+                        break
+                    fname = f"aug_{aug_counter:05d}.png"
+                    cv2.imwrite(
+                        os.path.join(OUTPUT_DIR, "images", fname), aug_img
+                    )
+                    cls_recs.append({
+                        "filename": row["filename"],
+                        "hair_type": row["hair_type"],
+                        "hairline": row["hairline"],
+                        "augumented": True,
+                    })
+                    aug_counter += 1
+                    aug_done += 1
+        print(f"-> {copied} orig + {need - (effective_target - copied - need) if need > 0 else 0} aug")
+
+    print(f"{cls} total: {len(cls_recs)}")
+    records_hairline.extend(cls_recs)
 
 df_hairline_balanced = pd.DataFrame(records_hairline)
 df_hairline_balanced.to_csv(f"{OUTPUT_DIR}/hairline_balanced.csv", index=False)
@@ -157,12 +219,20 @@ df_hairline_balanced.to_csv(f"{OUTPUT_DIR}/hairline_balanced.csv", index=False)
 print(f"\nHairline dataset: {len(df_hairline_balanced)}")
 print(df_hairline_balanced["hairline"].value_counts())
 
+merged = df_hairline_balanced.merge(
+    df_cov[["filename", "coverage_bin"]], on="filename", how="left"
+)
+merged["coverage_bin"] = merged["coverage_bin"].fillna("aug")
+print("\nCoverage distribution in balanced dataset:")
+print(pd.crosstab(merged["hairline"], merged["coverage_bin"]))
+
 train_hl, val_hl = train_test_split(
     df_hairline_balanced,
     test_size=0.15,
     stratify=df_hairline_balanced["hairline"],
     random_state=42,
 )
+
 train_hl.to_csv(f"{OUTPUT_DIR}/train_hairline.csv", index=False)
 val_hl.to_csv(f"{OUTPUT_DIR}/val_hairline.csv", index=False)
 print(f"Train: {len(train_hl)}, Val: {len(val_hl)}")
