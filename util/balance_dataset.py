@@ -47,7 +47,6 @@ def augment(img, n):
         lambda x: cv2.GaussianBlur(x, (3, 3), 0),
         lambda x: cv2.convertScaleAbs(x, alpha=1.0, beta=30),
         lambda x: _perspective_tilt(x, h, w),
-        lambda x: cv2.rotate(x, cv2.ROTATE_90_COUNTERCLOCKWISE),
     ]
     while len(results) < n:
         op  = np.random.choice(ops)
@@ -176,7 +175,7 @@ for cls in HAIRLINE_CLASSES:
                 "filename": row["filename"],
                 "hair_type": row["hair_type"],
                 "hairline": row["hairline"],
-                "augumented": False,
+                "augmented": False,
             })
             copied += 1
 
@@ -201,10 +200,10 @@ for cls in HAIRLINE_CLASSES:
                         os.path.join(OUTPUT_DIR, "images", fname), aug_img
                     )
                     cls_recs.append({
-                        "filename": row["filename"],
+                        "filename": fname,
                         "hair_type": row["hair_type"],
                         "hairline": row["hairline"],
-                        "augumented": True,
+                        "augmented": True,
                     })
                     aug_counter += 1
                     aug_done += 1
