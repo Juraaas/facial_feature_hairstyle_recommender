@@ -8,6 +8,7 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 from sklearn.metrics import confusion_matrix
+from torch.utils.data import WeightedRandomSampler
 
 BALANCED_DIR = "dataset/hair_dataset/balanced"
 IMAGES_DIR = f"{BALANCED_DIR}/images"
@@ -24,10 +25,7 @@ print(f"Using device: {DEVICE}")
 
 train_transform = T.Compose([
     T.Resize((256, 256)), 
-    T.RandomResizedCrop((224, 224), scale=(0.85, 1.0), ratio=(0.9, 1.1)),
-    T.RandomHorizontalFlip(p=0.5),
-    T.RandomRotation(8),
-    T.ColorJitter(brightness=0.2, contrast=0.15, saturation=0.15, hue=0.03),
+    T.ColorJitter(brightness=0.15, contrast=0.1, saturation=0.1, hue=0.02),
     T.ToTensor(),
     T.Normalize([0.485, 0.456, 0.406],
                 [0.229, 0.224, 0.225]),
@@ -80,13 +78,13 @@ class HairClassifier(nn.Module):
         self.head_hair = nn.Sequential(
             nn.Linear(feat_dim, 128),
             nn.Hardswish(),
-            nn.Dropout(0.35),
+            nn.Dropout(0.2),
             nn.Linear(128, num_hair)
         )
         self.head_hairline = nn.Sequential(
             nn.Linear(feat_dim, 64),
             nn.Hardswish(),
-            nn.Dropout(0.35),
+            nn.Dropout(0.2),
             nn.Linear(64, num_hairline),
         )
 
@@ -114,14 +112,27 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
     print(f"{'='*50}")
 
     train_ds = HairDataset(train_csv, label_col, classes, train_transform)
-    val_ds   = HairDataset(val_csv,   label_col, classes, val_transform)
+    val_ds = HairDataset(val_csv, label_col, classes, val_transform)
 
-    train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE,
-                              shuffle=True,  num_workers=0)
-    val_loader   = DataLoader(val_ds,   batch_size=BATCH_SIZE,
-                              shuffle=False, num_workers=0)
+    class_counts = train_ds.df[label_col].value_counts()
+    weights = train_ds.df[label_col].map(
+        lambda c: 1.0 / class_counts[c]
+    ).values
+    sampler = WeightedRandomSampler(
+        weights=torch.DoubleTensor(weights),
+        num_samples=len(weights),
+        replacement=True
+    )
+    train_loader = DataLoader(
+        train_ds, batch_size=BATCH_SIZE,
+        sampler=sampler,
+        num_workers=0
+    )
 
-    criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
+    val_loader = DataLoader(val_ds,batch_size=BATCH_SIZE,
+                            shuffle=False, num_workers=0)
+
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.05)
     best_path = f"models/hair_{head_name}_best.pt"
     os.makedirs("models", exist_ok=True)
 
