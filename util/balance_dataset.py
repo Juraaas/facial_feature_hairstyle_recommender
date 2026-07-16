@@ -14,8 +14,20 @@ OUTPUT_DIR = "dataset/hair_dataset/balanced"
 HAIR_CLASSES = ["straight", "wavy", "curly", "coily"]
 HAIRLINE_CLASSES = ["normal", "receding", "uneven"]
 
-MAX_AUG_FACTOR = 3
-MIN_CLASS_SIZE = 150
+MAX_AUG_FACTOR = 4
+
+HAIR_TARGETS = {
+    "straight": 600,
+    "wavy": 600,
+    "curly": 450,
+    "coily": 250,
+}
+
+HAIRLINE_TARGETS = {
+    "normal": 900,
+    "receding": 500,
+    "uneven": 500,
+}
 
 np.random.seed(42)
 
@@ -79,9 +91,6 @@ for _, row in val_orig.iterrows():
         "augmented": False,
     })
 
-class_counts = train_orig["hair_type"].value_counts()
-max_count = class_counts.max()
-
 for cls in HAIR_CLASSES:
     cls_df = train_orig[train_orig["hair_type"] == cls]
     n = len(cls_df)
@@ -98,7 +107,7 @@ for cls in HAIR_CLASSES:
             "hairline": row["hairline"],
             "augmented": False,
         })
-    target = min(max(MIN_CLASS_SIZE, max_count), n * MAX_AUG_FACTOR)
+    target = min(HAIR_TARGETS[cls], n * MAX_AUG_FACTOR)
     need = max(0, target - n)
 
     if need > 0:
@@ -146,10 +155,19 @@ print("\n=== Dataset B: hairline ===")
 
 df_hl  = df_cov[df_cov["hairline"].isin(HAIRLINE_CLASSES)].copy()
 
+df_hl["strat_key"] = df_hl["hairline"] + "_" + df_hl["coverage_bin"]
+key_counts = df_hl["strat_key"].value_counts()
+valid_keys = key_counts[key_counts >= 2].index
+df_hl_valid = df_hl[df_hl["strat_key"].isin(valid_keys)]
+
+print(f"Dropped {len(df_hl) - len(df_hl_valid)} rows with rare strat_key")
+print("strat_key distribution:")
+print(df_hl_valid["strat_key"].value_counts())
+
 train_hl_orig, val_hl_orig = train_test_split(
-    df_hl,
+    df_hl_valid,
     test_size=0.15,
-    stratify=df_hl["hairline"],
+    stratify=df_hl_valid["strat_key"],
     random_state=42
 )
 
@@ -175,10 +193,7 @@ for _, row in val_hl_orig.iterrows():
         "augmented": False,
     })
 
-BIN_PROPORTIONS = {"long": 0.40, "medium": 0.35, "short": 0.25}
-hl_class_counts = train_hl_orig["hairline"].value_counts()
-hl_max = hl_class_counts.max()
-HL_TARGET = min(hl_max, hl_class_counts.min() * MAX_AUG_FACTOR)
+BIN_PROPORTIONS = {"long": 0.35, "medium": 0.35, "short": 0.30}
 
 for cls in HAIRLINE_CLASSES:
     cls_df = train_hl_orig[train_hl_orig["hairline"] == cls]
@@ -197,7 +212,9 @@ for cls in HAIRLINE_CLASSES:
             "augmented": False,
         })
 
-    need = max(0, HL_TARGET - n)
+    target = min(HAIRLINE_TARGETS[cls], n * MAX_AUG_FACTOR)
+
+    need = max(0, target - n)
     if need > 0:
         aug_done = 0
         for bin_name, proportion in BIN_PROPORTIONS.items():

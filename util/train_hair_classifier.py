@@ -5,10 +5,9 @@ import torchvision.transforms as T
 import pandas as pd
 import os
 import numpy as np
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from PIL import Image
-from sklearn.metrics import confusion_matrix
-from torch.utils.data import WeightedRandomSampler
+from sklearn.metrics import confusion_matrix, balanced_accuracy_score
 
 BALANCED_DIR = "dataset/hair_dataset/balanced"
 IMAGES_DIR = f"{BALANCED_DIR}/images"
@@ -24,8 +23,12 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {DEVICE}")
 
 train_transform = T.Compose([
-    T.Resize((256, 256)), 
-    T.ColorJitter(brightness=0.15, contrast=0.1, saturation=0.1, hue=0.02),
+    T.Resize((256, 256)),
+    T.RandomCrop(224),
+    T.RandomHorizontalFlip(p=0.5),
+    T.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.15, hue=0.03),
+    T.RandomAutocontrast(p=0.2),
+    T.RandomAdjustSharpness(sharpness_factor=1.4,p=0.2),
     T.ToTensor(),
     T.Normalize([0.485, 0.456, 0.406],
                 [0.229, 0.224, 0.225]),
@@ -70,22 +73,22 @@ class HairDataset(Dataset):
 class HairClassifier(nn.Module):
     def __init__(self, num_hair=4, num_hairline=3):
         super().__init__()
-        backbone = models.mobilenet_v3_small(weights="IMAGENET1K_V1")
+        backbone = models.mobilenet_v3_large(weights="IMAGENET1K_V2")
         self.features = backbone.features
         self.avgpool = backbone.avgpool
-        feat_dim = 576
+        feat_dim = 960
 
         self.head_hair = nn.Sequential(
-            nn.Linear(feat_dim, 128),
+            nn.Linear(feat_dim, 256),
             nn.Hardswish(),
-            nn.Dropout(0.2),
-            nn.Linear(128, num_hair)
+            nn.Dropout(0.3),
+            nn.Linear(256, num_hair)
         )
         self.head_hairline = nn.Sequential(
-            nn.Linear(feat_dim, 64),
+            nn.Linear(feat_dim, 128),
             nn.Hardswish(),
-            nn.Dropout(0.2),
-            nn.Linear(64, num_hairline),
+            nn.Dropout(0.3),
+            nn.Linear(128, num_hairline),
         )
 
     def forward(self, x):
@@ -114,21 +117,9 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
     train_ds = HairDataset(train_csv, label_col, classes, train_transform)
     val_ds = HairDataset(val_csv, label_col, classes, val_transform)
 
-    class_counts = train_ds.df[label_col].value_counts()
-    weights = train_ds.df[label_col].map(
-        lambda c: 1.0 / class_counts[c]
-    ).values
-    sampler = WeightedRandomSampler(
-        weights=torch.DoubleTensor(weights),
-        num_samples=len(weights),
-        replacement=True
+    train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE,
+                              shuffle=True, num_workers=0
     )
-    train_loader = DataLoader(
-        train_ds, batch_size=BATCH_SIZE,
-        sampler=sampler,
-        num_workers=0
-    )
-
     val_loader = DataLoader(val_ds,batch_size=BATCH_SIZE,
                             shuffle=False, num_workers=0)
 
@@ -141,7 +132,7 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
     else:
         head_params = list(model.head_hairline.parameters())
 
-    WARMUP_EPOCHS = 8
+    WARMUP_EPOCHS = 5
     for param in model.features.parameters():
         param.requires_grad = False
 
@@ -178,14 +169,13 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
         optimizer, T_max=FINETUNE_EPOCHS, eta_min=1e-6
     )
     best_acc = 0
-    patience = 15
+    patience = 10
     no_improve = 0
 
     print(f"\nPhase 2: fine-tune {FINETUNE_EPOCHS} epochs (backbone unfrozen)")
     for epoch in range(1, FINETUNE_EPOCHS + 1):
         model.train()
         total, correct, loss_sum = 0, 0, 0.0
-
         for imgs, labels in train_loader:
             imgs, labels = imgs.to(DEVICE), labels.to(DEVICE)
             optimizer.zero_grad()
@@ -218,12 +208,15 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
                 all_labels.extend(labels.cpu().numpy())
 
         val_acc = sum(p == l for p, l in zip(all_preds, all_labels)) / len(all_labels)
+        val_bal_acc = balanced_accuracy_score(all_labels, all_preds)
         scheduler.step()
 
         print(f"Epoch {epoch:02d}/{FINETUNE_EPOCHS} | "
               f"loss={train_loss:.3f} | "
               f"train_acc={train_acc:.3f} | "
-              f"val_acc={val_acc:.3f}")
+              f"val_acc={val_acc:.3f} | "
+              f"val_bal_acc={val_bal_acc:.3f}")
+        
 
         if val_acc > best_acc:
             best_acc = val_acc
