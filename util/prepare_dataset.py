@@ -8,6 +8,7 @@ DEST_DIR = "dataset/hair_dataset/train_images"
 SOURCE_DIRS = [
     "dataset/hair_dataset/images",
     "dataset/short_hair_candidates",
+    "dataset/celeba/celeba_hq_256"
 ]
 
 MISSING_REPORT = "dataset/hair_dataset/missing_images.csv"

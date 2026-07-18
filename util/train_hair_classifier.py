@@ -24,11 +24,13 @@ print(f"Using device: {DEVICE}")
 
 train_transform = T.Compose([
     T.Resize((256, 256)),
-    T.RandomCrop(224),
+    T.RandomResizedCrop(224, scale=(0.85,1.0), ratio=(0.95,1.05)),
     T.RandomHorizontalFlip(p=0.5),
-    T.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.15, hue=0.03),
+    T.RandomRotation(8),
+    T.ColorJitter(brightness=0.25, contrast=0.25, saturation=0.2, hue=0.04),
     T.RandomAutocontrast(p=0.2),
     T.RandomAdjustSharpness(sharpness_factor=1.4,p=0.2),
+    T.RandomGrayscale(p=0.03),
     T.ToTensor(),
     T.Normalize([0.485, 0.456, 0.406],
                 [0.229, 0.224, 0.225]),
@@ -117,9 +119,22 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
     train_ds = HairDataset(train_csv, label_col, classes, train_transform)
     val_ds = HairDataset(val_csv, label_col, classes, val_transform)
 
-    train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE,
-                              shuffle=True, num_workers=0
+    print(f"Train: {len(train_ds)} | Val: {len(val_ds)}")
+    print(f"Train distribution:\n{train_ds.df[label_col].value_counts()}")
+    print(f"Val distribution:\n{val_ds.df[label_col].value_counts()}")
+
+    class_counts = train_ds.df[label_col].value_counts()
+    sample_weights = train_ds.df[label_col].map(
+        lambda c: 1.0 / class_counts[c]
+    ).values
+    sampler = WeightedRandomSampler(
+        weights = torch.DoubleTensor(sample_weights),
+        num_samples = len(sample_weights),
+        replacement = True,
     )
+
+    train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE,
+                              sampler=sampler, num_workers=0)
     val_loader = DataLoader(val_ds,batch_size=BATCH_SIZE,
                             shuffle=False, num_workers=0)
 
@@ -169,8 +184,9 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
         optimizer, T_max=FINETUNE_EPOCHS, eta_min=1e-6
     )
     best_acc = 0
-    patience = 10
+    patience = 20
     no_improve = 0
+    bal_history = []
 
     print(f"\nPhase 2: fine-tune {FINETUNE_EPOCHS} epochs (backbone unfrozen)")
     for epoch in range(1, FINETUNE_EPOCHS + 1):
@@ -209,6 +225,9 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
 
         val_acc = sum(p == l for p, l in zip(all_preds, all_labels)) / len(all_labels)
         val_bal_acc = balanced_accuracy_score(all_labels, all_preds)
+        bal_history.append(val_bal_acc)
+        smoothed_bal = np.mean(bal_history[-3:])
+
         scheduler.step()
 
         print(f"Epoch {epoch:02d}/{FINETUNE_EPOCHS} | "
@@ -216,23 +235,22 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
               f"train_acc={train_acc:.3f} | "
               f"val_acc={val_acc:.3f} | "
               f"val_bal_acc={val_bal_acc:.3f}")
-        
 
-        if val_acc > best_acc:
-            best_acc = val_acc
+        if smoothed_bal > best_acc:
+            best_acc = smoothed_bal
             no_improve = 0
             torch.save(model.state_dict(), best_path)
             cm = confusion_matrix(all_labels, all_preds)
             print(f"Confusion matrix ({classes}):")
             print(cm)
-            print(f"✓ saved best (val_acc={val_acc:.3f})")
+            print(f"✓ saved best smoothed_bal={smoothed_bal:.3f} (raw={val_bal_acc:.3f})")
         else:
             no_improve += 1
             if no_improve >= patience:
                 print(f"Early stopping at epoch {epoch}")
                 break
 
-    print(f"\nBest val_acc for {head_name}: {best_acc:.3f}")
+    print(f"\nBest bal_acc [{head_name}]: {best_acc:.3f}")
     model.load_state_dict(torch.load(best_path, weights_only=True))
     return model
     
