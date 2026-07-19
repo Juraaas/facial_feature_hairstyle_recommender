@@ -10,6 +10,15 @@ class QualityReport:
     score: float
     warnings: list[str]
     blocking: Optional[str] = None
+    blocking_code: Optional[str] = None
+
+def _blocking(code: str, message: str) -> QualityReport:
+    return QualityReport(
+        passed=False,
+        score=0.0,
+        blocking=message,
+        blocking_code=code,
+    )
 
 def assess_quality(landmarks, img) -> QualityReport:
     h, w = img.shape[:2]
@@ -19,17 +28,17 @@ def assess_quality(landmarks, img) -> QualityReport:
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     brightness = np.mean(gray)
     if brightness < 40:
-        warnings.append("Image is too dark — try better lighting")
+        warnings.append("Image is too dark - try better lighting")
     elif brightness > 230:
-        warnings.append("Image is overexposed — try softer lighting")
+        warnings.append("Image is overexposed - try softer lighting")
 
     face_width_px = geo.face_width()
     min_face_px = min(w, h) * 0.15
 
     if face_width_px < min_face_px:
-        return QualityReport(
-            passed=False, score=0.0,
-            blocking="Face too small — move closer to the camera"
+        return _blocking(
+            "FACE_TOO_SMALL",
+            "Face too small - move closer to the camera",
         )
     
     nose_x = geo.nose()[0]
@@ -39,8 +48,13 @@ def assess_quality(landmarks, img) -> QualityReport:
     eye_dist = abs(left_x - right_x)
 
     yaw_offset = abs(nose_x - eye_mid_x) / eye_dist if eye_dist > 0 else 0
-    if yaw_offset > 0.25:
-        warnings.append("Head is turned — results may be less accurate")
+    if yaw_offset > 0.35:
+        return _blocking(
+            "FACE_ROTATED",
+            "Please face the camera directly",
+        )
+    elif yaw_offset > 0.25:
+        warnings.append("Head is turned - results may be less accurate")
     
     chin_y = geo.chin()[1]
     forehead_y = geo.forehead_top()[1]
@@ -49,7 +63,12 @@ def assess_quality(landmarks, img) -> QualityReport:
     expected_y = (chin_y + forehead_y) / 2
 
     pitch_offset = abs(nose_y - expected_y) / face_h if face_h > 0 else 0
-    if pitch_offset > 0.15:
+    if pitch_offset > 0.25:
+        return _blocking(
+            "FACE_TILTED",
+            "Head is tilted too much - try a straight-on photo",
+        )
+    elif pitch_offset > 0.15:
         warnings.append("Head is tilted up or down - try a straight-on photo")
 
     left_cheek_x = geo.left_cheek()[0]
@@ -57,6 +76,11 @@ def assess_quality(landmarks, img) -> QualityReport:
     mid_x = (left_cheek_x + right_cheek_x) / 2
     
     nose_offset = abs(geo.nose()[0] - mid_x) / face_width_px
+    if nose_offset > 0.20:
+        return _blocking(
+            "POOR_ALIGNMENT",
+            "Could not align landmarks - try a clearer, well-lit photo",
+        )
     if nose_offset > 0.12:
         warnings.append("Unusual landmark alignment - lighting or angle may be off")
     
