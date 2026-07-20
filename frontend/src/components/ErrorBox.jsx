@@ -40,7 +40,7 @@ export function ErrorBox({error}) {
     if (!error) return null
 
     const code = typeof error === "object" ? error.code : "INTERNAL_ERROR"
-    const message = typeof error === "object" ? error.message : error
+    const msg = typeof error === "object" ? error.message : error
     const config = ERROR_CONFIG[code] || ERROR_CONFIG.INTERNAL_ERROR
 
     return (
@@ -56,7 +56,7 @@ export function ErrorBox({error}) {
             </div>
             <p style={{
                 fontSize: 14, fontWeight: 500, color: 'var(--text)', marginBottom: 4}}>
-
+                {config.title}
             </p>
             <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
                 {config.hint}
