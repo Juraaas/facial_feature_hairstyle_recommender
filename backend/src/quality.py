@@ -16,6 +16,7 @@ def _blocking(code: str, message: str) -> QualityReport:
     return QualityReport(
         passed=False,
         score=0.0,
+        warnings=[],
         blocking=message,
         blocking_code=code,
     )
