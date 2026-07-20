@@ -14,7 +14,11 @@ export function useAnalysis() {
       const data = await analysePhoto(file)
       setResult(data)
     } catch (e) {
-      setError(e.message)
+      try {
+        setError(JSON.parse(e.message))
+      } catch {
+        setError({ code: "INTERNAL_ERROR", message: e.message })
+      }
     } finally {
       setLoading(false)
     }

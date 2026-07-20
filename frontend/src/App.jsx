@@ -4,6 +4,7 @@ import { FaceAnalysis }    from './components/FaceAnalysis'
 import { FaceProportions } from './components/FaceProportions'
 import { StylesSection }   from './components/StylesSection'
 import { FeedbackSection } from './components/FeedbackSection'
+import { ErrorBox } from './components/ErrorBox'
 import './App.css'
 
 function App() {
@@ -99,7 +100,7 @@ function App() {
           </div>
         )}
 
-        {error && <div className="error-box">⚠️ {error}</div>}
+        {error && <ErrorBox error={error} />}
 
         {result && (
           <>

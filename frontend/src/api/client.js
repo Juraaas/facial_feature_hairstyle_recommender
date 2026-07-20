@@ -6,7 +6,9 @@ export async function analysePhoto(file) {
   const res = await fetch(`${BASE}/analyse`, { method: 'POST', body: form })
   if (!res.ok) {
     const err = await res.json()
-    throw new Error(err.detail || 'Analysis failed')
+    throw new Error(JSON.stringify(
+            err.detail || { code: "INTERNAL_ERROR", message: "Analysis failed" }
+        ))
   }
   return res.json()
 }
