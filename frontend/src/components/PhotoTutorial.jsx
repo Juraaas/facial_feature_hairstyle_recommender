@@ -44,11 +44,10 @@ const STEPS = [
     {
         title: "Hair & accessories",
         items: [
-            { ok: true, text: "Keep hair away from your face and forehead"},
+            { ok: true, text: "Remove hats, caps, and headbands"},
             { ok: true, text: "Show your natural hairline clearly"},
-            { ok: true, text: "Remove hats, hoods, and headbands"},
-            { ok: false, text: "Don't wear sunglasses or large glasses if possible"},
-            { ok: false, text: "Don't cover your forehead with a fringe or hat"},   
+            { ok: true, text: "Remove glasses if possible, or use thin-framed ones"},
+            { ok: false, text: "Don't wear anything that covers your hairline"},   
         ],
         visual: (
         <div style={{ width: 120, height: 120, margin: '0 auto', borderRadius: 12,
