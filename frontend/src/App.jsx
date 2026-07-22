@@ -1,8 +1,8 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useAnalysis } from './hooks/useAnalysis'
-import { FaceAnalysis }    from './components/FaceAnalysis'
+import { FaceAnalysis } from './components/FaceAnalysis'
 import { FaceProportions } from './components/FaceProportions'
-import { StylesSection }   from './components/StylesSection'
+import { StylesSection } from './components/StylesSection'
 import { FeedbackSection } from './components/FeedbackSection'
 import { ErrorBox } from './components/ErrorBox'
 import { PhotoTutorial } from './components/PhotoTutorial'
@@ -73,8 +73,8 @@ function App() {
           {tutorialDone && !showTutorial && (
             <button onClick={() => setShowTutorial(true)}
             style={{
-              background: 'none', border: 'none', cursor: 'pointer', fontSize: 11,
-              color: 'var(--text-hint)', padding: '2px 0',
+              background: 'none', border: '0.5px solid var(--border)', borderRadius: 6,
+              cursor: 'pointer', fontSize: 11, color: 'var(--text-muted)', padding: '4px 8px',
             }}>
               📷 Photo tips
             </button>
