@@ -82,7 +82,7 @@ function App() {
       </header>
 
       <main className="app-main">
-        {(showTutorial || tutorialDone) ? (
+        {(showTutorial || !tutorialDone) ? (
           <PhotoTutorial onDone={handleTutorialDone} />
         ) : (
           <section style={{ marginBottom: 32 }}>
