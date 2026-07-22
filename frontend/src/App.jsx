@@ -41,6 +41,7 @@ function App() {
 
   function handleTutorialDone() {
     localStorage.setItem('tutorial_done', '1')
+    setTutorialDone(true)
     setShowTutorial(false)
   }
 

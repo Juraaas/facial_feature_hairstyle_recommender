@@ -31,8 +31,8 @@ const STEPS = [
             { ok: true, text: "Use natural light or face a lamp - avoid backlighting"},
             { ok: true, text: "Plain or neutral background works best"},
             { ok: true, text: "Make sure your face is evenly lit on both sides"},
-            { ok: true, text: "Avoid strong shadows across your face"},
-            { ok: true, text: "Avoid very dark or very bright environments"},   
+            { ok: false, text: "Avoid strong shadows across your face"},
+            { ok: false, text: "Avoid very dark or very bright environments"},   
         ],
         visual: (
         <div style={{ width: 120, height: 120, margin: '0 auto', borderRadius: 12,
@@ -47,8 +47,8 @@ const STEPS = [
             { ok: true, text: "Keep hair away from your face and forehead"},
             { ok: true, text: "Show your natural hairline clearly"},
             { ok: true, text: "Remove hats, hoods, and headbands"},
-            { ok: true, text: "Don't wear sunglasses or large glasses if possible"},
-            { ok: true, text: "Don't cover your forehead with a fringe or hat"},   
+            { ok: false, text: "Don't wear sunglasses or large glasses if possible"},
+            { ok: false, text: "Don't cover your forehead with a fringe or hat"},   
         ],
         visual: (
         <div style={{ width: 120, height: 120, margin: '0 auto', borderRadius: 12,
@@ -150,7 +150,7 @@ export function PhotoTutorial({ onDone }) {
             color: '#fff', fontWeight: 500,
           }}
         >
-          {isLast ? "Got it — take my photo" : "Next"}
+          {isLast ? "Got it - take my photo" : "Next"}
         </button>
       </div>
 
