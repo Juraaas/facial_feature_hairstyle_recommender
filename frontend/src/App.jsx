@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useAnalysis } from './hooks/useAnalysis'
 import { FaceAnalysis }    from './components/FaceAnalysis'
 import { FaceProportions } from './components/FaceProportions'
 import { StylesSection }   from './components/StylesSection'
 import { FeedbackSection } from './components/FeedbackSection'
 import { ErrorBox } from './components/ErrorBox'
+import { PhotoTutorial } from './components/PhotoTutorial'
 import './App.css'
 
 function App() {
@@ -13,6 +14,10 @@ function App() {
   const [preview, setPreview] = useState(null)
   const [overlayUrl, setOverlayUrl] = useState(null)
   const [dark, setDark] = useState(false)
+  const [tutorialDone, setTutorialDone] = useState(
+  () => localStorage.getItem('tutorial_done') === '1'
+  )
+  const [showTutorial, setShowTutorial] = useState(false)
 
   useEffect(() => {
     document.body.setAttribute('data-theme', dark ? 'dark' : 'light')
@@ -34,6 +39,11 @@ function App() {
     handleFile(e.dataTransfer.files[0])
   }
 
+  function handleTutorialDone() {
+    localStorage.setItem('tutorial_done', '1')
+    setShowTutorial(false)
+  }
+
   async function handleAnalyse() {
     if (!file) return
     
@@ -52,46 +62,57 @@ function App() {
       <header className="app-header">
         <div className="brand">
           <h1>FaceFit AI</h1>
-          <p>AI-powered hairstyle recommendations based on your face proportions 
-            and key facial features</p>
+          <p>Upload a photo to get personalised hairstyle recommendations, based on key 
+            facial features </p>
         </div>
-        <button
-          className="theme-btn"
-          onClick={() => setDark(d => !d)}
-          title="Toggle dark mode"
-        >
-          {dark ? '☀️' : '🌙'}
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
+          <button className="theme-btn" onClick={() => setDark(d => !d)}>
+            {dark ? '☀️' : '🌙'}
+          </button>
+          {tutorialDone && !showTutorial && (
+            <button onClick={() => setShowTutorial(true)}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer', fontSize: 11,
+              color: 'var(--text-hint)', padding: '2px 0',
+            }}>
+              📷 Photo tips
+            </button>
+          )}
+        </div>
       </header>
 
       <main className="app-main">
-        <section style={{ marginBottom: 32 }}>
-          <div
-            className="dropzone"
-            onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]) }}
-            onDragOver={e => e.preventDefault()}
-            onClick={() => document.getElementById('file-input').click()}
-          >
-            {preview
-              ? <img src={preview} alt="uploaded" className="preview-img" />
-              : <p className="dropzone-hint">Drop a photo here or click to upload</p>
-            }
-          </div>
-          <input id="file-input" type="file" accept="image/jpeg,image/png"
-            onChange={e => handleFile(e.target.files[0])}
-            style={{ display: 'none' }} />
-          {file && !loading && !result && (
-            <button className="analyse-btn" onClick={handleAnalyse}>
-              Analyse
-            </button>
-          )}
-          {result && (
-            <button className="analyse-btn secondary"
-              onClick={() => { reset(); setFile(null); setPreview(null); setOverlayUrl(null) }}>
-              Upload new photo
-            </button>
-          )}
-        </section>
+        {(showTutorial || tutorialDone) ? (
+          <PhotoTutorial onDone={handleTutorialDone} />
+        ) : (
+          <section style={{ marginBottom: 32 }}>
+            <div
+              className="dropzone"
+              onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]) }}
+              onDragOver={e => e.preventDefault()}
+              onClick={() => document.getElementById('file-input').click()}
+            >
+              {preview
+                ? <img src={preview} alt="uploaded" className="preview-img" />
+                : <p className="dropzone-hint">Drop a photo here or click to upload</p>
+              }
+            </div>
+            <input id="file-input" type="file" accept="image/jpeg,image/png"
+              onChange={e => handleFile(e.target.files[0])}
+              style={{ display: 'none' }} />
+            {file && !loading && !result && (
+              <button className="analyse-btn" onClick={handleAnalyse}>
+                Analyse
+              </button>
+            )}
+            {result && (
+              <button className="analyse-btn secondary"
+                onClick={() => { reset(); setFile(null); setPreview(null); setOverlayUrl(null) }}>
+                Upload new photo
+              </button>
+            )}
+          </section>
+        )}
 
         {loading && (
           <div className="loading">
