@@ -86,6 +86,42 @@ MISSING_SENSITIVE_FEATURES = {
     "longer_hair",
 }
 
+HAIR_TYPE_COMPATIBILITY = {
+    "straight": {
+        "Curly Volume": -0.3,
+        "Beach Waves": -0.15,
+        "Braided Crown": -0.1,
+    },
+    "wavy": {
+        "Long Straight Blunt": -0.2,
+        "Bob Classic": -0.1,
+    },
+    "curly": {
+        "Long Straight Blunt": -0.4,
+        "Slick Back": -0.3,
+        "Side Part": -0.2,
+        "Comb Over": -0.2,
+        "Pompadour": -0.15,
+    },
+    "coily": {
+        "Long Straight Blunt": -0.5,
+        "Slick Back": -0.4,
+        "Side Part": -0.3,
+        "Bro Flow": -0.3,
+        "Pompadour": -0.2,
+    }
+}
+
+HAIRLINE_INCOMPATIBLE = {
+    "receding": [
+        "French Crop",
+        "Textured Fringe",
+        "Curtain Fringe Medium",
+        "French Bob",
+        "Long with Curtain Fringe",
+    ],
+}
+
 def load_hairstyles(path="data/hairstyles.json"):
     with open(path, "r") as f:
         return json.load(f)["styles"]
@@ -118,7 +154,20 @@ def compute_traits_influences(traits, gender):
         reverse=True,
     ))
 
-def score_hairstyle(user_scores, style):
+def apply_hair_compatibility(score, style_name, traits):
+    hair_type = traits.get("hair_type")
+    hairline = traits.get("hairline")
+
+    if hair_type is not None and hair_type in HAIR_TYPE_COMPATIBILITY:
+        penalty = HAIR_TYPE_COMPATIBILITY[hair_type].get(style_name, 0)
+        score = score + penalty
+
+    if hairline == "receding" and style_name in HAIRLINE_INCOMPATIBLE["receding"]:
+        score = score - 0.4
+
+    return max(0.0, score) 
+
+def score_hairstyle(user_scores, style, traits=None):
     score = 0.0
     total_importance = 0.0
     matched_importance = 0.0
@@ -146,8 +195,14 @@ def score_hairstyle(user_scores, style):
     
     base_score = score / total_importance
     match_concentration = matched_importance / total_importance
+    final_score = base_score * (0.75 + 0.25 * match_concentration)
 
-    return base_score * (0.75 + 0.25 * match_concentration)
+    if traits:
+        final_score = apply_hair_compatibility(
+            final_score, style["name"], traits
+        )
+
+    return final_score
 
 def explain_match(user_scores, style, total_score):  
     positive = []
@@ -247,13 +302,14 @@ def _build_face_analysis(influences, traits):
         
     return explanations
 
-def generate_recommendations(user_scores, traits, gender="Man", top_k=3, hairstyles_path="data/hairstyles.json"):
+def generate_recommendations(user_scores, traits, gender="Man", top_k=3, 
+                             hairstyles_path="data/hairstyles.json"):
     styles = load_hairstyles(hairstyles_path)
     influences = compute_traits_influences(traits, gender)
     results = []
 
     for style in styles:
-        score = score_hairstyle(user_scores, style)
+        score = score_hairstyle(user_scores, style, traits)
         positive, negative, missing = explain_match(user_scores, style, score)
 
         results.append({
