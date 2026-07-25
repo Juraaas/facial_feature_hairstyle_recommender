@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 HF_TOKEN = os.environ.get("HF_TOKEN")
-INPAINT_URL = "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-inpainting"
+INPAINT_URL = "https://api-inference.huggingface.co/models/stable-diffusion-v1-5/stable-diffusion-inpainting"
 
 STYLE_PROMPTS = {
     "French Crop":      "professional photo, french crop hairstyle, short textured hair with fringe, clean fade sides, natural lighting",
