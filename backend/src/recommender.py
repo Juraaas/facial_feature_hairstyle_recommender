@@ -1,6 +1,6 @@
 import json
 import os
-import anthropic
+from groq import Groq
 
 STYLE_DESCRIPTIONS = {
     "volume_top": "height on top",
@@ -123,16 +123,6 @@ HAIRLINE_INCOMPATIBLE = {
         "Long with Curtain Fringe",
     ],
 }
-
-_anthropic_client = None
-
-def get_anthropic_client():
-    global _anthropic_client
-    if _anthropic_client is None:
-        _anthropic_client = anthropic.Anthropic(
-            api_key=os.environ.get("ANTHROPIC_API_KEY")
-        )
-    return _anthropic_client
 
 def load_hairstyles(path="data/hairstyles.json"):
     with open(path, "r") as f:
@@ -315,11 +305,48 @@ def _build_face_analysis(influences, traits):
     return explanations
 
 def _build_face_analysis_llm(influences, traits, gender="Man"):
-    if not os.environ.get("ANTHROPIC_API_KEY"):
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
         return _build_face_analysis(influences, traits)
 
-    skip_values = {None, "normal", "balanced", "slight_imbalance"}
-    
+    trait_summary = _prepare_trait_summary(influences, traits)
+    if not trait_summary:
+        return ["Your facial proportions are well balanced — most styles will suit you."]
+
+    try:
+        client = Groq(api_key=api_key)
+        response = client.chat.completions.create(
+            model = "llama-3.1-8b-instant",
+            messages = [
+                {
+                    "role": "system",
+                    "content": "You are a professional hairstylist. Return only valid JSON arrays of strings."
+                },
+                {
+                    "role": "user",
+                    "content": f"""Client: {gender}
+Detected facial traits:
+{chr(10).join(trait_summary)}
+
+Write 3 short sentences (max 15 words each) explaining what hairstyle directions work best. Return ONLY a JSON array: ["sentence1", "sentence2", "sentence3"]"""
+                }
+            ],
+            max_tokens = 200,
+            temperature = 0.7,
+        )
+        import json
+        text = response.choices[0].message.content.strip()
+        text = text.replace("```json", "").replace("```", "").strip()
+        result = json.loads(text)
+        if isinstance(result, list):
+            return result[:4]
+    except Exception as e:
+        print(f"LLM error: {e}")
+
+    return _build_face_analysis(influences, traits)
+
+def _prepare_trait_summary(influences, traits):
+    skip_values   = {None, "normal", "balanced", "slight_imbalance"}
     trait_summary = []
     priority_order = ["hairline", "hair_type"] + [
         k for k in influences.keys()
@@ -336,59 +363,18 @@ def _build_face_analysis_llm(influences, traits, gender="Man"):
 
         delta = info["delta"]
         top_dims = sorted(delta.items(),
-                           key=lambda x: abs(x[1]), reverse=True)[:2]
-        dim_hints = []
+                          key=lambda x: abs(x[1]), reverse=True)[:2]
+        hints = []
         for dim, change in top_dims:
             desc = STYLE_DESCRIPTIONS.get(dim, dim)
-            dim_hints.append(
-                f"favours {desc}" if change > 0 else f"works against {desc}"
-            )
+            hints.append(f"favours {desc}" if change > 0 else f"works against {desc}")
 
         trait_summary.append(
-            f"- {key}: {value} (impact: {info['total_impact']:.1f}"
-            + (f", {', '.join(dim_hints)}" if dim_hints else "")
-            + ")"
+            f"- {key}: {value}"
+            + (f" ({', '.join(hints)})" if hints else "")
         )
 
-    if not trait_summary:
-        return ["Your facial proportions are well balanced — most styles will suit you."]
-
-    prompt = f"""You are a professional hairstylist analyzing a client's facial features to explain why certain hairstyles were recommended.
-
-Client profile:
-- Gender: {gender}
-- Key facial traits detected:
-{chr(10).join(trait_summary)}
-
-Write 3-4 SHORT sentences (max 15 words each) that:
-1. Naturally describe the most impactful facial features
-2. Explain what hairstyle directions work best and why
-3. Sound like a knowledgeable stylist talking to a client - warm, direct, not clinical
-4. Avoid repeating the same dimension (e.g. don't mention "fringe" twice)
-5. Never start with "I" or "Your face"
-
-Return ONLY the sentences as a JSON array of strings, nothing else.
-Example format: ["Sentence one.", "Sentence two.", "Sentence three."]"""
-
-    try:
-        client   = get_anthropic_client()
-        response = client.messages.create(
-            model = "claude-haiku-4-5",
-            max_tokens = 300,
-            messages = [{"role": "user", "content": prompt}]
-        )
-
-        import json
-        text = response.content[0].text.strip()
-        result = json.loads(text)
-
-        if isinstance(result, list) and all(isinstance(s, str) for s in result):
-            return result[:4]
-
-    except Exception as e:
-        print(f"LLM face analysis error: {e}")
-
-    return _build_face_analysis(influences, traits)
+    return trait_summary
 
 def generate_recommendations(user_scores, traits, gender="Man", top_k=3, 
                              hairstyles_path="data/hairstyles.json"):
