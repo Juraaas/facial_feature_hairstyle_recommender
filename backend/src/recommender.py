@@ -320,15 +320,16 @@ def _build_face_analysis_llm(influences, traits, gender="Man"):
             messages = [
                 {
                     "role": "system",
-                    "content": "You are a professional hairstylist. Return only valid JSON arrays of strings."
+                    "content": "You are a professional hairstylist speaking directly to a client. Always use 'your' and 'you' — never 'his', 'her', 'their' or third person. Return only valid JSON arrays of strings, no markdown."
                 },
                 {
                     "role": "user",
-                    "content": f"""Client: {gender}
-Detected facial traits:
+                    "content": f"""You are analysing the facial features of a {gender.lower()} client sitting in front of you.
+Their facial traits:
 {chr(10).join(trait_summary)}
 
-Write 3 short sentences (max 15 words each) explaining what hairstyle directions work best. Return ONLY a JSON array: ["sentence1", "sentence2", "sentence3"]"""
+Write 3 short sentences (max 15 words each) speaking directly to them — use 'your face', 'your jawline', 'for you' etc. Explain what hairstyle directions suit them best and why. Be warm and professional.
+Return ONLY a JSON array: ["sentence1", "sentence2", "sentence3"]"""
                 }
             ],
             max_tokens = 200,
