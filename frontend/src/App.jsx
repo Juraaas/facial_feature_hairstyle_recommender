@@ -6,6 +6,7 @@ import { StylesSection } from './components/StylesSection'
 import { FeedbackSection } from './components/FeedbackSection'
 import { ErrorBox } from './components/ErrorBox'
 import { PhotoTutorial } from './components/PhotoTutorial'
+import { useTranslation } from 'react-i18next'
 import './App.css'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
   () => localStorage.getItem('tutorial_done') === '1'
   )
   const [showTutorial, setShowTutorial] = useState(false)
+  const { t, i18n } = useTranslation()
 
   useEffect(() => {
     document.body.setAttribute('data-theme', dark ? 'dark' : 'light')
@@ -45,6 +47,12 @@ function App() {
     setShowTutorial(false)
   }
 
+  function toggleLang() {
+    const next = i18n.language === 'pl' ? 'en' : 'pl'
+    i18n.changeLanguage(next)
+    localStorage.setItem('lang', next)
+  }
+
   async function handleAnalyse() {
     if (!file) return
     
@@ -54,7 +62,7 @@ function App() {
       method: 'POST', body: form
     }).then(r => r.blob()).then(b => URL.createObjectURL(b))
     
-    analyse(file)
+    analyse(file, i18n.language)
     setOverlayUrl(await overlayPromise)
   }
 
@@ -69,6 +77,18 @@ function App() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
           <button className="theme-btn" onClick={() => setDark(d => !d)}>
             {dark ? '☀️' : '🌙'}
+          </button>
+          <button
+            onClick={toggleLang}
+            style={{
+              background: 'none',
+              border: '0.5px solid var(--border)',
+              borderRadius: 6, cursor: 'pointer',
+              fontSize: 11, color: 'var(--text-muted)',
+              padding: '4px 8px',
+            }}
+          >
+            {i18n.language === 'pl' ? '🇬🇧 EN' : '🇵🇱 PL'}
           </button>
           {tutorialDone && !showTutorial && (
             <button onClick={() => setShowTutorial(true)}

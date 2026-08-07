@@ -5,7 +5,7 @@ const STEPS = [
         title: "Position your face",
         items: [
             { ok: true, text: "Face the camera directly - look straight at the lens"},
-            { ok: true, text: "Keep your head uprgith and level"},
+            { ok: true, text: "Keep your head upright and level"},
             { ok: true, text: "Fill at least half of the frame with your face"},
             { ok: false, text: "Don't tilt or turn your head to the side"},
             { ok: false, text: "Don't take the photo from above or below"},
