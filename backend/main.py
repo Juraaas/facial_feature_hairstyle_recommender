@@ -124,6 +124,7 @@ def root_head():
 
 @app.post("/analyse")
 def analyse(file: UploadFile = File(...),
+            lang: str = Query("pl"),
             debug: bool = Query(False)):
     try:
         contents = file.file.read()

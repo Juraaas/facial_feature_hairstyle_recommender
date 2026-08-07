@@ -304,7 +304,7 @@ def _build_face_analysis(influences, traits):
         
     return explanations
 
-def _build_face_analysis_llm(influences, traits, gender="Man"):
+def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
         return _build_face_analysis(influences, traits)
@@ -313,6 +313,12 @@ def _build_face_analysis_llm(influences, traits, gender="Man"):
     if not trait_summary:
         return ["Your facial proportions are well balanced — most styles will suit you."]
 
+    lang_instruction = (
+        "Respond in Polish. Use 'Twoja' and 'Ci' forms."
+        if lang == "pl"
+        else "Respond in English."
+    )
+
     try:
         client = Groq(api_key=api_key)
         response = client.chat.completions.create(
@@ -320,7 +326,7 @@ def _build_face_analysis_llm(influences, traits, gender="Man"):
             messages = [
                 {
                     "role": "system",
-                    "content": "You are a professional hairstylist speaking directly to a client. Always use 'your' and 'you' — never 'his', 'her', 'their' or third person. Return only valid JSON arrays of strings, no markdown."
+                    "content": f"You are a professional hairstylist speaking directly to a client. {lang_instruction} Always use 'your' and 'you' — never 'his', 'her', 'their' or third person. Return only valid JSON arrays of strings, no markdown."
                 },
                 {
                     "role": "user",
@@ -378,7 +384,7 @@ def _prepare_trait_summary(influences, traits):
     return trait_summary
 
 def generate_recommendations(user_scores, traits, gender="Man", top_k=3, 
-                             hairstyles_path="data/hairstyles.json"):
+                             hairstyles_path="data/hairstyles.json", lang="pl"):
     styles = load_hairstyles(hairstyles_path)
     influences = compute_traits_influences(traits, gender)
     results = []
@@ -404,6 +410,6 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
     return {
         "top_styles": results[:top_k],
         "all_styles": results,
-        "face_analysis": _build_face_analysis_llm(influences, traits, gender),
+        "face_analysis": _build_face_analysis_llm(influences, traits, gender, lang="pl"),
         "trait_influences": influences,
     }
