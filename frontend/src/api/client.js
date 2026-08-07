@@ -3,7 +3,7 @@ const BASE = import.meta.env.VITE_API_URL || '/api'
 export async function analysePhoto(file) {
   const form = new FormData()
   form.append('file', file)
-  const res = await fetch(`${BASE}/analyse`, { method: 'POST', body: form })
+  const res = await fetch(`${BASE}/analyse?lang=${lang}`, { method: 'POST', body: form })
   if (!res.ok) {
     const err = await res.json()
     throw new Error(JSON.stringify(
