@@ -56,7 +56,7 @@ def run_pipeline(img, detector, gender=None):
             traits["hairline"] = hair_result["hairline"]
         scores = apply_rules(traits, gender="Woman")
         recs = generate_recommendations(scores, traits, gender="Woman",
-                                        hairstyles_path="data/hairstyles_female.json", lang=lang)
+                                        hairstyles_path="data/hairstyles_female.json")
     else:
         traits = interpret_face(features, gender="Man")
         if hair_result["hair_type"] is not None:
