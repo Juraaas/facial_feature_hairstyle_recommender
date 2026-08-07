@@ -11,7 +11,7 @@ export function useAnalysis() {
     setError(null)
     setResult(null)
     try {
-      const data = await analysePhoto(file)
+      const data = await analysePhoto(file, lang)
       setResult(data)
     } catch (e) {
       try {
