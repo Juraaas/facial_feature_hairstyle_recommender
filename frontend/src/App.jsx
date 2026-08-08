@@ -57,12 +57,13 @@ function App() {
     if (!file) return
     
     const form = new FormData()
+    const lang = i18n.language
     form.append('file', file)
     const overlayPromise = fetch(`${import.meta.env.VITE_API_URL}/landmarks-overlay`, {
       method: 'POST', body: form
     }).then(r => r.blob()).then(b => URL.createObjectURL(b))
     
-    analyse(file, i18n.language)
+    analyse(file, lang)
     setOverlayUrl(await overlayPromise)
   }
 
