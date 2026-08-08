@@ -410,6 +410,6 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
     return {
         "top_styles": results[:top_k],
         "all_styles": results,
-        "face_analysis": _build_face_analysis_llm(influences, traits, gender, lang="pl"),
+        "face_analysis": _build_face_analysis_llm(influences, traits, gender, lang=lang),
         "trait_influences": influences,
     }

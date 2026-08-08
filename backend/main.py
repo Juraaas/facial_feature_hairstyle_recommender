@@ -145,7 +145,7 @@ def analyse(file: UploadFile = File(...),
         norms, female_norms = get_norms()
         gender = get_gender(img)
         
-        result = run_pipeline(img, detector, gender=gender)
+        result = run_pipeline(img, detector, gender=gender, lang=lang)
         landmarks, features, traits, scores, recs, quality = result
 
         if landmarks is None:

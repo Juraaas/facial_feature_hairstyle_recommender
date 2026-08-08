@@ -13,7 +13,7 @@ from src.hair_classifier import classify_hair
 
 log = get_logger(__name__) 
 
-def run_pipeline(img, detector, gender=None):
+def run_pipeline(img, detector, gender=None, lang="pl"):
     landmarks = detector.detect(img)
     lm_check = validate_landmarks(landmarks)
 
@@ -56,7 +56,7 @@ def run_pipeline(img, detector, gender=None):
             traits["hairline"] = hair_result["hairline"]
         scores = apply_rules(traits, gender="Woman")
         recs = generate_recommendations(scores, traits, gender="Woman",
-                                        hairstyles_path="data/hairstyles_female.json")
+                                        hairstyles_path="data/hairstyles_female.json", lang=lang)
     else:
         traits = interpret_face(features, gender="Man")
         if hair_result["hair_type"] is not None:
@@ -65,6 +65,6 @@ def run_pipeline(img, detector, gender=None):
             traits["hairline"] = hair_result["hairline"]
         scores = apply_rules(traits, gender="Man")
         recs = generate_recommendations(scores, traits, gender="Man",
-                                        hairstyles_path="data/hairstyles.json")
+                                        hairstyles_path="data/hairstyles.json", lang=lang)
 
     return landmarks, features, traits, scores, recs, quality
