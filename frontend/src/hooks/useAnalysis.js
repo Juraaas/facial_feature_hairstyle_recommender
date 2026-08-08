@@ -6,7 +6,7 @@ export function useAnalysis() {
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState(null)
 
-  async function analyse(file) {
+  async function analyse(file, lang) {
     setLoading(true)
     setError(null)
     setResult(null)
