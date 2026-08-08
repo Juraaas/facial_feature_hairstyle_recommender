@@ -1,6 +1,6 @@
 const BASE = import.meta.env.VITE_API_URL || '/api'
 
-export async function analysePhoto(file) {
+export async function analysePhoto(file, lang) {
   const form = new FormData()
   form.append('file', file)
   const res = await fetch(`${BASE}/analyse?lang=${lang}`, { method: 'POST', body: form })
