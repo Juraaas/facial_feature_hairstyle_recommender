@@ -44,6 +44,7 @@ export default {
   confidence: "Pewność detekcji",
 
   hair_type_label: "włosy",
+  hairline_label: "linia włosów",
   hair_type_not_detected: "nie wykryto typu włosów",
   hairline_normal: "normalna linia włosów",
 

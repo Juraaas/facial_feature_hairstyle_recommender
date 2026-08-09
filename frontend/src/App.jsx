@@ -49,6 +49,7 @@ function App() {
 
   function toggleLang() {
     const next = i18n.language === 'pl' ? 'en' : 'pl'
+    console.log('changing language:', i18n.language, '→', next)
     i18n.changeLanguage(next)
     localStorage.setItem('lang', next)
   }
@@ -71,9 +72,8 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="brand">
-          <h1>FaceFit AI</h1>
-          <p>Upload a photo to get personalised hairstyle recommendations, based on key 
-            facial features </p>
+          <h1>{t('app_title')}</h1>
+          <p>{t('app_subtitle')}</p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
           <button className="theme-btn" onClick={() => setDark(d => !d)}>
@@ -97,7 +97,7 @@ function App() {
               background: 'none', border: '0.5px solid var(--border)', borderRadius: 6,
               cursor: 'pointer', fontSize: 11, color: 'var(--text-muted)', padding: '4px 8px',
             }}>
-              📷 Photo tips
+              {t('photo_tips')}
             </button>
           )}
         </div>
@@ -124,13 +124,13 @@ function App() {
               style={{ display: 'none' }} />
             {file && !loading && !result && (
               <button className="analyse-btn" onClick={handleAnalyse}>
-                Analyse
+                {t('btn_analyse')}
               </button>
             )}
             {result && (
               <button className="analyse-btn secondary"
                 onClick={() => { reset(); setFile(null); setPreview(null); setOverlayUrl(null) }}>
-                Upload new photo
+                {t('btn_upload_new')}
               </button>
             )}
           </section>
@@ -139,7 +139,7 @@ function App() {
         {loading && (
           <div className="loading">
             <div className="spinner" />
-            <p>Analysing photo...</p>
+            <p>{t('btn_loading')}</p>
           </div>
         )}
 
@@ -180,7 +180,7 @@ function App() {
                   color: 'var(--text-muted)'
                 }}>
                   <span>💇</span>
-                  <span>{result.traits.hair_type} hair</span>
+                  <span>{result.traits.hair_type} {t('hair_type_label')}</span>
                 </div>
               ) : (
                 <div style={{
@@ -190,7 +190,7 @@ function App() {
                   color: 'var(--text-muted)'
                 }}>
                   <span>💇</span>
-                  <span>hair type not detected</span>
+                  <span>{t('hair_type_not_detected')}</span>
                 </div>
               )}
 
@@ -202,7 +202,7 @@ function App() {
                   color: 'var(--text-muted)'
                 }}>
                   <span>📐</span>
-                  <span>{result.traits.hairline} hairline</span>
+                  <span>{result.traits.hairline} {t('hairline_label')}</span>
                 </div>
               ) : (
                 <div style={{
@@ -212,7 +212,7 @@ function App() {
                   color: 'var(--text-muted)'
                 }}>
                   <span>📐</span>
-                  <span>normal hairline</span>
+                  <span>{t('hairline_normal')}</span>
                 </div>
               )}
             </div>

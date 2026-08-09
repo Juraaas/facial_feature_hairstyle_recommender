@@ -43,6 +43,7 @@ export default {
   confidence: "Detection confidence",
 
   hair_type_label: "hair",
+  hairline_label: "hairline",
   hair_type_not_detected: "hair type not detected",
   hairline_normal: "normal hairline",
 
