@@ -1,47 +1,59 @@
+import { useTranslation } from "react-i18next"
+
 const ERROR_CONFIG = {
-    NO_FACE_DETECTED: {
-        icon: "🔍",
-        title: "No face detected",
-        hint: "Make sure your face is clearly visible and well-lit",
-    },
-    FACE_TOO_SMALL: {
-        icon: "📏",
-        title: "Move closer to the camera",
-        hint: "Your face should fill at least 1/3 of the photo",
-    },
-    FACE_ROTATED: {
-        icon: "↩️",
-        title: "Please face the camera directly",
-        hint: "Look straight at the lens, not to the side",
-    },
-    FACE_TILTED: {
-        icon: "↕️",
-        title: "Head is tilted too much",
-        hint: "Try a straight-on photo with your chin level",
-    },
-    POOR_ALIGNMENT: {
-        icon: "⚠️",
-        title: "Could not read your face",
-        hint: "Try better lighting or a clearer front-facing photo",
-    },
-    INVALID_IMAGE: {
-        icon: "🖼️",
-        title: "Could not read the image",
-        hint: "Try a JPG or PNG file",
-    },
-    INTERNAL_ERROR: {
-        icon: "⚙️",
-        title: "Something went wrong",
-        hint: "Please try again with a different photo",
-    },
+  NO_FACE_DETECTED: {
+    icon: "🔍",
+    titleKey: "error_no_face",
+    hintKey: "error_no_face_hint",
+  },
+
+  FACE_TOO_SMALL: {
+    icon: "📏",
+    titleKey: "error_too_small",
+    hintKey: "error_too_small_hint",
+  },
+
+  FACE_ROTATED: {
+    icon: "↩️",
+    titleKey: "error_rotated",
+    hintKey: "error_rotated_hint",
+  },
+
+  FACE_TILTED: {
+    icon: "↕️",
+    titleKey: "error_tilted",
+    hintKey: "error_tilted_hint",
+  },
+
+  POOR_ALIGNMENT: {
+    icon: "⚠️",
+    titleKey: "error_alignment",
+    hintKey: "error_alignment_hint",
+  },
+
+  INVALID_IMAGE: {
+    icon: "🖼️",
+    titleKey: "error_invalid_image",
+    hintKey: "error_invalid_image_hint",
+  },
+
+  INTERNAL_ERROR: {
+    icon: "⚙️",
+    titleKey: "error_internal",
+    hintKey: "error_internal_hint",
+  },
 }
 
 export function ErrorBox({error}) {
+    const { t } = useTranslation()
     if (!error) return null
 
     const code = typeof error === "object" ? error.code : "INTERNAL_ERROR"
     const msg = typeof error === "object" ? error.message : error
     const config = ERROR_CONFIG[code] || ERROR_CONFIG.INTERNAL_ERROR
+
+    const title = t(config.titleKey)
+    const hint = t(config.hintKey)
 
     return (
         <div style={{
@@ -56,12 +68,12 @@ export function ErrorBox({error}) {
             </div>
             <p style={{
                 fontSize: 14, fontWeight: 500, color: 'var(--text)', marginBottom: 4}}>
-                {config.title}
+                {title}
             </p>
             <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                {config.hint}
+                {hint}
             </p>
-            {msg && msg !== config.title && (
+            {msg && msg !== title && (
                 <p style={{
                     fontSize: 11, color: 'var(--text-hint)',
                     marginTop: 8, fontFamily: 'monospace'}}>

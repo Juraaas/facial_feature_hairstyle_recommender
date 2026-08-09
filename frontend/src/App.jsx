@@ -116,7 +116,7 @@ function App() {
             >
               {preview
                 ? <img src={preview} alt="uploaded" className="preview-img" />
-                : <p className="dropzone-hint">Drop a photo here or click to upload</p>
+                : <p className="dropzone-hint">{t('dropzone_hint')}</p>
               }
             </div>
             <input id="file-input" type="file" accept="image/jpeg,image/png"
@@ -149,7 +149,7 @@ function App() {
           <>
             <div className="detection-bar">
               <span className="detection-gender">
-                {result.gender === 'Woman' ? '👩' : '👨'} {result.gender} detected
+                {result.gender === 'Woman' ? t('detected_woman'): t('detected_man')}
               </span>
               <div className="confidence-track">
                 <div className="confidence-fill" style={{

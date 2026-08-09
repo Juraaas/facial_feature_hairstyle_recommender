@@ -1,15 +1,10 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 
 const STEPS = [
     {
-        title: "Position your face",
-        items: [
-            { ok: true, text: "Face the camera directly - look straight at the lens"},
-            { ok: true, text: "Keep your head upright and level"},
-            { ok: true, text: "Fill at least half of the frame with your face"},
-            { ok: false, text: "Don't tilt or turn your head to the side"},
-            { ok: false, text: "Don't take the photo from above or below"},
-        ],
+        titleKey: "tutorial_step1_title",
+        itemsKey: "tutorial_step1_items",
         visual: (
             <div style={{ position: "relative", width: 120, height: 120, margin: '0 auto'}}>
                 <div style={{ 
@@ -26,14 +21,8 @@ const STEPS = [
         ),
     },
     {
-        title: "Lighting & background",
-        items: [
-            { ok: true, text: "Use natural light or face a lamp - avoid backlighting"},
-            { ok: true, text: "Plain or neutral background works best"},
-            { ok: true, text: "Make sure your face is evenly lit on both sides"},
-            { ok: false, text: "Avoid strong shadows across your face"},
-            { ok: false, text: "Avoid very dark or very bright environments"},   
-        ],
+        titleKey: "tutorial_step2_title",
+        itemsKey: "tutorial_step2_items",
         visual: (
         <div style={{ width: 120, height: 120, margin: '0 auto', borderRadius: 12,
             background: 'var(--bg)', border: '2px solid var(--accent-mid)',
@@ -42,13 +31,8 @@ const STEPS = [
         ),
     },
     {
-        title: "Hair & accessories",
-        items: [
-            { ok: true, text: "Remove hats, caps, and headbands"},
-            { ok: true, text: "Show your natural hairline clearly"},
-            { ok: true, text: "Remove glasses if possible, or use thin-framed ones"},
-            { ok: false, text: "Don't wear anything that covers your hairline"},   
-        ],
+        titleKey: "tutorial_step3_title",
+        itemsKey: "tutorial_step3_items",
         visual: (
         <div style={{ width: 120, height: 120, margin: '0 auto', borderRadius: 12,
             background: 'var(--bg)', border: '2px solid var(--accent-mid)',
@@ -59,9 +43,11 @@ const STEPS = [
 ]
 
 export function PhotoTutorial({ onDone }) {
+  const { t } = useTranslation()
   const [step, setStep] = useState(0)
   const current = STEPS[step]
   const isLast  = step === STEPS.length - 1
+  const items = t(current.itemsKey, {returnObjects: true})
 
   return (
     <div style={{
@@ -98,7 +84,7 @@ export function PhotoTutorial({ onDone }) {
         color: 'var(--text)', textAlign: 'center',
         marginBottom: 16,
       }}>
-        {current.title}
+        {t(current.titleKey)}
       </h3>
 
       {/* items */}
@@ -136,7 +122,7 @@ export function PhotoTutorial({ onDone }) {
               fontSize: 13, color: 'var(--text-muted)',
             }}
           >
-            Back
+            t('tutorial_back')
           </button>
         )}
         <button
@@ -149,7 +135,9 @@ export function PhotoTutorial({ onDone }) {
             color: '#fff', fontWeight: 500,
           }}
         >
-          {isLast ? "Got it - take my photo" : "Next"}
+          {isLast
+            ? t('tutorial_done')
+            : t('tutorial_next')}
         </button>
       </div>
 
@@ -164,7 +152,7 @@ export function PhotoTutorial({ onDone }) {
           color: 'var(--text-hint)',
         }}
       >
-        Skip tutorial
+        {t('tutorial_skip')}
       </button>
     </div>
   )
