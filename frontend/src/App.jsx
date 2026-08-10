@@ -234,7 +234,8 @@ function App() {
                 </div>
               </div>
             </section>
-
+            console.log('TRAITS:', result.traits)
+            console.log('STYLES:', result.styles)
             <FaceAnalysis analysis={result.analysis} />
             <FaceProportions features={result.features} norms={result.norms} />
             <StylesSection
