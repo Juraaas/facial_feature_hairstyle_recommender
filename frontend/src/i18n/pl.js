@@ -49,6 +49,7 @@ export default {
   hairline_normal: "normalna linia włosów",
 
   section_visualization: "Wizualizacja",
+  load_overlay: "Ładowanie podglądu...",
   section_face_analysis: "Analiza twarzy",
   section_proportions: "Proporcje twarzy",
   section_hairstyles: "Najlepsze fryzury dla ciebie",
@@ -120,4 +121,10 @@ export default {
   label_long_mid: "Długa środkowa część",
   label_short_lower2: "Krótka dolna część",
   label_long_lower2: "Długa dolna część",
+
+  trait_below: "poniżej typowego zakresu",
+  trait_above: "powyżej typowego zakresu",
+  trait_low: "niższa wartość",
+  trait_high: "wyższa wartość",
+  trait_average: "wartość przeciętna",
 }

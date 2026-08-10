@@ -1,4 +1,7 @@
+import { useTranslation } from 'react-i18next'
+
 export function TraitBar({ title, value, minVal, maxVal, avgVal, minLabel, maxLabel }) {
+    const { t } = useTranslation()
     const clamp = (v) => Math.min(100, Math.max(0, (v - minVal) / (maxVal - minVal) * 100))
 
     const pct = clamp(value)
@@ -15,10 +18,10 @@ export function TraitBar({ title, value, minVal, maxVal, avgVal, minLabel, maxLa
     }
 
     const interp = outOfRange
-    ? (outOfRange === 'below' ? `notably ${minLabel.toLowerCase()}` : `notably ${maxLabel.toLowerCase()}`)
-    : pct < 33 ? `tends to ${minLabel.toLowerCase()}`
-    : pct > 67 ? `tends to ${maxLabel.toLowerCase()}`
-    : 'average'
+    ? (outOfRange === 'below' ? t('trait_below') : t('trait_above'))
+    : pct < 33 ? t('trait_low')
+    : pct > 67 ? t('trait_high')
+    : t('trait_average')
 
     return (
     <div style={{ marginBottom: 18 }}>

@@ -48,6 +48,7 @@ export default {
   hairline_normal: "normal hairline",
 
   section_visualization: "Visualization",
+  load_overlay: "Loading overlay...",
   section_face_analysis: "Face analysis",
   section_proportions: "Facial proportions",
   section_hairstyles: "Top hairstyles",
@@ -119,4 +120,10 @@ export default {
   label_long_mid: "Long mid face",
   label_short_lower2: "Short lower",
   label_long_lower2: "Long lower",
+
+  trait_below: "below the typical range",
+  trait_above: "above the typical range",
+  trait_low: "lower value",
+  trait_high: "higher value",
+  trait_average: "average value",
 }

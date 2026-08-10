@@ -219,18 +219,18 @@ function App() {
 
             {/* visualization */}
             <section style={{ marginBottom: 32 }}>
-              <h2 className="section-title">Visualization</h2>
+              <h2 className="section-title">{t('section_visualization')}</h2>
               <div className="vis-grid">
                 <div className="vis-item">
                   <img src={preview} alt="Original" className="vis-img" />
-                  <p className="vis-label">Original</p>
+                  <p className="vis-label">{t('label_original')}</p>
                 </div>
                 <div className="vis-item">
                   {overlayUrl
                     ? <img src={overlayUrl} alt="Landmarks" className="vis-img" />
-                    : <div className="vis-placeholder">Loading overlay...</div>
+                    : <div className="vis-placeholder">{t('load_ovelray')}</div>
                   }
-                  <p className="vis-label">Detected landmarks</p>
+                  <p className="vis-label">{t('label_landmarks')}</p>
                 </div>
               </div>
             </section>

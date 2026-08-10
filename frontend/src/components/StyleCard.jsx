@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { sendVote } from '../api/client'
+import { useTranslation } from 'react-i18next'
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export function StyleCard({style, rank, features, gender, onReplace }) {
+    const { t } = useTranslation()
     const [voted, setVoted] = useState(null)
     const score = Math.max(0, Math.min(100, Math.round(style.score * 100)))
     const isTop = rank === 0
@@ -38,7 +40,7 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
                 position: 'absolute', top: 8, left: 8,
                 background: '#185FA5', color: '#E6F1FB',
                 fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 20
-            }}>Best match</div>
+            }}>{t('best_match')}</div>
             )}
             <div style={{
             position: 'absolute', top: 8, right: 8,
@@ -55,13 +57,13 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
 
             {/* tags */}
             <div style={{ marginBottom: 8 }}>
-            {style.tags?.slice(0, 2).map(t => (
-                <span key={t} style={{
+            {style.tags?.slice(0, 2).map(tag => (
+                <span key={tag} style={{
                 fontSize: 10, padding: '2px 7px', borderRadius: 20,
                 background: 'var(--bg)',
                 color: 'var(--text-muted)',
                 border: '0.5px solid var(--border)', marginRight: 4
-                }}>{t}</span>
+                }}>{tag}</span>
             ))}
             </div>
 
@@ -82,7 +84,7 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
                 <p style={{
                 fontSize: 10, fontWeight: 500, color: 'var(--text-muted)',
                 textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6
-                }}>Why it works for you</p>
+                }}>{t('why_it_works')}</p>
                 {style.contributions.slice(0, 2).map((c, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
                     <span style={{
@@ -136,14 +138,14 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
                 textAlign: 'center', fontSize: 12, color: '#2d8f4e',
                 padding: 6, background: '#f0faf4', borderRadius: 8,
                 border: '0.5px solid #b7dfc7'
-                }}>👍 Thanks for your feedback!</div>
+                }}>{t('vote_up_thanks')}</div>
             )}
             {voted === 'down' && (
                 <div style={{
                 textAlign: 'center', fontSize: 12, color: '#888',
                 padding: 6, background: '#f9f9f9', borderRadius: 8,
                 border: '0.5px solid #ddd'
-                }}>👎 Noted — showing next suggestion</div>
+                }}>{t('vote_down_noted')}</div>
             )}
             {!voted && (
                 <div style={{ display: 'flex', gap: 8 }}>

@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { StyleCard } from "./StyleCard"
+import { useTranslation } from 'react-i18next'
 
 export function StylesSection({ styles, features, gender}) {
+    const { t } = useTranslation()
     const [displayed, setDisplayed] = useState(styles.slice(0, 3))
     const [queue, setQueue] = useState(styles.slice(3))
 
@@ -17,7 +19,7 @@ export function StylesSection({ styles, features, gender}) {
 
     return (
         <section style={{ marginBottom: 32 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 500, marginBottom: 20 }}>Top hairstyles</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 500, marginBottom: 20 }}>{t('section_hairstyles')}</h2>
         <div className="styles-grid">
             {displayed.map((style, i) => (
             <StyleCard

@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { sendFeedback } from '../api/client'
+import { useTranslation } from 'react-i18next'
 
 export function FeedbackSection({ features, qualityScore, topStyles }) {
+    const { t } = useTranslation()
     const [rating, setRating] = useState(null)
     const [comment, setComment] = useState('')
     const [saved, setSaved] = useState(false)
@@ -29,7 +31,7 @@ export function FeedbackSection({ features, qualityScore, topStyles }) {
                     fontSize: 13, color: 'var(--text-muted)',
                     textAlign: 'center'
                 }}>
-                    ✓ Thanks for your feedback!
+                    {t('feedback_saved')}
                 </div>
             </section>
         )
@@ -38,7 +40,7 @@ export function FeedbackSection({ features, qualityScore, topStyles }) {
     return (
         <section style={{ marginBottom: 32 }}>
             <h2 style={{ fontSize: 18, fontWeight: 500, marginBottom: 16, color: 'var(--text)'}}>
-                How accurate were our recommendations?
+                {t('section_feedback')}
             </h2>
 
             {/* stars */}
@@ -64,7 +66,7 @@ export function FeedbackSection({ features, qualityScore, topStyles }) {
             <textarea
                 value={comment}
                 onChange={e => setComment(e.target.value)}
-                placeholder="Any comments? (optional)"
+                placeholder={t('feedback_comment_placeholder')}
                 rows={3}
                 style={{
                     width: '100%', padding: '10px 12px',
@@ -82,7 +84,7 @@ export function FeedbackSection({ features, qualityScore, topStyles }) {
                 className="analyse-btn"
                 style={{ opacity: rating === null ? 0.5 : 1 }}
             >
-                {saving ? 'Submitting...' : 'Submit feedback'}
+                {saving ? t('feedback_submitting') : t('feedback_submit')}
             </button>
         </section>
     )
