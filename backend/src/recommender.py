@@ -412,10 +412,7 @@ def _build_face_analysis(influences, traits, lang="pl"):
 def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
-        return {
-            "pl": _build_face_analysis(influences, traits, lang="pl"),
-            "en": _build_face_analysis(influences, traits, lang="en"),
-        }
+        _build_face_analysis(influences, traits)
 
     trait_summary = _prepare_trait_summary(influences, traits, lang=lang)
     if not trait_summary:
