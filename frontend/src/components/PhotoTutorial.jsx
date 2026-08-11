@@ -122,7 +122,7 @@ export function PhotoTutorial({ onDone }) {
               fontSize: 13, color: 'var(--text-muted)',
             }}
           >
-            t('tutorial_back')
+            {t('tutorial_back')}
           </button>
         )}
         <button
