@@ -368,7 +368,7 @@ def explain_match(user_scores, style, total_score, lang="pl"):
 
     return positive, negative, missing
 
-def _build_face_analysis(influences, traits):
+def _build_face_analysis(influences, traits, lang="pl"):
     explanations = []
     skip_values  = { None, "normal", "balanced", "slight_imbalance"}
     seen_dims = set()
@@ -412,7 +412,10 @@ def _build_face_analysis(influences, traits):
 def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
-        return _build_face_analysis(influences, traits)
+        return {
+            "pl": _build_face_analysis(influences, traits, lang="pl"),
+            "en": _build_face_analysis(influences, traits, lang="en"),
+        }
 
     trait_summary = _prepare_trait_summary(influences, traits, lang=lang)
     if not trait_summary:
@@ -568,40 +571,82 @@ def _prepare_trait_summary(influences, traits, lang="pl"):
 
     return trait_summary
 
+def _build_style_result(style, user_scores, traits, score, lang):
+    positive, negative, missing = explain_match(
+        user_scores,
+        style,
+        score,
+        lang=lang
+    )
+
+    return {
+        "name": style["name"],
+        "score": score,
+        "category": style.get("category", ""),
+        "tags": style.get(f"tags_{lang}", style.get("tags", [])),
+        "description": style.get(
+            f"description_{lang}",
+            style.get("description", "")
+        ),
+        "contributions": positive,
+        "negatives": negative,
+        "missing": missing,
+        "image": style.get("image"),
+    }
+
 def generate_recommendations(user_scores, traits, gender="Man", top_k=3, 
                              hairstyles_path="data/hairstyles.json", lang="pl"):
     styles = load_hairstyles(hairstyles_path)
     influences = compute_traits_influences(traits, gender)
-    results = []
+    results_pl = []
+    results_en = []
 
     for style in styles:
         score = score_hairstyle(user_scores, style, traits)
         positive, negative, missing = explain_match(user_scores, style, score, lang=lang)
 
-        results.append({
-            "name": style["name"],
-            "score": score,
-            "category": style.get("category", ""),
-            "tags": style.get("tags_pl") if lang == "pl" else style.get("tags", []),
-            "contributions": positive,
-            "negatives": negative,
-            "missing": missing,
-            "image": style.get("image", None),
-            "description": (
-                style.get("description_pl")
-                if lang == "pl"
-                else style.get("description", "")
-            ),
-        })
+        results_pl.append(
+            _build_style_result(
+                style,
+                user_scores,
+                traits,
+                score,
+                lang="pl"
+            )
+        )
 
-    results.sort(key=lambda x: x["score"], reverse=True)
+        results_en.append(
+            _build_style_result(
+                style,
+                user_scores,
+                traits,
+                score,
+                lang="en"
+            )
+        )
+
+    results_pl.sort(key=lambda x: x["score"], reverse=True)
+    results_en.sort(key=lambda x: x["score"], reverse=True)
 
     return {
-        "top_styles": results[:top_k],
-        "all_styles": results,
-        "face_analysis": {
-            "pl": _build_face_analysis_llm(influences, traits, gender, lang="pl"),
-            "en": _build_face_analysis_llm(influences, traits, gender, lang="en"),
+        "top_styles": {
+            "pl": results_pl[:top_k],
+            "en": results_en[:top_k],
         },
+
+        "all_styles": {
+            "pl": results_pl,
+            "en": results_en,
+        },
+
+        "face_analysis": {
+            "pl": _build_face_analysis_llm(
+                influences, traits, gender, lang="pl"
+            ),
+            "en": _build_face_analysis_llm(
+                influences, traits, gender, lang="en"
+            ),
+        },
+
         "trait_influences": influences,
     }
