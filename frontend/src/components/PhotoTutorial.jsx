@@ -89,7 +89,7 @@ export function PhotoTutorial({ onDone }) {
 
       {/* items */}
       <div style={{ marginBottom: 24 }}>
-        {current.items.map((item, i) => (
+        {items.map((item, i) => (
           <div key={i} style={{
             display: 'flex', alignItems: 'flex-start', gap: 10,
             marginBottom: 10,
