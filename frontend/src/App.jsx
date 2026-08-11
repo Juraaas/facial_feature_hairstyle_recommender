@@ -20,6 +20,7 @@ function App() {
   )
   const [showTutorial, setShowTutorial] = useState(false)
   const { t, i18n } = useTranslation()
+  const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
 
   useEffect(() => {
     document.body.setAttribute('data-theme', dark ? 'dark' : 'light')
@@ -234,9 +235,7 @@ function App() {
                 </div>
               </div>
             </section>
-            console.log('TRAITS:', result.traits)
-            console.log('STYLES:', result.styles)
-            <FaceAnalysis analysis={result.analysis} />
+            <FaceAnalysis analysis={analysis} />
             <FaceProportions features={result.features} norms={result.norms} />
             <StylesSection
               styles={result.styles}

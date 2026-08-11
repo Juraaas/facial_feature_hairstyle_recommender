@@ -16,6 +16,20 @@ STYLE_DESCRIPTIONS = {
     "curtain_fringe": "curtain fringe",
 }
 
+STYLE_DESCRIPTIONS_PL = {
+    "volume_top": "objętość na górze",
+    "volume_sides": "pełniejsze boki",
+    "short_sides": "krótkie boki",
+    "longer_hair": "dłuższe włosy",
+    "fringe": "grzywka",
+    "clean_lines": "czysty kształt",
+    "soft_texture": "miękka tekstura",
+    "textured_top": "góra z teksturą",
+    "layers": "warstwowe cięcie",
+    "updo": "upięcie",
+    "curtain_fringe": "kurtynowa grzywka",
+}
+
 NEGATIVE_EXPLANATIONS = {
     "fringe": "fringe may not suit your eye proportions or add unwanted weight to the forehead",
     "volume_sides": "side volume may widen your face shape",
@@ -28,6 +42,20 @@ NEGATIVE_EXPLANATIONS = {
     "layers": "heavy layering may not suit your face proportions",
     "updo": "lifted styles may elongate your face further",
     "curtain_fringe": "a centre parting may emphasise close-set eyes",
+}
+
+NEGATIVE_EXPLANATIONS_PL = {
+    "fringe": "grzywka może zasłaniać oczy lub dodawać wagi czołu",
+    "volume_sides": "objętość boków może optycznie poszerzyć twarz",
+    "volume_top": "dodatkowa wysokość może podkreślić długość twarzy",
+    "short_sides": "krótkie boki mogą zwracać uwagę na szeroką szczękę",
+    "clean_lines": "geometryczne cięcia mogą uwydatniać asymetrię",
+    "soft_texture": "miękka tekstura może nie pasować do struktury twarzy",
+    "longer_hair": "długość może dodatkowo wydłużyć twarz",
+    "textured_top": "teksturowana góra może zaburzyć balans przy wyraźnej brodzie",
+    "layers": "warstwy mogą nie pasować do proporcji twarzy",
+    "updo": "upięcie może wydłużyć twarz",
+    "curtain_fringe": "środkowy przedziałek może uwydatnić blisko osadzone oczy",
 }
 
 TRAIT_EXPLANATIONS = {
@@ -76,6 +104,65 @@ TRAIT_EXPLANATIONS = {
     "hairline": {
         "receding": "your hairline shape may work better with styles that avoid heavy forward fringe",
         "uneven": "your hairline shape may benefit from softer texture and less rigid outlines",
+    },
+}
+
+TRAIT_EXPLANATIONS_PL = {
+    "face_length": {
+        "long": "wydłużony kształt twarzy - objętość po bokach i grzywka pomagają zrównoważyć proporcje",
+        "short": "krótszy kształt twarzy - wysokość na górze pomaga optycznie wydłużyć proporcje",
+        "balanced": "długość twarzy jest dobrze zbalansowana",
+    },
+
+    "forehead": {
+        "high": "wysokie czoło - grzywka pomaga optycznie obniżyć linię włosów",
+        "low": "niskie czoło - warto pozostawić czoło bardziej odkryte i unikać ciężkiej grzywki",
+    },
+
+    "jaw": {
+        "wide": "szeroka szczęka - miękkie, warstwowe fryzury pomagają złagodzić jej optyczną szerokość",
+        "narrow": "wąska szczęka - objętość po bokach pomaga poprawić proporcje twarzy",
+    },
+
+    "eyes": {
+        "wide": "szeroko rozstawione oczy - pionowe akcenty i uporządkowane przedziałki dobrze równoważą proporcje",
+        "close": "oczy blisko siebie - objętość po bokach pomaga stworzyć wrażenie większego odstępu",
+    },
+
+    "lips": {
+        "wide": "szersze usta - lekka tekstura na górze pomaga zrównoważyć dolną część twarzy",
+        "narrow": "węższe usta - uporządkowane i strukturalne fryzury dobrze uzupełniają proporcje",
+    },
+
+    "chin": {
+        "prominent": "wyraźny podbródek - tekstura na górze i odpowiednia długość pomagają zrównoważyć profil",
+        "recessed": "cofnięty podbródek - objętość na górze pomaga skierować uwagę wyżej",
+    },
+
+    "symmetry": {
+        "high": "wysoka symetria twarzy - uporządkowane, geometryczne fryzury dobrze współgrają z proporcjami",
+        "low": "zauważalna asymetria - teksturowane fryzury pomagają rozłożyć uwagę i zrównoważyć twarz",
+    },
+
+    "eye_openness": {
+        "narrow": "węższe oczy - warto unikać ciężkiej grzywki, aby nie zasłaniać oczu",
+    },
+
+    "thirds_vertical": {
+        "top_heavy": "górna część twarzy dominuje - grzywka i objętość po bokach pomagają zrównoważyć proporcje",
+        "bottom_heavy": "dolna część twarzy dominuje - wysokość na górze pomaga poprawić balans",
+    },
+
+    "hair_type": {
+        "curly": "naturalne loki dobrze współgrają z fryzurami wykorzystującymi ruch i objętość",
+        "coily": "naturalna struktura dobrze współgra z zaokrąglonym kształtem, kontrolowaną objętością i wyraźną teksturą",
+        "straight": "proste włosy dobrze współgrają z uporządkowanymi i strukturalnymi fryzurami",
+        "wavy": "delikatnie teksturowane fryzury mogą podkreślić naturalny ruch falowanych włosów",
+    },
+
+    "hairline": {
+        "receding": "cofająca się linia włosów - lepiej sprawdzą się fryzury unikające ciężkiej grzywki zaczesanej do przodu",
+        "uneven": "nierówna linia włosów - dobrze zadziała lekka tekstura",
     },
 }
 
@@ -206,7 +293,9 @@ def score_hairstyle(user_scores, style, traits=None):
 
     return final_score
 
-def explain_match(user_scores, style, total_score):  
+def explain_match(user_scores, style, total_score, lang="pl"):
+    descriptions = STYLE_DESCRIPTIONS_PL if lang == "pl" else STYLE_DESCRIPTIONS
+    negatives_map = NEGATIVE_EXPLANATIONS_PL if lang == "pl" else NEGATIVE_EXPLANATIONS
     positive = []
     negative = []
     missing = []
@@ -225,7 +314,7 @@ def explain_match(user_scores, style, total_score):
             positive.append({
                 "feature": key,
                 "raw": contribution,
-                "desc": STYLE_DESCRIPTIONS.get(key,key),
+                "desc": descriptions.get(key,key),
             })
             pos_total += contribution
         
@@ -233,18 +322,34 @@ def explain_match(user_scores, style, total_score):
             negative.append({
                 "feature": key,
                 "raw": contribution,
-                "desc": STYLE_DESCRIPTIONS.get(key, key),
-                "reason": NEGATIVE_EXPLANATIONS.get(key, "may not suit your face profile"),
+                "desc": descriptions.get(key, key),
+                "reason": negatives_map.get(
+                    key, 
+                    "może nie pasować do profilu Twojej twarzy" if lang == "pl"
+                    else "may not suit your face profile"
+            ),
             })
             neg_total += abs(contribution)
         
         if key in MISSING_SENSITIVE_FEATURES and user_value >= 3 and style_value < 0.2:
             missing_strength = user_value * (1 - style_value)
+            feature_desc = descriptions.get(key, key)
+            if lang == "pl":
+                reason = (
+                    f"ten styl nie oferuje cechy „{feature_desc}”, "
+                    f"którą Twoja analiza wyraźnie sugeruje"
+                )
+            else:
+                reason = (
+                    f"this style lacks {feature_desc}, "
+                    f"which your analysis strongly favours"
+                )
+
             missing.append({
                 "feature": key,
                 "raw": missing_strength,
-                "desc": STYLE_DESCRIPTIONS.get(key, key),
-                "reason": f"this style lacks {STYLE_DESCRIPTIONS.get(key, key)}, which your analysis strongly favours",
+                "desc": feature_desc,
+                "reason": reason,
             })
             missing_total += missing_strength
 
@@ -309,15 +414,94 @@ def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
     if not api_key:
         return _build_face_analysis(influences, traits)
 
-    trait_summary = _prepare_trait_summary(influences, traits)
+    trait_summary = _prepare_trait_summary(influences, traits, lang=lang)
     if not trait_summary:
-        return ["Your facial proportions are well balanced — most styles will suit you."]
+        if lang == "pl":
+            return [
+                "Proporcje Twojej twarzy są dobrze zbalansowane.",
+                "Większość fryzur powinna dobrze współgrać z Twoimi proporcjami."
+            ]
+        else:
+            return [
+                "Your facial proportions are well balanced.",
+                "Most hairstyles should work well with your proportions."
+            ]
 
-    lang_instruction = (
-        "Respond in Polish. Use 'Twoja' and 'Ci' forms."
-        if lang == "pl"
-        else "Respond in English."
-    )
+    if lang == "pl":
+        system_instruction = """
+Jesteś profesjonalnym stylistą fryzur.
+
+Tworzysz krótkie podsumowanie analizy twarzy dla klienta.
+
+Pisz NATURALNYM, POPRAWNYM JĘZYKIEM POLSKIM.
+Zwracaj się bezpośrednio do klienta:
+"Twoja twarz", "Twoja szczęka", "dla Ciebie", "u Ciebie".
+
+Nie używaj form:
+"jego", "jej", "ich", "klient", "osoba".
+
+Bardzo ważne:
+- korzystaj WYŁĄCZNIE z informacji przekazanych w analizie,
+- nie wymyślaj nowych cech,
+- nie dodawaj diagnoz ani niepotwierdzonych obserwacji,
+- nie tłumacz technicznych wartości,
+- nie powtarzaj mechanicznie danych wejściowych,
+- połącz informacje w naturalny opis,
+- skup się na tym, jakie kierunki fryzur są korzystne i dlaczego,
+- używaj prostego, naturalnego polskiego,
+- każde zdanie powinno być krótkie.
+
+Zwróć dokładnie 3 zdania.
+Każde zdanie może mieć maksymalnie 20 słów.
+
+Zwróć WYŁĄCZNIE poprawny JSON:
+["zdanie 1", "zdanie 2", "zdanie 3"]
+"""
+
+        user_instruction = f"""
+Analiza cech klienta:
+
+{chr(10).join(trait_summary)}
+
+Na podstawie powyższych informacji napisz krótkie podsumowanie.
+"""
+
+    else:
+        system_instruction = """
+You are a professional hairstylist.
+
+Write a short facial-analysis summary directly to the client.
+
+Use natural, professional English.
+Always address the client directly:
+"your face", "your jawline", "for you".
+
+Do not use:
+"his", "her", "their", "the client", "the person".
+
+Important:
+- use ONLY the information provided,
+- do not invent characteristics,
+- do not add unsupported observations,
+- do not mention technical measurements,
+- combine the provided facts into natural sentences,
+- focus on which hairstyle directions suit the client and why,
+- keep every sentence concise.
+
+Return exactly 3 sentences.
+Each sentence must contain at most 20 words.
+
+Return ONLY valid JSON:
+["sentence 1", "sentence 2", "sentence 3"]
+"""
+
+        user_instruction = f"""
+Client's facial analysis:
+
+{chr(10).join(trait_summary)}
+
+Write a concise summary based only on these findings.
+"""
 
     try:
         client = Groq(api_key=api_key)
@@ -326,20 +510,15 @@ def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
             messages = [
                 {
                     "role": "system",
-                    "content": f"You are a professional hairstylist speaking directly to a client. {lang_instruction} Always use 'your' and 'you' — never 'his', 'her', 'their' or third person. Return only valid JSON arrays of strings, no markdown."
+                    "content": system_instruction,
                 },
                 {
                     "role": "user",
-                    "content": f"""You are analysing the facial features of a {gender.lower()} client sitting in front of you.
-Their facial traits:
-{chr(10).join(trait_summary)}
-
-Write 3 short sentences (max 15 words each) speaking directly to them — use 'your face', 'your jawline', 'for you' etc. Explain what hairstyle directions suit them best and why. Be warm and professional.
-Return ONLY a JSON array: ["sentence1", "sentence2", "sentence3"]"""
+                    "content": user_instruction,
                 }
             ],
-            max_tokens = 200,
-            temperature = 0.7,
+            max_tokens = 250,
+            temperature = 0.4,
         )
         import json
         text = response.choices[0].message.content.strip()
@@ -350,10 +529,12 @@ Return ONLY a JSON array: ["sentence1", "sentence2", "sentence3"]"""
     except Exception as e:
         print(f"LLM error: {e}")
 
-    return _build_face_analysis(influences, traits)
+    return _build_face_analysis(influences, traits, lang=lang)
 
-def _prepare_trait_summary(influences, traits):
+def _prepare_trait_summary(influences, traits, lang="pl"):
     skip_values   = {None, "normal", "balanced", "slight_imbalance"}
+    explanations = (TRAIT_EXPLANATIONS_PL if lang == "pl" else TRAIT_EXPLANATIONS)
+    style_descriptions = (STYLE_DESCRIPTIONS_PL if lang == "pl" else STYLE_DESCRIPTIONS)
     trait_summary = []
     priority_order = ["hairline", "hair_type"] + [
         k for k in influences.keys()
@@ -368,18 +549,22 @@ def _prepare_trait_summary(influences, traits):
         if value in skip_values:
             continue
 
-        delta = info["delta"]
-        top_dims = sorted(delta.items(),
-                          key=lambda x: abs(x[1]), reverse=True)[:2]
+        trait_explanation = explanations.get(key, {}).get(value)
+        if trait_explanation:
+            trait_summary.append(f"- {trait_explanation}")
+        else:
+            trait_summary.append(f"- {key}: {value}")
+
+        delta = info.get("delta", {})
+        top_dims = sorted(delta.items(), key=lambda x: abs(x[1]), reverse=True)[:2]
         hints = []
         for dim, change in top_dims:
-            desc = STYLE_DESCRIPTIONS.get(dim, dim)
-            hints.append(f"favours {desc}" if change > 0 else f"works against {desc}")
-
-        trait_summary.append(
-            f"- {key}: {value}"
-            + (f" ({', '.join(hints)})" if hints else "")
-        )
+            desc = style_descriptions.get(dim, dim)
+            if lang == "pl":
+                hint = (f"preferuje {desc}" if change > 0 else f"działa przeciwko {desc}")
+            else:
+                hint = (f"favours {desc}" if change > 0 else f"works against {desc}")
+            trait_summary.append(f" → {hint}")
 
     return trait_summary
 
@@ -391,18 +576,22 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
 
     for style in styles:
         score = score_hairstyle(user_scores, style, traits)
-        positive, negative, missing = explain_match(user_scores, style, score)
+        positive, negative, missing = explain_match(user_scores, style, score, lang=lang)
 
         results.append({
             "name": style["name"],
             "score": score,
             "category": style.get("category", ""),
-            "tags": style.get("tags", []),
+            "tags": style.get("tags_pl") if lang == "pl" else style.get("tags", []),
             "contributions": positive,
             "negatives": negative,
             "missing": missing,
             "image": style.get("image", None),
-            "description": style.get("description", ""),
+            "description": (
+                style.get("description_pl")
+                if lang == "pl"
+                else style.get("description", "")
+            ),
         })
 
     results.sort(key=lambda x: x["score"], reverse=True)
@@ -410,6 +599,9 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
     return {
         "top_styles": results[:top_k],
         "all_styles": results,
-        "face_analysis": _build_face_analysis_llm(influences, traits, gender, lang=lang),
+        "face_analysis": {
+            "pl": _build_face_analysis_llm(influences, traits, gender, lang="pl"),
+            "en": _build_face_analysis_llm(influences, traits, gender, lang="en"),
+        },
         "trait_influences": influences,
     }
