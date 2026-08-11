@@ -21,6 +21,7 @@ function App() {
   const [showTutorial, setShowTutorial] = useState(false)
   const { t, i18n } = useTranslation()
   const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
+  const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
 
   useEffect(() => {
     document.body.setAttribute('data-theme', dark ? 'dark' : 'light')
@@ -238,14 +239,14 @@ function App() {
             <FaceAnalysis analysis={analysis} />
             <FaceProportions features={result.features} norms={result.norms} />
             <StylesSection
-              styles={result.styles}
+              styles={styles}
               features={result.features}
               gender={result.gender}
             />
             <FeedbackSection
               features={result.features}
               qualityScore={result.quality.score}
-              topStyles={result.styles.slice(0, 3)}
+              topStyles={styles.slice(0, 3)}
             />
           </>
         )}
