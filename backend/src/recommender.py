@@ -533,8 +533,6 @@ Write a concise summary based only on these findings.
 
 def _prepare_trait_summary(influences, traits, lang="pl"):
     skip_values   = {None, "normal", "balanced", "slight_imbalance"}
-    explanations = (TRAIT_EXPLANATIONS_PL if lang == "pl" else TRAIT_EXPLANATIONS)
-    style_descriptions = (STYLE_DESCRIPTIONS_PL if lang == "pl" else STYLE_DESCRIPTIONS)
     trait_summary = []
     priority_order = ["hairline", "hair_type"] + [
         k for k in influences.keys()
@@ -549,24 +547,18 @@ def _prepare_trait_summary(influences, traits, lang="pl"):
         if value in skip_values:
             continue
 
-        trait_explanation = explanations.get(key, {}).get(value)
-        if not trait_explanation:
-            trait_summary.append(f"- {key}: {value}")
-
-        delta = info.get("delta", {})
-        top_dims = sorted(delta.items(), key=lambda x: abs(x[1]), reverse=True)[:2]
+        delta = info["delta"]
+        top_dims = sorted(delta.items(),
+                          key=lambda x: abs(x[1]), reverse=True)[:2]
         hints = []
         for dim, change in top_dims:
-            desc = style_descriptions.get(dim, dim)
-            if lang == "pl":
-                hint = (f"preferuje {desc}" if change > 0 else f"działa przeciwko {desc}")
-            else:
-                hint = (f"favours {desc}" if change > 0 else f"works against {desc}")
-            hints.append(hint)
-        if hints:
-            trait_summary.append(f"- {trait_explanation} ({', '.join(hints)})")
-        else:
-            trait_summary.append(f"- {trait_explanation}")
+            desc = STYLE_DESCRIPTIONS.get(dim, dim)
+            hints.append(f"favours {desc}" if change > 0 else f"works against {desc}")
+
+        trait_summary.append(
+            f"- {key}: {value}"
+            + (f" ({', '.join(hints)})" if hints else "")
+        )
 
     return trait_summary
 
