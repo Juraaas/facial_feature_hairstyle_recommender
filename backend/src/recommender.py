@@ -412,7 +412,7 @@ def _build_face_analysis(influences, traits, lang="pl"):
 def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
-        _build_face_analysis(influences, traits)
+        return _build_face_analysis(influences, traits)
 
     trait_summary = _prepare_trait_summary(influences, traits, lang=lang)
     if not trait_summary:
@@ -550,9 +550,7 @@ def _prepare_trait_summary(influences, traits, lang="pl"):
             continue
 
         trait_explanation = explanations.get(key, {}).get(value)
-        if trait_explanation:
-            trait_summary.append(f"- {trait_explanation}")
-        else:
+        if not trait_explanation:
             trait_summary.append(f"- {key}: {value}")
 
         delta = info.get("delta", {})
@@ -564,7 +562,11 @@ def _prepare_trait_summary(influences, traits, lang="pl"):
                 hint = (f"preferuje {desc}" if change > 0 else f"działa przeciwko {desc}")
             else:
                 hint = (f"favours {desc}" if change > 0 else f"works against {desc}")
-            trait_summary.append(f" → {hint}")
+            hints.append(hint)
+        if hints:
+            trait_summary.append(f"- {trait_explanation} ({', '.join(hints)})")
+        else:
+            trait_summary.append(f"- {trait_explanation}")
 
     return trait_summary
 
@@ -600,7 +602,6 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
 
     for style in styles:
         score = score_hairstyle(user_scores, style, traits)
-        positive, negative, missing = explain_match(user_scores, style, score, lang=lang)
 
         results_pl.append(
             _build_style_result(
