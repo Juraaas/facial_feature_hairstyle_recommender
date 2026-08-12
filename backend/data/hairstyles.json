@@ -182,7 +182,7 @@
       "tags": ["textured", "casual"],
       "tags_pl": ["tekstura", "swobodna"],
       "description": "Short crop with textured movement and a soft forward fringe. Adds casual shape while helping soften the forehead area. Low styling effort.",
-      "description_pl": "Krótka fryzura z teksturowaną górą i swobodnym kształtem. Nadaje włosom naturalny ruch i niewymuszony wygląd przy stosunkowo niewielkim wysiłku.",
+      "description_pl": "Krótka fryzura z teksturowaną górą i swobodnym kształtem. Nadaje włosom naturalny ruch i niewymuszony wygląd.",
       "attributes": {
         "volume_top": 0.3,
         "volume_sides": 0.5,

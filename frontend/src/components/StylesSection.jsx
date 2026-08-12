@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { StyleCard } from "./StyleCard"
 import { useTranslation } from 'react-i18next'
 
@@ -6,6 +6,11 @@ export function StylesSection({ styles, features, gender}) {
     const { t } = useTranslation()
     const [displayed, setDisplayed] = useState(styles.slice(0, 3))
     const [queue, setQueue] = useState(styles.slice(3))
+
+    useEffect(() => {
+        setDisplayed(styles.slice(0, 3))
+        setQueue(styles.slice(3))
+    }, [styles, t])
 
     function handleReplace(idx) {
         if (!queue.length) return
