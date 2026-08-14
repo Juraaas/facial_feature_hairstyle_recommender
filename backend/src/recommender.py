@@ -27,7 +27,7 @@ STYLE_DESCRIPTIONS_PL = {
     "textured_top": "góra z teksturą",
     "layers": "warstwowe cięcie",
     "updo": "upięcie",
-    "curtain_fringe": "kurtynowa grzywka",
+    "curtain_fringe": "grzywka zasłonowa",
 }
 
 NEGATIVE_EXPLANATIONS = {
@@ -415,6 +415,7 @@ def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
         return _build_face_analysis(influences, traits)
 
     trait_summary = _prepare_trait_summary(influences, traits, lang=lang)
+    print(f"DEBUG LLM: trait_summary={trait_summary}")
     if not trait_summary:
         if lang == "pl":
             return [
@@ -452,7 +453,12 @@ Bardzo ważne:
 - każde zdanie powinno być krótkie.
 
 Zwróć dokładnie 3 zdania.
-Każde zdanie może mieć maksymalnie 20 słów.
+Każde zdanie może mieć maksymalnie 20 słów. Odpowiedź musi zaczynać się od znaku [ i kończyć znakiem ].
+Nie dodawaj żadnego znaku przed [ ani po ].
+Nie dodawaj kropki po zamykającym ].
+Nie używaj bloków Markdown ani ```json. Nie wymyślaj żadnych cech fizycznych, które nie zostały wyraźnie wymienione
+w dostarczonej analizie. Na przykład, jeśli w analizie jest mowa o „dużych oczach”, nie należy opisywać ich koloru,
+kształtu, jasności, wielkości ani innych właściwości, chyba że zostały one wyraźnie podane.
 
 Zwróć WYŁĄCZNIE poprawny JSON:
 ["zdanie 1", "zdanie 2", "zdanie 3"]
@@ -468,16 +474,11 @@ Na podstawie powyższych informacji napisz krótkie podsumowanie.
 
     else:
         system_instruction = """
-You are a professional hairstylist.
+You are a professional hairstylist. Write a short facial-analysis summary directly to the client.
 
-Write a short facial-analysis summary directly to the client.
+Use natural, professional English. Always address the client directly: "your face", "your jawline", "for you".
 
-Use natural, professional English.
-Always address the client directly:
-"your face", "your jawline", "for you".
-
-Do not use:
-"his", "her", "their", "the client", "the person".
+Do not use: "his", "her", "their", "the client", "the person".
 
 Important:
 - use ONLY the information provided,
@@ -489,7 +490,13 @@ Important:
 - keep every sentence concise.
 
 Return exactly 3 sentences.
-Each sentence must contain at most 20 words.
+Each sentence must contain at most 20 words. Your entire response must start with [ and end with ].
+Do not put any character before or after the JSON array.
+Do not add a period after the closing ].
+Do not use Markdown code fences. 
+Do not infer or invent any physical characteristic that is not explicitly present
+in the provided analysis. For example, if the analysis says "wide eyes", do not describe their color,
+shape, brightness, size, or other properties unless explicitly provided.
 
 Return ONLY valid JSON:
 ["sentence 1", "sentence 2", "sentence 3"]
@@ -522,12 +529,20 @@ Write a concise summary based only on these findings.
         )
         import json
         text = response.choices[0].message.content.strip()
+        print("DEBUG LLM RAW RESPONSE:")
+        print(repr(text))
         text = text.replace("```json", "").replace("```", "").strip()
+        print("DEBUG LLM CLEAN RESPONSE:")
+        print(repr(text))
         result = json.loads(text)
+        print("DEBUG LLM PARSED RESULT:")
+        print(repr(result))
         if isinstance(result, list):
             return result[:4]
     except Exception as e:
-        print(f"LLM error: {e}")
+        print(f"LLM error: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
 
     return _build_face_analysis(influences, traits, lang=lang)
 
@@ -548,11 +563,19 @@ def _prepare_trait_summary(influences, traits, lang="pl"):
             continue
 
         delta = info["delta"]
+        print("DEBUG delta:", delta)
         top_dims = sorted(delta.items(),
                           key=lambda x: abs(x[1]), reverse=True)[:2]
         hints = []
         for dim, change in top_dims:
-            desc = STYLE_DESCRIPTIONS.get(dim, dim)
+            print("DEBUG dim =", repr(dim))
+            print("DEBUG dim type =", type(dim))
+            print("DEBUG change =", repr(change))
+            desc = (
+                STYLE_DESCRIPTIONS_PL
+                if lang == "pl"
+                else STYLE_DESCRIPTIONS
+            )
             hints.append(f"favours {desc}" if change > 0 else f"works against {desc}")
 
         trait_summary.append(
@@ -589,6 +612,7 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
                              hairstyles_path="data/hairstyles.json", lang="pl"):
     styles = load_hairstyles(hairstyles_path)
     influences = compute_traits_influences(traits, gender)
+    print(f"DEBUG influences: {list(influences.keys())}")
     results_pl = []
     results_en = []
 

@@ -23,6 +23,15 @@ function App() {
   const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
 
+  console.log("=== FRONTEND ANALYSIS DEBUG ===")
+  console.log("i18n.language:", i18n.language)
+  console.log("result.face_analysis:", result?.face_analysis)
+  console.log("result.face_analysis.pl:", result?.face_analysis?.pl)
+  console.log("result.face_analysis.en:", result?.face_analysis?.en)
+  console.log("selected analysis:", analysis)
+  console.log("result.styles:", result?.styles)
+  console.log("selected styles:", styles)
+
   useEffect(() => {
     document.body.setAttribute('data-theme', dark ? 'dark' : 'light')
   }, [dark])
