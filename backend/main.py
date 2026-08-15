@@ -163,7 +163,7 @@ def analyse(file: UploadFile = File(...),
                 "score": quality.score,
                 "warnings": quality.warnings,
             },
-            "analysis": recs["face_analysis"],
+            "face_analysis": recs["face_analysis"],
             "styles": recs["all_styles"],
             "norms": {
                 feat: {
