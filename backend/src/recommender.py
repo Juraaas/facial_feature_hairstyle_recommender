@@ -27,7 +27,7 @@ STYLE_DESCRIPTIONS_PL = {
     "textured_top": "góra z teksturą",
     "layers": "warstwowe cięcie",
     "updo": "upięcie",
-    "curtain_fringe": "grzywka zasłonowa",
+    "curtain_fringe": "kurtynowa grzywka",
 }
 
 NEGATIVE_EXPLANATIONS = {
@@ -415,139 +415,120 @@ def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
         return _build_face_analysis(influences, traits)
 
     trait_summary = _prepare_trait_summary(influences, traits, lang=lang)
-    print(f"DEBUG LLM: trait_summary={trait_summary}")
+
     if not trait_summary:
         if lang == "pl":
             return [
                 "Proporcje Twojej twarzy są dobrze zbalansowane.",
                 "Większość fryzur powinna dobrze współgrać z Twoimi proporcjami."
             ]
-        else:
-            return [
-                "Your facial proportions are well balanced.",
-                "Most hairstyles should work well with your proportions."
-            ]
+        return [
+            "Your facial proportions are well balanced.",
+            "Most hairstyles should work well with your proportions."
+        ]
+
+    gender_pl = "klientki" if gender == "Woman" else "klienta"
+    gender_en = "female client" if gender == "Woman" else "male client"
 
     if lang == "pl":
-        system_instruction = """
-Jesteś profesjonalnym stylistą fryzur.
-
-Tworzysz krótkie podsumowanie analizy twarzy dla klienta.
-
-Pisz NATURALNYM, POPRAWNYM JĘZYKIEM POLSKIM.
-Zwracaj się bezpośrednio do klienta:
-"Twoja twarz", "Twoja szczęka", "dla Ciebie", "u Ciebie".
-
-Nie używaj form:
-"jego", "jej", "ich", "klient", "osoba".
-
-Bardzo ważne:
-- korzystaj WYŁĄCZNIE z informacji przekazanych w analizie,
-- nie wymyślaj nowych cech,
-- nie dodawaj diagnoz ani niepotwierdzonych obserwacji,
-- nie tłumacz technicznych wartości,
-- nie powtarzaj mechanicznie danych wejściowych,
-- połącz informacje w naturalny opis,
-- skup się na tym, jakie kierunki fryzur są korzystne i dlaczego,
-- używaj prostego, naturalnego polskiego,
-- każde zdanie powinno być krótkie.
-
-Zwróć dokładnie 3 zdania.
-Każde zdanie może mieć maksymalnie 20 słów. Odpowiedź musi zaczynać się od znaku [ i kończyć znakiem ].
-Nie dodawaj żadnego znaku przed [ ani po ].
-Nie dodawaj kropki po zamykającym ].
-Nie używaj bloków Markdown ani ```json. Nie wymyślaj żadnych cech fizycznych, które nie zostały wyraźnie wymienione
-w dostarczonej analizie. Na przykład, jeśli w analizie jest mowa o „dużych oczach”, nie należy opisywać ich koloru,
-kształtu, jasności, wielkości ani innych właściwości, chyba że zostały one wyraźnie podane.
-
-Zwróć WYŁĄCZNIE poprawny JSON:
-["zdanie 1", "zdanie 2", "zdanie 3"]
-"""
-
-        user_instruction = f"""
-Analiza cech klienta:
-
-{chr(10).join(trait_summary)}
-
-Na podstawie powyższych informacji napisz krótkie podsumowanie.
-"""
-
+        system_msg = (
+            f"Jesteś doświadczonym fryzjerem. Piszesz personalizowaną analizę twarzy {gender_pl}.\n"
+            "Zwracasz się bezpośrednio do klienta używając form: \"Twoja twarz\", \"dla Ciebie\", \"u Ciebie\".\n"
+            "Nigdy nie używaj: \"jego\", \"jej\", \"klient\", \"osoba\".\n"
+            "Piszesz naturalnie i ciepło — jak do kogoś kto siedzi przed Tobą w fotelu.\n"
+            "Odpowiadasz WYŁĄCZNIE w formacie JSON: {\"sentences\": [\"...\", \"...\", \"...\"]}"
+        )
+        user_msg = (
+            "Oto wykryte cechy twarzy wraz z ich wpływem na dobór fryzury:\n\n"
+            + "\n".join(trait_summary)
+            + "\n\n"
+            "Na podstawie tych cech napisz 3 zdania które:\n"
+            "1. opisują najważniejsze cechy twarzy klienta i co z nich wynika\n"
+            "2. wyjaśniają dlaczego konkretne kierunki fryzur będą korzystne\n"
+            "3. brzmią naturalnie i dają klientowi realną wartość\n\n"
+            "Każde zdanie maksymalnie 20 słów. Nie wymyślaj cech których nie ma w analizie.\n\n"
+            "Odpowiedź: {\"sentences\": [\"pierwsze zdanie.\", \"drugie zdanie.\", \"trzecie zdanie.\"]}"
+        )
     else:
-        system_instruction = """
-You are a professional hairstylist. Write a short facial-analysis summary directly to the client.
-
-Use natural, professional English. Always address the client directly: "your face", "your jawline", "for you".
-
-Do not use: "his", "her", "their", "the client", "the person".
-
-Important:
-- use ONLY the information provided,
-- do not invent characteristics,
-- do not add unsupported observations,
-- do not mention technical measurements,
-- combine the provided facts into natural sentences,
-- focus on which hairstyle directions suit the client and why,
-- keep every sentence concise.
-
-Return exactly 3 sentences.
-Each sentence must contain at most 20 words. Your entire response must start with [ and end with ].
-Do not put any character before or after the JSON array.
-Do not add a period after the closing ].
-Do not use Markdown code fences. 
-Do not infer or invent any physical characteristic that is not explicitly present
-in the provided analysis. For example, if the analysis says "wide eyes", do not describe their color,
-shape, brightness, size, or other properties unless explicitly provided.
-
-Return ONLY valid JSON:
-["sentence 1", "sentence 2", "sentence 3"]
-"""
-
-        user_instruction = f"""
-Client's facial analysis:
-
-{chr(10).join(trait_summary)}
-
-Write a concise summary based only on these findings.
-"""
+        system_msg = (
+            f"You are an experienced hairstylist writing a personalised facial analysis for a {gender_en}.\n"
+            "Address the client directly using: \"your face\", \"for you\", \"your jawline\".\n"
+            "Never use: \"his\", \"her\", \"the client\", \"this person\".\n"
+            "Write warmly and naturally — as if the client is sitting in front of you.\n"
+            "Reply ONLY in JSON format: {\"sentences\": [\"...\", \"...\", \"...\"]}"
+        )
+        user_msg = (
+            "Detected facial features and their influence on hairstyle choice:\n\n"
+            + "\n".join(trait_summary)
+            + "\n\n"
+            "Based on these features, write 3 sentences that:\n"
+            "1. describe the most important facial characteristics and what they mean\n"
+            "2. explain why specific hairstyle directions will be beneficial\n"
+            "3. sound natural and give the client real, actionable insight\n\n"
+            "Max 20 words per sentence. Do not invent features not present in the analysis.\n\n"
+            "Response: {\"sentences\": [\"first sentence.\", \"second sentence.\", \"third sentence.\"]}"
+        )
 
     try:
         client = Groq(api_key=api_key)
         response = client.chat.completions.create(
-            model = "llama-3.1-8b-instant",
+            model = "qwen/qwen3.6-27b",
+            max_tokens = 400,
+            temperature = 0.7,
+            top_p = 0.80,
+            reasoning_effort="none",
             messages = [
-                {
-                    "role": "system",
-                    "content": system_instruction,
-                },
-                {
-                    "role": "user",
-                    "content": user_instruction,
-                }
+                {"role": "system", "content": system_msg},
+                {"role": "user", "content": user_msg},
             ],
-            max_tokens = 250,
-            temperature = 0.4,
         )
-        import json
-        text = response.choices[0].message.content.strip()
-        print("DEBUG LLM RAW RESPONSE:")
-        print(repr(text))
-        text = text.replace("```json", "").replace("```", "").strip()
-        print("DEBUG LLM CLEAN RESPONSE:")
-        print(repr(text))
-        result = json.loads(text)
-        print("DEBUG LLM PARSED RESULT:")
-        print(repr(result))
-        if isinstance(result, list):
-            return result[:4]
-    except Exception as e:
-        print(f"LLM error: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
 
-    return _build_face_analysis(influences, traits, lang=lang)
+        import json
+        import re
+        text = response.choices[0].message.content.strip()
+        print(f"DEBUG LLM response: {text!r}")
+        if not text.endswith('}'):
+            matches = re.findall(r'"([^"]*)"', text)
+            if matches:
+                sentences = [m for m in matches if len(m) > 10]
+                if sentences:
+                    return sentences[:4]
+        try:
+            parsed = json.loads(text)
+        except json.JSONDecodeError:
+            for suffix in [']}', '}', ']']:
+                try:
+                    parsed = json.loads(text + suffix)
+                    break
+                except json.JSONDecodeError:
+                    continue
+            else:
+                print(f"LLM JSON parse failed: {text!r}")
+                return _build_face_analysis(influences, traits)
+
+        if isinstance(parsed, dict) and "sentences" in parsed:
+            sentences = parsed["sentences"]
+        elif isinstance(parsed, list):
+            sentences = parsed
+        else:
+            print(f"DEBUG unexpected structure: {parsed}")
+            return _build_face_analysis(influences, traits)
+
+        if isinstance(sentences, list) and all(isinstance(s, str) for s in sentences):
+            return sentences[:4]
+
+    except Exception as e:
+        print(f"LLM error: {e}")
+
+    return _build_face_analysis(influences, traits)
 
 def _prepare_trait_summary(influences, traits, lang="pl"):
-    skip_values   = {None, "normal", "balanced", "slight_imbalance"}
+    skip_values = {None, "normal", "balanced", "slight_imbalance"}
+    descriptions = STYLE_DESCRIPTIONS_PL if lang == "pl" else STYLE_DESCRIPTIONS
+    explanations = TRAIT_EXPLANATIONS_PL  if lang == "pl" else TRAIT_EXPLANATIONS
+    favours_word = "sprzyja" if lang == "pl" else "favours"
+    against_word = "utrudnia" if lang == "pl" else "works against"
+
     trait_summary = []
     priority_order = ["hairline", "hair_type"] + [
         k for k in influences.keys()
@@ -563,23 +544,20 @@ def _prepare_trait_summary(influences, traits, lang="pl"):
             continue
 
         delta = info["delta"]
-        print("DEBUG delta:", delta)
         top_dims = sorted(delta.items(),
                           key=lambda x: abs(x[1]), reverse=True)[:2]
         hints = []
         for dim, change in top_dims:
-            print("DEBUG dim =", repr(dim))
-            print("DEBUG dim type =", type(dim))
-            print("DEBUG change =", repr(change))
-            desc = (
-                STYLE_DESCRIPTIONS_PL
-                if lang == "pl"
-                else STYLE_DESCRIPTIONS
+            desc = descriptions.get(dim, dim)
+            hints.append(
+                f"{favours_word} {desc}" if change > 0
+                else f"{against_word} {desc}"
             )
-            hints.append(f"favours {desc}" if change > 0 else f"works against {desc}")
+
+        trait_label = explanations.get(key, {}).get(value) or f"{key}: {value}"
 
         trait_summary.append(
-            f"- {key}: {value}"
+            f"- {trait_label}"
             + (f" ({', '.join(hints)})" if hints else "")
         )
 
@@ -607,6 +585,19 @@ def _build_style_result(style, user_scores, traits, score, lang):
         "missing": missing,
         "image": style.get("image"),
     }
+
+def normalize_scores_for_display(results):
+    if not results:
+        return results
+    raw = [r["score"] for r in results]
+    max_s = max(raw)
+    min_s = min(raw)
+    rng = max_s - min_s if max_s != min_s else 1.0
+
+    for r in results:
+        normalized = 50 + ((r["score"] - min_s) / rng) * 49
+        r["display_score"] = round(normalized)
+    return results
 
 def generate_recommendations(user_scores, traits, gender="Man", top_k=3, 
                              hairstyles_path="data/hairstyles.json", lang="pl"):
@@ -641,6 +632,9 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
 
     results_pl.sort(key=lambda x: x["score"], reverse=True)
     results_en.sort(key=lambda x: x["score"], reverse=True)
+
+    results_pl = normalize_scores_for_display(results_pl)
+    results_en = normalize_scores_for_display(results_en)
 
     return {
         "top_styles": {
