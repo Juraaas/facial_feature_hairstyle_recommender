@@ -214,21 +214,21 @@ def apply_rules(traits, gender="Man"):
             scores["layers"] += MEDIUM
 
     if traits.get("hair_type") == "curly":
-        scores["soft_texture"] += MEDIUM #* HAIR_TYPE_WEIGHT
-        scores["textured_top"] += MEDIUM #* HAIR_TYPE_WEIGHT
-        scores["clean_lines"] -= WEAK #* HAIR_TYPE_WEIGHT
-        scores["longer_hair"] -= WEAK #* HAIR_TYPE_WEIGHT
+        scores["soft_texture"] += MEDIUM * HAIR_TYPE_WEIGHT
+        scores["textured_top"] += MEDIUM * HAIR_TYPE_WEIGHT
+        scores["clean_lines"] -= WEAK * HAIR_TYPE_WEIGHT
+        scores["longer_hair"] -= WEAK * HAIR_TYPE_WEIGHT
 
     elif traits.get("hair_type") in ("straight", "wavy"):
-        scores["clean_lines"] += WEAK #* HAIR_TYPE_WEIGHT
-        scores["longer_hair"] += WEAK #* HAIR_TYPE_WEIGHT
+        scores["clean_lines"] += WEAK * HAIR_TYPE_WEIGHT
+        scores["longer_hair"] += WEAK * HAIR_TYPE_WEIGHT
 
     elif traits.get("hair_type") == "coily":
-        scores["soft_texture"] += STRONG #* HAIR_TYPE_WEIGHT
-        scores["textured_top"] += STRONG #* HAIR_TYPE_WEIGHT
-        scores["volume_top"] += MEDIUM #* HAIR_TYPE_WEIGHT
-        scores["clean_lines"] -= MEDIUM #* HAIR_TYPE_WEIGHT
-        scores["longer_hair"] -= MEDIUM #* HAIR_TYPE_WEIGHT
+        scores["soft_texture"] += STRONG * HAIR_TYPE_WEIGHT
+        scores["textured_top"] += STRONG * HAIR_TYPE_WEIGHT
+        scores["volume_top"] += MEDIUM * HAIR_TYPE_WEIGHT
+        scores["clean_lines"] -= MEDIUM * HAIR_TYPE_WEIGHT
+        scores["longer_hair"] -= MEDIUM * HAIR_TYPE_WEIGHT
 
     if traits.get("hairline") == "receding":
         scores["textured_top"] += WEAK
@@ -243,6 +243,7 @@ def apply_rules(traits, gender="Man"):
 
     scores = _apply_interaction_rules(scores, traits, gender)
     scores = _apply_symmetry_modulation(scores, traits, gender)
+    scores = _apply_hard_constraints(scores, traits)
     scores = clamp_scores(scores)
 
     return scores
