@@ -7,7 +7,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 export function StyleCard({style, rank, features, gender, onReplace }) {
     const { t } = useTranslation()
     const [voted, setVoted] = useState(null)
-    const score = Math.max(0, Math.min(100, Math.round(style.score * 100)))
+    //const score = Math.max(0, Math.min(100, Math.round(style.score * 100)))
+    const score = style.display_score ?? Math.round(style.score * 100)
     const isTop = rank === 0
     const imgPath = style.image ? `${API_URL}/${style.image.replace(/^\/+/, "")}` : null
 
