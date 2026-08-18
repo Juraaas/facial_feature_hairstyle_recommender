@@ -92,7 +92,7 @@ function App() {
           <p>{t('app_subtitle')}</p>
         </div>
         <div style={{ position: 'absolute', right: 0, top: 0, display: 'flex', 
-          flexDirection: 'column', gap: 6, alignItems: 'flex-end',
+          flexDirection: 'row', gap: 6, alignItems: 'flex-end',
          }}>
           <button className="theme-btn" onClick={() => setDark(d => !d)}>
             {dark ? '☀️' : '🌙'}
