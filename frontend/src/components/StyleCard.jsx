@@ -31,7 +31,8 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
         {/* image */}
         <div style={{ position: 'relative', overflow: 'hidden' }}>
             {imgPath
-            ? <img src={imgPath} alt={style.name} className="style-card-img" />
+            ? <img src={imgPath} alt={style.name} className="style-card-img" 
+              style={{ objectPosition: 'top'}} />
             : <div className="style-card-img" style={{ 
                 background: 'var(--surface-2)', display: 'flex', 
                 alignItems: 'center', justifyContent: 'center',
@@ -62,8 +63,8 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
             <div>
                 <p style={{fontFamily: 'var(--font-display)', fontSize: 15,
                         fontWeight: 500, color: 'var(--text)', marginBottom: 6,
-                        letterSpacing: '.01em'}}>{style.name}</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                        letterSpacing: '.01em', textAlign: 'center'}}>{style.name}</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center'}}>
                     {style.tags?.slice(0, 2).map(tag => (
                         <span key={tag} style={{
                         fontSize: 9, padding: '2px 8px', borderRadius: 20,
