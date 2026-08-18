@@ -20,17 +20,9 @@ function App() {
   )
   const [showTutorial, setShowTutorial] = useState(false)
   const { t, i18n } = useTranslation()
+
   const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
-
-  console.log("=== FRONTEND ANALYSIS DEBUG ===")
-  console.log("i18n.language:", i18n.language)
-  console.log("result.face_analysis:", result?.face_analysis)
-  console.log("result.face_analysis.pl:", result?.face_analysis?.pl)
-  console.log("result.face_analysis.en:", result?.face_analysis?.en)
-  console.log("selected analysis:", analysis)
-  console.log("result.styles:", result?.styles)
-  console.log("selected styles:", styles)
 
   useEffect(() => {
     document.body.setAttribute('data-theme', dark ? 'dark' : 'light')
@@ -67,7 +59,6 @@ function App() {
 
   async function handleAnalyse() {
     if (!file) return
-    
     const form = new FormData()
     const lang = i18n.language
     form.append('file', file)
@@ -79,6 +70,20 @@ function App() {
     setOverlayUrl(await overlayPromise)
   }
 
+  const headerBtnStyle = {
+    background: 'none',
+    border: '1px solid var(--border)',
+    borderRadius: 'var(--radius-sm)',
+    cursor: 'pointer',
+    fontSize: 11,
+    color: 'var(--text-muted)',
+    padding: '5px 10px',
+    fontFamily: 'var(--font-body)',
+    letterSpacing: '.02em',
+    transition: 'border-color .15s, color .15s',
+    whiteSpace: 'nowrap',
+  }
+
   return (
     <div className="app">
       <header className="app-header">
@@ -86,28 +91,17 @@ function App() {
           <h1>{t('app_title')}</h1>
           <p>{t('app_subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
+        <div style={{ position: 'absolute', right: 0, top: 0, display: 'flex', 
+          flexDirection: 'column', gap: 6, alignItems: 'flex-end',
+         }}>
           <button className="theme-btn" onClick={() => setDark(d => !d)}>
             {dark ? '☀️' : '🌙'}
           </button>
-          <button
-            onClick={toggleLang}
-            style={{
-              background: 'none',
-              border: '0.5px solid var(--border)',
-              borderRadius: 6, cursor: 'pointer',
-              fontSize: 11, color: 'var(--text-muted)',
-              padding: '4px 8px',
-            }}
-          >
+          <button onClick={toggleLang} style={headerBtnStyle}>
             {i18n.language === 'pl' ? '🇬🇧 EN' : '🇵🇱 PL'}
           </button>
           {tutorialDone && !showTutorial && (
-            <button onClick={() => setShowTutorial(true)}
-            style={{
-              background: 'none', border: '0.5px solid var(--border)', borderRadius: 6,
-              cursor: 'pointer', fontSize: 11, color: 'var(--text-muted)', padding: '4px 8px',
-            }}>
+            <button onClick={() => setShowTutorial(true)} style={headerBtnStyle}>
               {t('photo_tips')}
             </button>
           )}
@@ -150,7 +144,7 @@ function App() {
         {loading && (
           <div className="loading">
             <div className="spinner" />
-            <p>{t('btn_loading')}</p>
+            <p style={{ fontSize: 13, fontWeight: 300 }}>{t('btn_loading')}</p>
           </div>
         )}
 
@@ -166,7 +160,7 @@ function App() {
                 <div className="confidence-fill" style={{
                   width: `${result.quality.score * 100}%`,
                   background: result.quality.score > 0.7 ? '#2d8f4e'
-                            : result.quality.score > 0.4 ? '#e6a817' : '#c0392b'
+                            : result.quality.score > 0.4 ? '#C8975A' : '#c0392b'
                 }} />
               </div>
               <span className="confidence-label">
@@ -178,54 +172,40 @@ function App() {
               <div key={i} className="warning-box">⚠️ {w}</div>
             ))}
 
-            {/* hair traits badge */}
-            <div style={{
-              display: 'flex', gap: 8, flexWrap: 'wrap',
-              marginBottom: 16
-            }}>
-              {result.traits?.hair_type ? (
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  fontSize: 12, padding: '4px 10px', borderRadius: 20,
-                  background: 'var(--surface)', border: '0.5px solid var(--border)',
-                  color: 'var(--text-muted)'
+            {/* hair trait badges */}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+              {[
+                {
+                  icon:  '💇',
+                  label: result.traits?.hair_type
+                    ? `${t(`hair_type_${result.traits.hair_type}`)} ${t('hair_type_label')}`
+                    : t('hair_type_not_detected'),
+                  dashed: !result.traits?.hair_type,
+                },
+                {
+                  icon:  '📐',
+                  label: (result.traits?.hairline && result.traits.hairline !== 'normal')
+                    ? t(`hairline_${result.traits.hairline}`)
+                    : t('hairline_normal'),
+                  dashed: false,
+                },
+              ].map(({ icon, label, dashed }) => (
+                <div key={label} style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: 11,
+                  padding: '4px 12px',
+                  borderRadius: 20,
+                  background: 'var(--surface)',
+                  border: `1px ${dashed ? 'dashed' : 'solid'} var(--border)`,
+                  color: 'var(--text-muted)',
+                  fontWeight: 300,
                 }}>
-                  <span>💇</span>
-                  <span>{result.traits.hair_type} {t('hair_type_label')}</span>
+                  <span>{icon}</span>
+                  <span>{label}</span>
                 </div>
-              ) : (
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  fontSize: 12, padding: '4px 10px', borderRadius: 20,
-                  background: 'var(--surface)', border: '0.5px dashed var(--border)',
-                  color: 'var(--text-muted)'
-                }}>
-                  <span>💇</span>
-                  <span>{t('hair_type_not_detected')}</span>
-                </div>
-              )}
-
-              {result.traits?.hairline && result.traits.hairline !== 'normal' ? (
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  fontSize: 12, padding: '4px 10px', borderRadius: 20,
-                  background: 'var(--surface)', border: '0.5px solid var(--border)',
-                  color: 'var(--text-muted)'
-                }}>
-                  <span>📐</span>
-                  <span>{result.traits.hairline} {t('hairline_label')}</span>
-                </div>
-              ) : (
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  fontSize: 12, padding: '4px 10px', borderRadius: 20,
-                  background: 'var(--surface)', border: '0.5px solid var(--border)',
-                  color: 'var(--text-muted)'
-                }}>
-                  <span>📐</span>
-                  <span>{t('hairline_normal')}</span>
-                </div>
-              )}
+              ))}
             </div>
 
             {/* visualization */}
