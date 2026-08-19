@@ -67,7 +67,7 @@ export default {
 
   feedback_submit: "Wyślij opinię",
   feedback_submitting: "Wysyłanie...",
-  feedback_comment_placeholder: "Zostaw nam komentarz? (opcjonalnie)",
+  feedback_comment_placeholder: "Zostaw nam komentarz!",
   feedback_saved: "✓ Dziękujemy za opinię!",
 
   error_no_face: "Nie wykryto twarzy",

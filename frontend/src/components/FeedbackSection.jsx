@@ -26,10 +26,10 @@ export function FeedbackSection({ features, qualityScore, topStyles }) {
         return (
             <section style={{ marginBottom: 32 }}>
                 <div style={{
-                    padding: '12px 16px', background: 'var(--surface)',
-                    borderRadius: 8, border: '0.5px solid var(--border)',
+                    padding: '14px 16px', background: 'var(--surface)',
+                    borderRadius: 'var(--radius-md)', border: '1px solid var(--border)',
                     fontSize: 13, color: 'var(--text-muted)',
-                    textAlign: 'center'
+                    textAlign: 'center', fontWeight: 300,
                 }}>
                     {t('feedback_saved')}
                 </div>
@@ -38,54 +38,54 @@ export function FeedbackSection({ features, qualityScore, topStyles }) {
     }
 
     return (
-        <section style={{ marginBottom: 32 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 500, marginBottom: 16, color: 'var(--text)'}}>
-                {t('section_feedback')}
-            </h2>
+        <section style={{ marginBottom: 40 }}>
+            <h2 className="section-title">{t('section_feedback')}</h2>
+            <div style={{background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--border)', padding: '20px'}}>
+                {/* stars */}
+                <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+                    {[1, 2, 3, 4, 5].map(n => (
+                        <button
+                            key={n}
+                            onClick={() => setRating(n)}
+                            style={{
+                                fontSize: 22, background: 'none', border: 'none',
+                                cursor: 'pointer', padding: '4px 2px',
+                                opacity: rating !== null && n > rating ? 0.25 : 1,
+                                transform: rating === n ? 'scale(1.25)' : 'scale(1)',
+                                transition: 'all .15s',
+                            }}
+                        >
+                            ⭐
+                        </button>
+                    ))}
+                </div>
 
-            {/* stars */}
-            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                {[1, 2, 3, 4, 5].map(n => (
-                    <button
-                        key={n}
-                        onClick={() => setRating(n)}
-                        style={{
-                            fontSize: 24, background: 'none', border: 'none',
-                            cursor: 'pointer', padding: '4px 2px',
-                            opacity: rating !== null && n > rating ? 0.3 : 1,
-                            transform: rating === n ? 'scale(1.2)' : 'scale(1)',
-                            transition: 'all .15s',
-                        }}
-                    >
-                        ⭐
-                    </button>
-                ))}
+                {/* comment */}
+                <textarea
+                    value={comment}
+                    onChange={e => setComment(e.target.value)}
+                    placeholder={t('feedback_comment_placeholder')}
+                    rows={3}
+                    style={{
+                        width: '100%', padding: '10px 12px',
+                        border: '1px solid var(--border)',
+                        borderRadius: 'var(--radius-md)', background: 'var(--surface-2)',
+                        color: 'var(--text)', fontSize: 13,
+                        resize: 'vertical', marginBottom: 14,
+                        outline: 'none', lineHeight: 1.5,
+                    }}
+                />
+
+                <button
+                    onClick={handleSubmit}
+                    disabled={rating === null || saving}
+                    className="analyse-btn"
+                    style={{ opacity: rating === null ? 0.45 : 1 }}
+                >
+                    {saving ? t('feedback_submitting') : t('feedback_submit')}
+                </button>
             </div>
-
-            {/* comment */}
-            <textarea
-                value={comment}
-                onChange={e => setComment(e.target.value)}
-                placeholder={t('feedback_comment_placeholder')}
-                rows={3}
-                style={{
-                    width: '100%', padding: '10px 12px',
-                    border: '0.5px solid var(--border)',
-                    borderRadius: 8, background: 'var(--surface)',
-                    color: 'var(--text)', fontSize: 13,
-                    resize: 'vertical', marginBottom: 12,
-                    fontFamily: 'inherit',
-                }}
-            />
-
-            <button
-                onClick={handleSubmit}
-                disabled={rating === null || saving}
-                className="analyse-btn"
-                style={{ opacity: rating === null ? 0.5 : 1 }}
-            >
-                {saving ? t('feedback_submitting') : t('feedback_submit')}
-            </button>
         </section>
     )
 }

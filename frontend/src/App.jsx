@@ -94,7 +94,7 @@ function App() {
         <div style={{ position: 'absolute', right: 0, top: 0, display: 'flex', 
           flexDirection: 'row', gap: 6, alignItems: 'flex-end',
          }}>
-          <button className="theme-btn" onClick={() => setDark(d => !d)}>
+          <button onClick={() => setDark(d => !d)} style={headerBtnStyle}>
             {dark ? '☀️' : '🌙'}
           </button>
           <button onClick={toggleLang} style={headerBtnStyle}>
