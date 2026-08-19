@@ -8,7 +8,7 @@ MODEL_PATH = os.path.join(BASE_DIR, "models", "hair_classifier.onnx")
 HAIR_TYPES = ["straight", "wavy", "curly", "coily"]
 HAIRLINES = ["normal", "receding", "uneven"]
 
-HAIR_TYPE_COVERAGE_MIN = 0.04
+HAIR_TYPE_COVERAGE_MIN = 0.025
 HAIRLINE_COVERAGE_MIN = 0.01
 
 _session = None
@@ -60,7 +60,7 @@ def prepare_hairline_crop(img_bgr, hair_mask, landmarks=None, size=224):
     return cv2.resize(region, (size, size))
 
 def classify_hair(img_bgr, hair_mask, gender="Man", landmarks=None,
-                  hair_conf_threshold=0.65, hairline_conf_threshold=0.85):
+                  hair_conf_threshold=0.6, hairline_conf_threshold=0.82):
     if hair_mask is None:
         return {
             "hair_type": None,
