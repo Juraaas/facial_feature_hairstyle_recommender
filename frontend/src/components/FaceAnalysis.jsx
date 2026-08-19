@@ -1,46 +1,30 @@
-import { TraitBar } from "./TraitBar"
 import { useTranslation } from 'react-i18next'
 
-const BARS = [
-  ['face_ratio',       'trait_face_shape',   'label_wide_face',    'label_long_face'],
-  ['jaw_ratio',        'trait_jaw_width',     'label_narrow_jaw',   'label_wide_jaw'],
-  ['eye_ratio',        'trait_eye_spacing',   'label_close_eyes',   'label_wide_eyes'],
-  ['eye_height',       'trait_eye_openness',  'label_narrow_eyes',  'label_wide_eyes2'],
-  ['lip_ratio',        'trait_lip_width',     'label_narrow_lips',  'label_wide_lips'],
-  ['nose_position',    'trait_nose_position', 'label_high_nose',    'label_low_nose'],
-  ['lower_face_ratio', 'trait_lower_face',    'label_short_lower',  'label_long_lower'],
-  ['chin_prominence',  'trait_chin',          'label_flat_chin',    'label_strong_chin'],
-  ['symmetry',         'trait_symmetry',      'label_symmetrical',  'label_asymmetrical'],
-  ['upper_third',      'trait_forehead',      'label_low_forehead', 'label_high_forehead'],
-  ['middle_third',     'trait_mid_face',      'label_short_mid',    'label_long_mid'],
-  ['lower_third',      'trait_lower_thirds',  'label_short_lower2', 'label_long_lower2'],
-]
-
-export function FaceProportions({ features, norms }) {
+export function FaceAnalysis({ analysis }) {
     const { t } = useTranslation()
+
+    if (!analysis?.length) {
+        return (
+            <section style={{ marginBottom: 32 }}>
+                <h2 className="section-title">{t('section_face_analysis')}</h2>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300 }}>
+                    {t('face_balanced')}
+                </p>
+            </section>
+        )
+    }
 
     return (
         <section style={{ marginBottom: 32 }}>
-            <h2 className="section-title">{t('section_proportions')}</h2>
-            <div style={{
-                background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--border)', padding: '20px 20px 8px'}}>
-                {BARS.map(([feat, title, minLabel, maxLabel]) => {
-                    const n = norms[feat]
-                    if (!n || features[feat] === undefined) return null
-                    return (
-                        <TraitBar
-                            key={feat}
-                            title={t(title)}
-                            value={features[feat]}
-                            minVal={n.p5}
-                            maxVal={n.p95}
-                            avgVal={n.mean}
-                            minLabel={t(minLabel)}
-                            maxLabel={t(maxLabel)}
-                        />
-                    )
-                })}
+            <h2 className="section-title">{t('section_face_analysis')}</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {analysis.map((exp, i) => (
+                    <div key={i} style={{
+                        fontSize: 13, lineHeight: 1.6, padding: '8px 12px',
+                        borderLeft: '2px solid var(--accent)', color: 'var(--text)',
+                        background: 'var(--surface)', borderRadius: '0 var(--radius-sm) var(--radius-sm) 0',
+                        fontWeight: 300}}>{exp}</div>
+                ))}
             </div>
         </section>
     )
