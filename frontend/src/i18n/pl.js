@@ -47,16 +47,17 @@ export default {
   hairline_label: "linia włosów",
   hair_type_not_detected: "nie wykryto typu włosów",
   hairline_normal: "normalna linia włosów",
+  hair_type_straight: "proste",
+  hair_type_wavy: "falowane",
+  hair_type_curly: "kręcone",
+  hair_type_coily: "spiralne",
+  hairline_receding: "cofnięta linia włosów",
+  hairline_uneven: "nierówna linia włosów",
 
-  section_visualization: "Wizualizacja",
-  load_overlay: "Ładowanie podglądu...",
   section_face_analysis: "Analiza twarzy",
   section_proportions: "Proporcje twarzy",
   section_hairstyles: "Najlepsze fryzury dla ciebie",
   section_feedback: "Czy nasze rekomendacje były trafne?",
-
-  label_original: "Oryginał",
-  label_landmarks: "Wykryte punkty na twarzy",
 
   face_balanced: "Proporcje Twojej twarzy są dobrze zbalansowane - większość stylów będzie Ci pasować.",
 

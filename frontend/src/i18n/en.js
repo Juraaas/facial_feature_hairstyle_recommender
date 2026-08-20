@@ -46,16 +46,17 @@ export default {
   hairline_label: "hairline",
   hair_type_not_detected: "hair type not detected",
   hairline_normal: "normal hairline",
+  hair_type_straight: "straight",
+  hair_type_wavy: "wavy",
+  hair_type_curly: "curly",
+  hair_type_coily: "coily",
+  hairline_receding: "receding hairline",
+  hairline_uneven: "uneven hairline",
 
-  section_visualization: "Visualization",
-  load_overlay: "Loading overlay...",
   section_face_analysis: "Face analysis",
   section_proportions: "Facial proportions",
   section_hairstyles: "Top hairstyles",
   section_feedback: "How accurate were our recommendations?",
-
-  label_original: "Original",
-  label_landmarks: "Detected landmarks",
 
   face_balanced: "Your facial proportions are well balanced — most styles will suit you.",
 
