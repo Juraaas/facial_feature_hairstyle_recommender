@@ -242,37 +242,6 @@ async def feedback(body: dict):
         raise http_error(INTERNAL_ERROR, str(e), status=500)
     return {"ok": True}
 
-@app.post("/landmarks-overlay")
-def landmarks_overlay(file: UploadFile = File(...)):
-    try:
-        contents = file.file.read()
-        arr = np.frombuffer(contents, np.uint8)
-        img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-
-        if img is None:
-            raise http_error(INVALID_IMAGE, "Could not decode image", status=400)
-
-        h, w = img.shape[:2]
-        if max(h, w) > 640:
-            scale = 640 / max(h, w)
-            img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
-        
-        detector = get_detector()
-        
-        landmarks = detector.detect(img)
-        if landmarks is not None:
-            img = draw_landmarks(img, landmarks, draw_indices=False)
-        
-        _, buf = cv2.imencode('.jpg', img)
-        return Response(content=buf.tobytes(), media_type="image/jpeg")
-    
-    except HTTPException:
-        raise
-    except Exception:
-        import traceback
-        print(traceback.format_exc())
-        raise http_error(INTERNAL_ERROR, "Overlay generation failed", status=500)
-
 @app.post("/debug-hair")
 async def debug_hair(file: UploadFile = File(...)):
     try:
@@ -307,47 +276,3 @@ async def debug_hair(file: UploadFile = File(...)):
         import traceback
         print(traceback.format_exc())
         raise http_error(INTERNAL_ERROR, "Hair debug failed", status=500)
-
-
-@app.post("/debug-hair-overlay")
-async def debug_hair_overlay(file: UploadFile = File(...)):
-    try:
-        contents = await file.read()
-        img = decode_and_resize_image(contents)
-        if img is None:
-            raise http_error(INVALID_IMAGE, "Could not decode image", status=400)
-
-        hair_mask, _ = segment_face(img)
-        if hair_mask is None:
-            raise http_error(INTERNAL_ERROR, "Segmentation failed", status=500)
-
-        result = classify_hair(img, hair_mask)
-        coverage = float(np.sum(hair_mask > 0) / hair_mask.size)
-
-        overlay = img.copy()
-        overlay[hair_mask > 0] = (
-            overlay[hair_mask > 0] * 0.55 + np.array([255, 80, 40]) * 0.45
-        ).astype(np.uint8)
-
-        h, w  = overlay.shape[:2]
-        cv2.rectangle(overlay, (0, 0), (w, int(h * 0.4)),
-                    (0, 200, 255), 2)
-        
-        lines = [
-            f"hair_type: {result['hair_type'] or 'None'} ({result['hair_conf']:.2f})",
-            f"hairline: {result['hairline']  or 'None'} ({result['hairline_conf']:.2f})",
-            f"coverage: {coverage:.3f}",
-        ]
-        for i, line in enumerate(lines):
-            cv2.putText(overlay, line, (10, 24 + i * 22),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.55,
-                        (0, 255, 255), 2, cv2.LINE_AA)
-
-        _, buf = cv2.imencode(".jpg", overlay)
-        return Response(content=buf.tobytes(), media_type="image/jpeg")
-    except HTTPException:
-        raise
-    except Exception:
-        import traceback
-        print(traceback.format_exc())
-        raise http_error(INTERNAL_ERROR, "Overlay failed", status=500)
