@@ -3,30 +3,57 @@ import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 
 const API_URL = import.meta.env.VITE_API_URL
-const DEMO_CASES = [
+const DEMO_CASES_MAN = [
   {
     face: 'Long face · Narrow jaw',
     face_pl: 'Długa twarz · Wąska szczęka',
-    analysis: 'Side volume and fringe balance your proportions beautifully.',
-    analysis_pl: 'Objętość po bokach i grzywka dobrze balansują proporcje twarzy.',
-    styles: ['French Crop', 'Textured Fringe', 'Curtain Fringe Medium'],
-    image: '/images/male/french_crop.jpg',
+    analysis: 'Side volume and fringe optically widen your face and shorten its length.',
+    analysis_pl: 'Objętość po bokach i grzywka optycznie poszerzają twarz i skracają ją.',
+    styles: ['French Crop', 'Textured Fringe'],
+    image: `${API_URL}/images/male/french_crop.jpg`,
   },
   {
-    face: 'Wide face · Wide jaw',
-    face_pl: 'Szeroka twarz · Szeroka szczęka',
-    analysis: 'Height on top and clean lines create a longer, balanced silhouette.',
-    analysis_pl: 'Objętość na górze i czyste kształty tworzą dłuższą, zbalansowaną sylwetkę.',
-    styles: ['Pompadour', 'Quiff', 'Slick Back'],
-    image: '/images/male/quiff.jpg',
+    face: 'Wide jaw · Short face',
+    face_pl: 'Szeroka szczęka · Szeroka twarz',
+    analysis: 'Height on top and tapered sides balance a broader jaw and create a more elongated silhouette.',
+    analysis_pl: 'Objętość na górze i krótkie boki równoważą szeroką szczękę i wydłużają optycznie sylwetkę.',
+    styles: ['Pompadour', 'Quiff'],
+    image: `${API_URL}/images/male/pompadour.jpg`,
   },
   {
-    face: 'Clean lines · High symmetry',
-    face_pl: 'Czyste linie · Wysoka symetria',
-    analysis: 'Clean geometric styles highlight your natural facial balance.',
-    analysis_pl: 'Geometryczne style podkreślą naturalną symetrię twarzy.',
-    styles: ['Classic Undercut', 'Crew Cut', 'Side Part'],
-    image: '/images/male/classic_undercut.jpg',
+    face: 'Balanced proportions · High symmetry',
+    face_pl: 'Zbalansowane proporcje · Wysoka symetria',
+    analysis: 'Balanced proportions give you more freedom, so clean geometric cuts and classic styles work especially well.',
+    analysis_pl: 'Zbalansowane proporcje dają większą swobodę, dlatego dobrze sprawdzają się klasyczne i geometryczne cięcia.',
+    styles: ['Classic Undercut', 'Crew Cut'],
+    image: `${API_URL}/images/male/classic_undercut.jpg`,
+  },
+]
+
+const DEMO_CASES_WOMAN = [
+  {
+    face: 'Long face · Narrow jaw',
+    face_pl: 'Długa twarz · Wąska szczęka',
+    analysis: 'A bob, layers or curtain fringe adds width and breaks up the vertical proportions.',
+    analysis_pl: 'Bob, warstwy lub grzywka dodają szerokości i przełamują pionowe proporcje twarzy.',
+    styles: ['French Bob', 'Curtain Fringe Medium'],
+    image: `${API_URL}/images/female/french_bob.jpg`,
+  },
+  {
+    face: 'Wide jaw · Strong lower face',
+    face_pl: 'Szeroka szczęka · Mocniejsza dolna część twarzy',
+    analysis: 'Layers and length below the chin soften the jaw and create a longer, more flowing silhouette.',
+    analysis_pl: 'Warstwy i długość poniżej brody łagodzą szeroką szczękę i tworzą bardziej wydłużoną, płynną sylwetkę.',
+    styles: ['Layered Medium', 'Long Bob'],
+    image: `${API_URL}/images/female/layered_medium.jpg`,
+  },
+  {
+    face: 'Balanced thirds · High symmetry',
+    face_pl: 'Zbalansowane proporcje · Wysoka symetria',
+    analysis: 'Balanced proportions give you flexibility, making soft textures, waves and structured styles easy to wear.',
+    analysis_pl: 'Zbalansowane proporcje dają większą swobodę, dlatego dobrze sprawdzają się fale, miękka tekstura i bardziej uporządkowane fryzury.',
+    styles: ['Beach Waves', 'Classic Updo',],
+    image: `${API_URL}/images/female/beach_waves.jpg`,
   },
 ]
 
@@ -53,7 +80,7 @@ const STEPS = [
     title_en: 'Get your recommendations',
     title_pl: 'Otrzymaj spersonalizowane wskazówki',
     desc_en:  'Personalised hairstyles ranked by how well they suit your face geometry.',
-    desc_pl:  'Dobrane dla ciebie fryzury uszeregowane według dopasowania.',
+    desc_pl:  'Fryzury dobrane specjalnie dla Ciebie uszeregowane według dopasowania.',
   },
 ]
 
@@ -77,6 +104,8 @@ export function Landing() {
   }
 
   const t = (en, plStr) => pl ? plStr : en
+  const [demoGender, setDemoGender] = useState('Man')
+  const demoCases = demoGender === 'Man' ? DEMO_CASES_MAN : DEMO_CASES_WOMAN
 
   return (
     <div style={{minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', 
@@ -235,55 +264,93 @@ export function Landing() {
       {/* ── demo ── */}
       <section style={{
         background: 'var(--surface)', borderTop: '1px solid var(--border)',
-        borderBottom: '1px solid var(--border)', padding: '64px 24px'}}>
+        borderBottom: '1px solid var(--border)', padding: '64px 24px'
+      }}>
         <div style={{ maxWidth: 880, margin: '0 auto' }}>
           <SectionLabel text={t('Example results', 'Przykładowe wyniki')} />
-          <h2 style={sectionH2}>
-            {t('See what the system recommends', 'Zobacz co doradzi aplikacja')}
-          </h2>
-          <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: 20, marginTop: 40,
-          }}>
-            {DEMO_CASES.map((c, i) => (
-              <div key={i} style={{
-                background: 'var(--bg)', borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--border)', overflow: 'hidden',
-              }}>
-                {/* style image */}
-                <div style={{height: 200, background: 'var(--surface-2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderBottom: '1px solid var(--border)', fontSize: 48}}>✂️</div>
-
-                <div style={{ padding: '16px' }}>
-                  {/* face type badge */}
-                  <div style={{fontSize: 10, fontFamily: 'var(--font-mono)',
-                    color: 'var(--accent)', letterSpacing: '.06em',
-                    textTransform: 'uppercase', marginBottom: 8}}>
-                  {pl ? c.face_pl : c.face}</div>
-
-                  {/* analysis */}
-                  <p style={{
-                    fontSize: 12, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6,
-                    marginBottom: 14, paddingLeft: 8, borderLeft: '2px solid var(--accent)',
-                  }}>{pl ? c.analysis_pl : c.analysis}</p>
-
-                  {/* recommended styles */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                    {c.styles.map(s => (
-                      <span key={s} style={{
-                        fontSize: 10, padding: '3px 9px', borderRadius: 20,
-                        background: 'var(--surface)', border: '1px solid var(--border)',
-                        color: 'var(--text-muted)', letterSpacing: '.03em',
-                      }}>{s}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
+            <h2 style={sectionH2}>
+              {t('See what the system recommends', 'Zobacz co doradzi aplikacja')}
+            </h2>
+            {/* gender toggle */}
+            <div style={{ display: 'flex', gap: 6 }}>
+              {['Man', 'Woman'].map(g => (
+                <button
+                  key={g}
+                  onClick={() => setDemoGender(g)}
+                  style={{
+                    ...btnOutline,
+                    borderColor:   demoGender === g ? 'var(--accent)' : 'var(--border)',
+                    color:         demoGender === g ? 'var(--accent)' : 'var(--text-muted)',
+                    background:    demoGender === g ? 'var(--accent-soft)' : 'none',
+                  }}
+                >
+                  {g === 'Man'
+                    ? t('👨 Men', '👨 Mężczyźni')
+                    : t('👩 Women', '👩 Kobiety')}
+                </button>
+              ))}
+            </div>
         </div>
-      </section>
+
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: 20, marginTop: 24,
+        }}>
+          {demoCases.map((c, i) => (
+            <div key={`${demoGender}-${i}`} style={{
+              background: 'var(--bg)', borderRadius: 'var(--radius-lg)',
+              border: '1px solid var(--border)', overflow: 'hidden',
+              animation: 'fadeIn .3s ease',
+            }}>
+              {/* image */}
+              <img
+                src={`${API_URL}/images/hairstyles/${c.image}`}
+                alt={c.face}
+                style={{
+                  width: '100%', height: 200,
+                  objectFit: 'cover', objectPosition: 'top',
+                  display: 'block', borderBottom: '1px solid var(--border)',
+                }}
+                onError={e => {
+                  e.target.style.display = 'none'
+                  e.target.nextSibling.style.display = 'flex'
+                }}
+              />
+              {/* fallback */}
+              <div style={{
+                height: 200, background: 'var(--surface-2)',
+                display: 'none', alignItems: 'center', justifyContent: 'center',
+                fontSize: 48, borderBottom: '1px solid var(--border)',
+              }}>✂️</div>
+
+              <div style={{ padding: '16px' }}>
+                <div style={{
+                  fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--accent)',
+                  letterSpacing: '.06em', textTransform: 'uppercase', marginBottom: 8,
+                }}>{pl ? c.face_pl : c.face}</div>
+
+              <p style={{
+                fontSize: 12, color: 'var(--text-muted)', fontWeight: 300,
+                lineHeight: 1.6, marginBottom: 14,
+                paddingLeft: 8, borderLeft: '2px solid var(--accent)',
+              }}>{pl ? c.analysis_pl : c.analysis}</p>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {c.styles.map(s => (
+                  <span key={s} style={{
+                    fontSize: 10, padding: '3px 9px', borderRadius: 20,
+                    background: 'var(--surface)', border: '1px solid var(--border)',
+                    color: 'var(--text-muted)', letterSpacing: '.03em',
+                  }}>{s}</span>
+                ))}
+              </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
 
       {/* ── for professionals ── */}
       <section style={{ padding: '64px 24px' }}>
