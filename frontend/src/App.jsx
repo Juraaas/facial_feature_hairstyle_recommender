@@ -7,19 +7,21 @@ import { FeedbackSection } from './components/FeedbackSection'
 import { ErrorBox } from './components/ErrorBox'
 import { PhotoTutorial } from './components/PhotoTutorial'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import './App.css'
 
 function App() {
   const { result, loading, error, analyse, reset} = useAnalysis()
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
-  const [overlayUrl, setOverlayUrl] = useState(null)
   const [dark, setDark] = useState(false)
   const [tutorialDone, setTutorialDone] = useState(
   () => localStorage.getItem('tutorial_done') === '1'
   )
   const [showTutorial, setShowTutorial] = useState(false)
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
+  const pl = i18n.language === 'pl'
 
   const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
@@ -35,15 +37,6 @@ function App() {
     reset()
   }
 
-  function handleUpload(e) {
-    handleFile(e.target.files[0])
-  }
-
-  function handleDrop(e) {
-    e.preventDefault()
-    handleFile(e.dataTransfer.files[0])
-  }
-
   function handleTutorialDone() {
     localStorage.setItem('tutorial_done', '1')
     setTutorialDone(true)
@@ -52,22 +45,13 @@ function App() {
 
   function toggleLang() {
     const next = i18n.language === 'pl' ? 'en' : 'pl'
-    console.log('changing language:', i18n.language, '→', next)
     i18n.changeLanguage(next)
     localStorage.setItem('lang', next)
   }
 
   async function handleAnalyse() {
     if (!file) return
-    const form = new FormData()
-    const lang = i18n.language
-    form.append('file', file)
-    const overlayPromise = fetch(`${import.meta.env.VITE_API_URL}/landmarks-overlay`, {
-      method: 'POST', body: form
-    }).then(r => r.blob()).then(b => URL.createObjectURL(b))
-    
-    analyse(file, lang)
-    setOverlayUrl(await overlayPromise)
+    analyse(file, i18n.language)
   }
 
   const headerBtnStyle = {
@@ -105,6 +89,9 @@ function App() {
               {t('photo_tips')}
             </button>
           )}
+          <button onClick={() => navigate('/')} style={headerBtnStyle}>
+            ← {pl ? 'Strona główna' : 'Home'}
+          </button>
         </div>
       </header>
 
@@ -134,7 +121,7 @@ function App() {
             )}
             {result && (
               <button className="analyse-btn secondary"
-                onClick={() => { reset(); setFile(null); setPreview(null); setOverlayUrl(null) }}>
+                onClick={() => { reset(); setFile(null); setPreview(null); }}>
                 {t('btn_upload_new')}
               </button>
             )}
@@ -207,24 +194,6 @@ function App() {
                 </div>
               ))}
             </div>
-
-            {/* visualization */}
-            <section style={{ marginBottom: 32 }}>
-              <h2 className="section-title">{t('section_visualization')}</h2>
-              <div className="vis-grid">
-                <div className="vis-item">
-                  <img src={preview} alt="Original" className="vis-img" />
-                  <p className="vis-label">{t('label_original')}</p>
-                </div>
-                <div className="vis-item">
-                  {overlayUrl
-                    ? <img src={overlayUrl} alt="Landmarks" className="vis-img" />
-                    : <div className="vis-placeholder">{t('load_ovelray')}</div>
-                  }
-                  <p className="vis-label">{t('label_landmarks')}</p>
-                </div>
-              </div>
-            </section>
             <FaceAnalysis analysis={analysis} />
             <FaceProportions features={result.features} norms={result.norms} />
             <StylesSection
