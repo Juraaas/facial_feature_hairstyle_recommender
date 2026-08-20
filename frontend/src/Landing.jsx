@@ -10,7 +10,7 @@ const DEMO_CASES_MAN = [
     analysis: 'Side volume and fringe optically widen your face and shorten its length.',
     analysis_pl: 'Objętość po bokach i grzywka optycznie poszerzają twarz i skracają ją.',
     styles: ['French Crop', 'Textured Fringe'],
-    image: 'french_crop.jpg',
+    image: `${API_URL}/images/male/french_crop.jpg`,
   },
   {
     face: 'Wide jaw · Short face',
@@ -18,7 +18,7 @@ const DEMO_CASES_MAN = [
     analysis: 'Height on top and tapered sides balance a broader jaw and create a more elongated silhouette.',
     analysis_pl: 'Objętość na górze i krótkie boki równoważą szeroką szczękę i wydłużają optycznie sylwetkę.',
     styles: ['Pompadour', 'Quiff'],
-    image: 'pompadour.jpg',
+    image: `${API_URL}/images/male/pompadour.jpg`,
   },
   {
     face: 'Balanced proportions · High symmetry',
@@ -26,7 +26,7 @@ const DEMO_CASES_MAN = [
     analysis: 'Balanced proportions give you more freedom, so clean geometric cuts and classic styles work especially well.',
     analysis_pl: 'Zbalansowane proporcje dają większą swobodę, dlatego dobrze sprawdzają się klasyczne i geometryczne cięcia.',
     styles: ['Classic Undercut', 'Crew Cut'],
-    image: 'classic_undercut.jpg',
+    image: `${API_URL}/images/male/classic_undercut.jpg`,
   },
 ]
 
@@ -37,7 +37,7 @@ const DEMO_CASES_WOMAN = [
     analysis: 'A bob, layers or curtain fringe adds width and breaks up the vertical proportions.',
     analysis_pl: 'Bob, warstwy lub grzywka dodają szerokości i przełamują pionowe proporcje twarzy.',
     styles: ['French Bob', 'Curtain Fringe Medium'],
-    image: 'french_bob.jpg',
+    image: `${API_URL}/images/female/french_bob.jpg`,
   },
   {
     face: 'Wide jaw · Strong lower face',
@@ -45,7 +45,7 @@ const DEMO_CASES_WOMAN = [
     analysis: 'Layers and length below the chin soften the jaw and create a longer, more flowing silhouette.',
     analysis_pl: 'Warstwy i długość poniżej brody łagodzą szeroką szczękę i tworzą bardziej wydłużoną, płynną sylwetkę.',
     styles: ['Layered Medium', 'Long Bob'],
-    image: 'layered_medium.jpg',
+    image: `${API_URL}/images/female/layered_medium.jpg`,
   },
   {
     face: 'Balanced thirds · High symmetry',
@@ -53,7 +53,7 @@ const DEMO_CASES_WOMAN = [
     analysis: 'Balanced proportions give you flexibility, making soft textures, waves and structured styles easy to wear.',
     analysis_pl: 'Zbalansowane proporcje dają większą swobodę, dlatego dobrze sprawdzają się fale, miękka tekstura i bardziej uporządkowane fryzury.',
     styles: ['Beach Waves', 'Classic Updo',],
-    image: 'beach_waves.jpg',
+    image: `${API_URL}/images/female/beach_waves.jpg`,
   },
 ]
 
@@ -305,7 +305,7 @@ export function Landing() {
             }}>
               {/* image */}
               <img
-                src={`${API_URL}/images/hairstyles/${c.image}`}
+                src={c.image}
                 alt={c.face}
                 style={{
                   width: '100%', height: 200,
