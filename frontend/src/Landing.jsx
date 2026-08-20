@@ -8,25 +8,25 @@ const DEMO_CASES = [
     face: 'Long face · Narrow jaw',
     face_pl: 'Długa twarz · Wąska szczęka',
     analysis: 'Side volume and fringe balance your proportions beautifully.',
-    analysis_pl: 'Objętość po bokach i grzywka pięknie balansują proporcje twarzy.',
+    analysis_pl: 'Objętość po bokach i grzywka dobrze balansują proporcje twarzy.',
     styles: ['French Crop', 'Textured Fringe', 'Curtain Fringe Medium'],
-    image: '/images/hairstyles/french_crop.jpg',
+    image: '/images/male/french_crop.jpg',
   },
   {
     face: 'Wide face · Wide jaw',
     face_pl: 'Szeroka twarz · Szeroka szczęka',
     analysis: 'Height on top and clean lines create a longer, balanced silhouette.',
-    analysis_pl: 'Wysokość na górze i czyste linie tworzą dłuższą, zbalansowaną sylwetkę.',
+    analysis_pl: 'Objętość na górze i czyste kształty tworzą dłuższą, zbalansowaną sylwetkę.',
     styles: ['Pompadour', 'Quiff', 'Slick Back'],
-    image: '/images/hairstyles/pompadour.jpg',
+    image: '/images/male/quiff.jpg',
   },
   {
     face: 'Clean lines · High symmetry',
     face_pl: 'Czyste linie · Wysoka symetria',
     analysis: 'Clean geometric styles highlight your natural facial balance.',
-    analysis_pl: 'Geometryczne cięcia podkreślają naturalną symetrię twarzy.',
+    analysis_pl: 'Geometryczne style podkreślą naturalną symetrię twarzy.',
     styles: ['Classic Undercut', 'Crew Cut', 'Side Part'],
-    image: '/images/hairstyles/undercut.jpg',
+    image: '/images/male/classic_undercut.jpg',
   },
 ]
 
@@ -35,9 +35,9 @@ const STEPS = [
     num: '01',
     icon: '📸',
     title_en: 'Upload a photo',
-    title_pl: 'Wgraj zdjęcie',
-    desc_en:  'A clear front-facing photo in good lighting — that\'s all you need.',
-    desc_pl:  'Wyraźne zdjęcie en face w dobrym oświetleniu — to wszystko czego potrzebujesz.',
+    title_pl: 'Wrzuć zdjęcie',
+    desc_en:  'A clear front-facing photo in good lighting - that\'s all needed.',
+    desc_pl:  'Wyraźne zdjęcie przodem w dobrym oświetleniu - tylko tyle potrzeba.',
   },
   {
     num: '02',
@@ -45,22 +45,22 @@ const STEPS = [
     title_en: 'AI analyses your face',
     title_pl: 'AI analizuje Twoją twarz',
     desc_en:  'We measure 15 facial proportions using 478 landmark points.',
-    desc_pl:  'Mierzymy 15 proporcji twarzy przy użyciu 478 punktów landmarkowych.',
+    desc_pl:  'Mierzymy 15 proporcji twarzy przy użyciu 478 punktów.',
   },
   {
     num: '03',
     icon: '✂️',
     title_en: 'Get your recommendations',
-    title_pl: 'Otrzymaj rekomendacje',
+    title_pl: 'Otrzymaj spersonalizowane wskazówki',
     desc_en:  'Personalised hairstyles ranked by how well they suit your face geometry.',
-    desc_pl:  'Spersonalizowane fryzury uszeregowane według dopasowania do geometrii twarzy.',
+    desc_pl:  'Dobrane dla ciebie fryzury uszeregowane według dopasowania.',
   },
 ]
 
 const FEATURES = [
   { icon: '📐', title_en: 'Geometric analysis', title_pl: 'Analiza geometryczna', desc_en: '15 facial ratios measured against population norms', desc_pl: '15 proporcji twarzy zmierzonych względem norm populacyjnych' },
   { icon: '💇', title_en: 'Hair detection',  title_pl: 'Detekcja włosów', desc_en: 'Hair type and hairline shape detected automatically', desc_pl: 'Automatyczna detekcja typu i linii włosów' },
-  { icon: '⚖️', title_en: 'Balance-first scoring', title_pl: 'Scoring balansujący', desc_en: 'Styles scored on how well they balance and enhance your features', desc_pl: 'Fryzury oceniane pod kątem balansowania i uwydatniania rysów' },
+  { icon: '⚖️', title_en: 'Balance-first scoring', title_pl: 'Punktacja balansująca', desc_en: 'Styles scored on how well they balance and enhance your features', desc_pl: 'Fryzury oceniane pod kątem balansowania i uwydatniania Twoich rysów' },
   { icon: '🤖', title_en: 'AI face analysis', title_pl: 'Analiza AI', desc_en: 'Explanation of your facial strengths', desc_pl: 'Wyjaśnienie mocnych stron Twojej twarzy' },
 ]
 
@@ -104,7 +104,7 @@ export function Landing() {
             onClick={() => navigate('/analyse')}
             style={btnAccent}
           >
-            {t('Try it', 'Wypróbuj za darmo')}
+            {t('Try it', 'Wypróbuj')}
           </button>
         </div>
       </nav>
@@ -122,7 +122,7 @@ export function Landing() {
           background: 'var(--accent-soft)', padding: '4px 12px', borderRadius: 20,
           marginBottom: 24, border: '1px solid var(--accent)',
         }}>
-          {t('AI-Powered · Free to try', 'Oparte na AI · Darmowe testy')}
+          {t('AI-Powered · Free to try', 'Oparte na AI · Przetestuj za darmo')}
         </div>
 
         <h1 style={{
@@ -136,7 +136,7 @@ export function Landing() {
         }}>
           {t(
             'Find hairstyles that actually suit your face',
-            'Znajdź fryzury które realnie pasują do Twojej twarzy'
+            'Znajdź fryzurę która realnie pasuje do Twojej twarzy'
           )}
         </h1>
 
@@ -146,7 +146,7 @@ export function Landing() {
         }}>
           {t(
             'Upload a photo and get science-backed hairstyle recommendations based on the geometry of your face.',
-            'Wgraj zdjęcie i otrzymaj rekomendacje fryzur oparte na geometrii Twojej twarzy.'
+            'Wrzuć zdjęcie i otrzymaj propozycje fryzur oparte na geometrii Twojej twarzy.'
           )}
         </p>
 
@@ -155,7 +155,7 @@ export function Landing() {
             {t('Analyse my face →', 'Analizuj moją twarz →')}
           </button>
           <a href="#how-it-works" style={{ ...btnOutline, fontSize: 15, padding: '13px 32px', textDecoration: 'none' }}>
-            {t('See how it works', 'Jak to działa')}
+            {t('See how it works', 'Zobacz jak to działa')}
           </a>
         </div>
 
@@ -176,7 +176,7 @@ export function Landing() {
         <div style={{ maxWidth: 880, margin: '0 auto' }}>
           <SectionLabel text={t('How it works', 'Jak to działa')} />
           <h2 style={sectionH2}>
-            {t('Three steps to your perfect hairstyle', 'Trzy kroki do otrzymania idealnej fryzury')}
+            {t('Three steps to your perfect hairstyle', 'Trzy kroki do otrzymania Twojej idealnej fryzury')}
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, marginTop: 40 }}>
             {STEPS.map(s => (
@@ -318,7 +318,7 @@ export function Landing() {
         background: 'var(--surface)', borderTop: '1px solid var(--border)',
         padding: '64px 24px', textAlign: 'center'}}>
         <h2 style={{ ...sectionH2, marginBottom: 12 }}>
-          {t('Ready to find your style?', 'Gotowy żeby odkryć idealną fryzurę?')}
+          {t('Ready to find your style?', 'Gotowy żeby odkryć idealną fryzurę dla siebie?')}
         </h2>
         <p style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 300, marginBottom: 28}}>
           {t('Free · No account · Results in seconds', 'Bezpłatne · Bez rejestracji · Wyniki w kilka sekund')}
