@@ -289,25 +289,29 @@ export function Landing() {
       <section style={{ padding: '64px 24px' }}>
         <div style={{
           maxWidth: 640, margin: '0 auto', textAlign: 'center', background: 'var(--surface)',
-          borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', padding: '40px 32px'}}>
+          borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', padding: '40px 32px'
+        }}>
           <span style={{ fontSize: 32, display: 'block', marginBottom: 16 }}>✂️</span>
           <h2 style={{ ...sectionH2, marginBottom: 12 }}>
             {t('For hairstylists & salons', 'Dla fryzjerów i salonów')}
           </h2>
           <p style={{
-            fontSize: 14, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.7, marginBottom: 24}}>
+            fontSize: 14, color: 'var(--text-muted)', fontWeight: 300,
+            lineHeight: 1.7, marginBottom: 24
+          }}>
             {t(
               'Use FaceFit AI as a consultation tool — show clients data-driven style suggestions before the cut. Currently in beta, contact us for early access.',
               'Używaj FaceFit AI jako narzędzia konsultacyjnego, zaproponuj klientom analizę fryzur opartą na danych przed strzyżeniem. Aktualnie w fazie beta, skontaktuj się po wcześniejszy dostęp.'
             )}
           </p>
-          <a>
-            href="jurewiczjuras@gmail.com"
+          
+            <a href="mailto:jurewiczjuras@gmail.com"
             style={{ ...btnAccent, textDecoration: 'none', display: 'inline-block' }}
+          >
             {t('Contact us', 'Skontaktuj się')}
           </a>
         </div>
-    </section>
+      </section>
 
       {/* ── cta footer ── */}
       <section style={{
