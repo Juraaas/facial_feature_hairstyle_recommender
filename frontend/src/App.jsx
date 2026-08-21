@@ -82,7 +82,7 @@ function App() {
             {dark ? '☀️' : '🌙'}
           </button>
           <button onClick={toggleLang} style={headerBtnStyle}>
-            {i18n.language === 'pl' ? '🇬🇧 EN' : '🇵🇱 PL'}
+            {i18n.language === 'pl' ? 'EN' : 'PL'}
           </button>
           {tutorialDone && !showTutorial && (
             <button onClick={() => setShowTutorial(true)} style={headerBtnStyle}>
