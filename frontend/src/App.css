@@ -331,4 +331,11 @@ body {
   }
 
   .brand { padding: 0; }
+
+  @media (max-width: 640px) {
+  .demo-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+}
 }
