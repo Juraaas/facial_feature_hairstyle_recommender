@@ -310,7 +310,7 @@ export function Landing() {
                 src={c.image}
                 alt={c.face}
                 style={{
-                  width: '100%', height: 360,
+                  width: '100%', height: 400,
                   objectFit: 'cover', objectPosition: 'top',
                   display: 'block', borderBottom: '1px solid var(--border)',
                 }}
