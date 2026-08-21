@@ -295,10 +295,7 @@ export function Landing() {
 
         <div 
         className="demo-grid"
-        style={{
-          display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 380px))',
-          gap: 20, marginTop: 24, justifyContent: 'center'
-        }}>
+        style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginTop: 24}}>
           {demoCases.map((c, i) => (
             <div key={`${demoGender}-${i}`} style={{
               background: 'var(--bg)', borderRadius: 'var(--radius-lg)',

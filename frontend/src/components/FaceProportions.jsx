@@ -10,7 +10,7 @@ const BARS = [
   ['nose_position',    'trait_nose_position', 'label_low_nose',      'label_high_nose'],
   ['lower_face_ratio', 'trait_lower_face',    'label_short_lower',   'label_long_lower'],
   ['chin_prominence',  'trait_chin',          'label_flat_chin',     'label_strong_chin'],
-  ['symmetry',         'trait_symmetry',      'label_symmetrical',   'label_asymmetrical'],
+  ['symmetry',         'trait_symmetry',      'label_asymmetrical',   'label_symmetrical'],
   ['upper_third',      'trait_forehead',      'label_low_forehead',  'label_high_forehead'],
   ['middle_third',     'trait_mid_face',      'label_short_mid',     'label_long_mid'],
   ['lower_third',      'trait_lower_thirds',  'label_short_lower2',  'label_long_lower2'],
