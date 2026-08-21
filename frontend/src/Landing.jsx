@@ -293,9 +293,11 @@ export function Landing() {
             </div>
         </div>
 
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: 20, marginTop: 24,
+        <div 
+        className="demo-grid"
+        style={{
+          display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 380px))',
+          gap: 20, marginTop: 24, justifyContent: 'center'
         }}>
           {demoCases.map((c, i) => (
             <div key={`${demoGender}-${i}`} style={{
@@ -304,11 +306,11 @@ export function Landing() {
               animation: 'fadeIn .3s ease',
             }}>
               {/* image */}
-              <img
+              <img className="card-mobile"
                 src={c.image}
                 alt={c.face}
                 style={{
-                  width: '100%', height: 200,
+                  width: '100%', height: 300,
                   objectFit: 'cover', objectPosition: 'top',
                   display: 'block', borderBottom: '1px solid var(--border)',
                 }}
