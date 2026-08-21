@@ -14,7 +14,6 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
     async function handleVote(v) {
         setVoted(v)
         await sendVote(style.name, v, features, gender)
-        if (v === 'down') onReplace(rank)
     }
 
     return (
