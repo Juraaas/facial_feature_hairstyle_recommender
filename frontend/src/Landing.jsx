@@ -310,7 +310,7 @@ export function Landing() {
                 src={c.image}
                 alt={c.face}
                 style={{
-                  width: '100%', height: 300,
+                  width: '100%', height: 360,
                   objectFit: 'cover', objectPosition: 'top',
                   display: 'block', borderBottom: '1px solid var(--border)',
                 }}
@@ -338,7 +338,7 @@ export function Landing() {
                 paddingLeft: 8, borderLeft: '2px solid var(--accent)',
               }}>{pl ? c.analysis_pl : c.analysis}</p>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center'}}>
                 {c.styles.map(s => (
                   <span key={s} style={{
                     fontSize: 10, padding: '3px 9px', borderRadius: 20,
