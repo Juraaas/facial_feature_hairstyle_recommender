@@ -78,8 +78,20 @@ function App() {
         <div style={{ position: 'absolute', right: 0, top: 0, display: 'flex', 
           flexDirection: 'row', gap: 6, alignItems: 'flex-end',
          }}>
-          <button onClick={() => setDark(d => !d)} style={headerBtnStyle}>
-            {dark ? '☀️' : '🌙'}
+          <button onClick={() => setDark(d => !d)}
+            style={{
+              ...headerBtnStyle, display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px'}}>
+            {/* track */}
+            <span style={{
+              width: 28, height: 14, borderRadius: 7, background: dark ? 'var(--accent)' : 'var(--border)',
+              position: 'relative', display: 'block', transition: 'background .2s', flexShrink: 0,
+            }}>
+              {/* knob */}
+              <span style={{
+                position: 'absolute', top: 2, left: dark ? 14 : 2, width: 10, height: 10,
+                borderRadius: '50%', background: '#fff', transition: 'left .2s'
+              }} />
+            </span>
           </button>
           <button onClick={toggleLang} style={headerBtnStyle}>
             {i18n.language === 'pl' ? 'EN' : 'PL'}

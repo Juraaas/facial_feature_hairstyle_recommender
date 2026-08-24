@@ -124,7 +124,7 @@ export function Landing() {
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button onClick={toggleLang} style={btnOutline}>
-            {pl ? '🇬🇧 EN' : '🇵🇱 PL'}
+            {pl ? 'EN' : 'PL'}
           </button>
           <button onClick={() => setDark(d => !d)} style={btnOutline}>
             {dark ? '☀️' : '🌙'}
