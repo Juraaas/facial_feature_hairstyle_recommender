@@ -97,6 +97,7 @@ export default {
   trait_symmetry: "Symetria twarzy",
   trait_forehead: "Czoło",
   trait_mid_face: "Środkowa część twarzy",
+  trait_mid_lower: 'Balans środek/dół',
   trait_lower_thirds: "Dolna trzecia twarzy",
   label_wide_face: "Szeroka twarz",
   label_long_face: "Długa twarz",
@@ -122,6 +123,8 @@ export default {
   label_long_mid: "Długa środkowa część",
   label_short_lower2: "Krótka dolna część",
   label_long_lower2: "Długa dolna część",
+  label_lower_dom: 'Dominuje dół',
+  label_mid_dom:   'Dominuje środek',
 
   trait_below: "poniżej typowego zakresu",
   trait_above: "powyżej typowego zakresu",

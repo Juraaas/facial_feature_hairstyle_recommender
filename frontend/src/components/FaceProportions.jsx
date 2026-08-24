@@ -13,7 +13,7 @@ const BARS = [
   ['symmetry',         'trait_symmetry',      'label_asymmetrical',   'label_symmetrical'],
   ['upper_third',      'trait_forehead',      'label_low_forehead',  'label_high_forehead'],
   ['middle_third',     'trait_mid_face',      'label_short_mid',     'label_long_mid'],
-  ['lower_third',      'trait_lower_thirds',  'label_short_lower2',  'label_long_lower2'],
+  ['mid_lower_ratio',  'trait_mid_lower',     'label_lower_dom',     'label_mid_dom'],
 ]
 
 export function FaceProportions({ features, norms }) {

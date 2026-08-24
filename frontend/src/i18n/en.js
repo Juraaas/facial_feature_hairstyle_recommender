@@ -97,6 +97,7 @@ export default {
   trait_forehead: "Forehead",
   trait_mid_face: "Mid face",
   trait_lower_thirds: "Lower face thirds",
+  trait_mid_lower: 'Mid/lower balance',
   label_wide_face: "Wide face",
   label_long_face: "Long face",
   label_narrow_jaw: "Narrow jaw",
@@ -121,6 +122,8 @@ export default {
   label_long_mid: "Long mid face",
   label_short_lower2: "Short lower",
   label_long_lower2: "Long lower",
+  label_lower_dom: 'Lower dominant',
+  label_mid_dom:   'Mid dominant',
 
   trait_below: "below the typical range",
   trait_above: "above the typical range",
