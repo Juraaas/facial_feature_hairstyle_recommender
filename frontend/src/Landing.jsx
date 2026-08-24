@@ -17,8 +17,8 @@ const DEMO_CASES_MAN = [
     face_pl: 'Szeroka szczęka · Szeroka twarz',
     analysis: 'Height on top and tapered sides balance a broader jaw and create a more elongated silhouette.',
     analysis_pl: 'Objętość na górze i krótkie boki równoważą szeroką szczękę i wydłużają optycznie sylwetkę.',
-    styles: ['Pompadour', 'Quiff'],
-    image: `${API_URL}/images/male/pompadour.jpg`,
+    styles: ['Quiff', 'Pompadour'],
+    image: `${API_URL}/images/male/quiff.jpg`,
   },
   {
     face: 'Balanced proportions · High symmetry',
