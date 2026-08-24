@@ -78,16 +78,16 @@ const STEPS = [
     num: '03',
     icon: '✂️',
     title_en: 'Get your recommendations',
-    title_pl: 'Otrzymaj spersonalizowane wskazówki',
+    title_pl: 'Otrzymaj dopasowane porady',
     desc_en:  'Personalised hairstyles ranked by how well they suit your face geometry.',
-    desc_pl:  'Fryzury dobrane specjalnie dla Ciebie uszeregowane według dopasowania.',
+    desc_pl:  'Fryzury dobrane specjalnie dla Ciebie.',
   },
 ]
 
 const FEATURES = [
   { icon: '📐', title_en: 'Geometric analysis', title_pl: 'Analiza geometryczna', desc_en: '15 facial ratios measured against population norms', desc_pl: '15 proporcji twarzy zmierzonych względem norm populacyjnych' },
   { icon: '💇', title_en: 'Hair detection',  title_pl: 'Detekcja włosów', desc_en: 'Hair type and hairline shape detected automatically', desc_pl: 'Automatyczna detekcja typu i linii włosów' },
-  { icon: '⚖️', title_en: 'Balance-first scoring', title_pl: 'Punktacja balansująca', desc_en: 'Styles scored on how well they balance and enhance your features', desc_pl: 'Fryzury oceniane pod kątem balansowania i uwydatniania Twoich rysów' },
+  { icon: '⚖️', title_en: 'Balance-first scoring', title_pl: 'System oceny', desc_en: 'Styles scored on how well they balance and enhance your features', desc_pl: 'Fryzury oceniane pod kątem balansowania i uwydatniania Twoich rysów' },
   { icon: '🤖', title_en: 'AI face analysis', title_pl: 'Analiza AI', desc_en: 'Explanation of your facial strengths', desc_pl: 'Wyjaśnienie mocnych stron Twojej twarzy' },
 ]
 
@@ -145,7 +145,7 @@ export function Landing() {
             onClick={() => navigate('/analyse')}
             style={btnAccent}
           >
-            {t('Try it', 'Wypróbuj')}
+            {t('Try it', 'Przetestuj')}
           </button>
         </div>
       </nav>
@@ -196,7 +196,7 @@ export function Landing() {
             {t('Analyse my face →', 'Analizuj moją twarz →')}
           </button>
           <a href="#how-it-works" style={{ ...btnOutline, fontSize: 15, padding: '13px 32px', textDecoration: 'none' }}>
-            {t('See how it works', 'Zobacz jak to działa')}
+            {t('See how it works', 'Zobacz działanie')}
           </a>
         </div>
 
@@ -215,9 +215,9 @@ export function Landing() {
         padding: '64px 24px',
       }}>
         <div style={{ maxWidth: 880, margin: '0 auto' }}>
-          <SectionLabel text={t('How it works', 'Jak to działa')} />
+          <SectionLabel text={t('How it works?', 'Jak to działa?')} />
           <h2 style={sectionH2}>
-            {t('Three steps to your perfect hairstyle', 'Trzy kroki do otrzymania Twojej idealnej fryzury')}
+            {t('Three steps to your perfect hairstyle', 'Trzy kroki do Twojej idealnej fryzury')}
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, marginTop: 40 }}>
             {STEPS.map(s => (
@@ -247,9 +247,9 @@ export function Landing() {
       {/* ── features ── */}
       <section style={{ padding: '64px 24px' }}>
         <div style={{ maxWidth: 880, margin: '0 auto' }}>
-          <SectionLabel text={t('What you get', 'Co otrzymujesz')} />
+          <SectionLabel text={t('What you get?', 'Co otrzymujesz?')} />
           <h2 style={sectionH2}>
-            {t('More than a style quiz', 'Więcej niż quiz o stylach')}
+            {t('More than a style quiz', 'Więcej niż quiz')}
           </h2>
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -279,10 +279,10 @@ export function Landing() {
         borderBottom: '1px solid var(--border)', padding: '64px 24px'
       }}>
         <div style={{ maxWidth: 880, margin: '0 auto' }}>
-          <SectionLabel text={t('Example results', 'Przykładowe wyniki')} />
+          <SectionLabel text={t('Example results', 'Przykładowa analiza')} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
             <h2 style={sectionH2}>
-              {t('See what the system recommends', 'Zobacz co doradzi aplikacja')}
+              {t('See what the system recommends', 'Zobacz co doradza system')}
             </h2>
             {/* gender toggle */}
             <div style={{ display: 'flex', gap: 6 }}>
@@ -378,15 +378,15 @@ export function Landing() {
             lineHeight: 1.7, marginBottom: 24
           }}>
             {t(
-              'Use FaceFit AI as a consultation tool — show clients data-driven style suggestions before the cut. Currently in beta, contact us for early access.',
-              'Używaj FaceFit AI jako narzędzia konsultacyjnego, zaproponuj klientom analizę fryzur opartą na danych przed strzyżeniem. Aktualnie w fazie beta, skontaktuj się po wcześniejszy dostęp.'
+              'Use FaceFit AI as a consultation tool. Show clients data-driven style suggestions before the cut. Currently in beta, contact us for early access.',
+              'Używaj FaceFit AI jako narzędzia konsultacyjnego, zaproponuj klientom analizę fryzur opartą na danych przed strzyżeniem. Aktualnie we fazie beta, skontaktuj się po dostęp.'
             )}
           </p>
           
             <a href="mailto:jurewiczjuras@gmail.com"
             style={{ ...btnAccent, textDecoration: 'none', display: 'inline-block' }}
           >
-            {t('Contact us', 'Skontaktuj się')}
+            {t('Contact us', 'Napisz do nas')}
           </a>
         </div>
       </section>
@@ -396,7 +396,7 @@ export function Landing() {
         background: 'var(--surface)', borderTop: '1px solid var(--border)',
         padding: '64px 24px', textAlign: 'center'}}>
         <h2 style={{ ...sectionH2, marginBottom: 12 }}>
-          {t('Ready to find your style?', 'Gotowy żeby odkryć idealną fryzurę dla siebie?')}
+          {t('Ready to find your style?', 'Gotowy odkryć idealną fryzurę?')}
         </h2>
         <p style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 300, marginBottom: 28}}>
           {t('Free · No account · Results in seconds', 'Bezpłatne · Bez rejestracji · Wyniki w kilka sekund')}

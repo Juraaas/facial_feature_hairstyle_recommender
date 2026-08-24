@@ -1,7 +1,7 @@
 export default {
   app_title: "FaceFit AI",
   app_subtitle: "Wrzuć zdjęcie i otrzymaj spersonalizowane rekomendacje fryzur idealnie dopasowane do Twojej twarzy",
-  photo_tips: "📷 Wskazówki jak zrobić zdjęcie",
+  photo_tips: "📷 Wskazówki",
 
   tutorial_step1_title: "Ustaw dobrze twarz",
   tutorial_step1_items: [
