@@ -123,12 +123,9 @@ export function Landing() {
           FaceFit <span style={{ color: 'var(--accent)' }}>AI</span>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button onClick={toggleLang} style={btnOutline}>
-            {pl ? 'EN' : 'PL'}
-          </button>
           <button onClick={() => setDark(d => !d)}
             style={{
-              ...btnOutline, display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px'}}>
+              ...btnOutline, padding: '0 10px', height: 32, display: 'flex', alignItems: center}}>
             {/* track */}
             <span style={{
               width: 28, height: 14, borderRadius: 7, background: dark ? 'var(--accent)' : 'var(--border)',
@@ -140,6 +137,9 @@ export function Landing() {
                 borderRadius: '50%', background: '#fff', transition: 'left .2s'
               }} />
             </span>
+          </button>
+          <button onClick={toggleLang} style={btnOutline}>
+            {pl ? 'EN' : 'PL'}
           </button>
           <button
             onClick={() => navigate('/analyse')}
