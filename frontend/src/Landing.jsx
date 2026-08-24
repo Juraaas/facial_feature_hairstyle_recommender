@@ -125,7 +125,7 @@ export function Landing() {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button onClick={() => setDark(d => !d)}
             style={{
-              ...btnOutline, padding: '0 10px', height: 32, display: 'flex', alignItems: center}}>
+              ...btnOutline, padding: '0 10px', height: 32, display: 'flex', alignItems: 'center'}}>
             {/* track */}
             <span style={{
               width: 28, height: 14, borderRadius: 7, background: dark ? 'var(--accent)' : 'var(--border)',
