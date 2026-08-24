@@ -14,7 +14,7 @@ const DEMO_CASES_MAN = [
   },
   {
     face: 'Wide jaw · Short face',
-    face_pl: 'Szeroka szczęka · Szeroka twarz',
+    face_pl: 'Szeroka szczęka · Krótka twarz',
     analysis: 'Height on top and tapered sides balance a broader jaw and create a more elongated silhouette.',
     analysis_pl: 'Objętość na górze i krótkie boki równoważą szeroką szczękę i wydłużają optycznie sylwetkę.',
     styles: ['Quiff', 'Pompadour'],
@@ -63,8 +63,8 @@ const STEPS = [
     icon: '📸',
     title_en: 'Upload a photo',
     title_pl: 'Wrzuć zdjęcie',
-    desc_en:  'A clear front-facing photo in good lighting - that\'s all needed.',
-    desc_pl:  'Wyraźne zdjęcie przodem w dobrym oświetleniu - tylko tyle potrzeba.',
+    desc_en:  'A clear, front-facing photo in good lighting is all you need.',
+    desc_pl:  'Wystarczy wyraźne zdjęcie twarzy z przodu, wykonane w dobrym oświetleniu.',
   },
   {
     num: '02',
@@ -72,23 +72,23 @@ const STEPS = [
     title_en: 'AI analyses your face',
     title_pl: 'AI analizuje Twoją twarz',
     desc_en:  'We measure 15 facial proportions using 478 landmark points.',
-    desc_pl:  'Mierzymy 15 proporcji twarzy przy użyciu 478 punktów.',
+    desc_pl:  'Analizujemy 15 proporcji twarzy na podstawie 478 punktów charakterystycznych.',
   },
   {
     num: '03',
     icon: '✂️',
-    title_en: 'Get your recommendations',
-    title_pl: 'Otrzymaj dopasowane porady',
-    desc_en:  'Personalised hairstyles ranked by how well they suit your face geometry.',
-    desc_pl:  'Fryzury dobrane specjalnie dla Ciebie.',
+    title_en: 'Get personalised hairstyle recommendations',
+    title_pl: 'Otrzymaj spersonalizowane rekomendacje fryzur',
+    desc_en:  'Ranked by how well they suit your facial geometry.',
+    desc_pl:  'Uporządkowane według dopasowania do geometrii Twojej twarzy.',
   },
 ]
 
 const FEATURES = [
   { icon: '📐', title_en: 'Geometric analysis', title_pl: 'Analiza geometryczna', desc_en: '15 facial ratios measured against population norms', desc_pl: '15 proporcji twarzy zmierzonych względem norm populacyjnych' },
-  { icon: '💇', title_en: 'Hair detection',  title_pl: 'Detekcja włosów', desc_en: 'Hair type and hairline shape detected automatically', desc_pl: 'Automatyczna detekcja typu i linii włosów' },
-  { icon: '⚖️', title_en: 'Balance-first scoring', title_pl: 'System oceny', desc_en: 'Styles scored on how well they balance and enhance your features', desc_pl: 'Fryzury oceniane pod kątem balansowania i uwydatniania Twoich rysów' },
-  { icon: '🤖', title_en: 'AI face analysis', title_pl: 'Analiza AI', desc_en: 'Explanation of your facial strengths', desc_pl: 'Wyjaśnienie mocnych stron Twojej twarzy' },
+  { icon: '💇', title_en: 'Hair detection',  title_pl: 'Detekcja włosów', desc_en: 'Hair type and hairline shape detected automatically', desc_pl: 'Automatyczne rozpoznanie typu włosów i kształtu linii włosów' },
+  { icon: '⚖️', title_en: 'Balance-first scoring', title_pl: 'System oceny', desc_en: 'Styles ranked by how well they balance and enhance your features', desc_pl: 'Fryzury oceniane pod kątem równoważenia proporcji i podkreślania Twoich rysów' },
+  { icon: '🤖', title_en: 'AI face analysis', title_pl: 'Analiza AI', desc_en: 'Clear explanations of how your features influence hairstyle recommendations', desc_pl: 'Jasne wyjaśnienie, jak Twoje cechy twarzy wpływają na rekomendowane fryzury' },
 ]
 
 export function Landing() {
@@ -177,7 +177,7 @@ export function Landing() {
         }}>
           {t(
             'Find hairstyles that actually suit your face',
-            'Znajdź fryzurę która realnie pasuje do Twojej twarzy'
+            'Znajdź fryzurę która naprawdę pasuje do Twojej twarzy'
           )}
         </h1>
 
@@ -186,8 +186,8 @@ export function Landing() {
           fontWeight: 300, lineHeight: 1.65, maxWidth: 560, margin: '0 auto 36px',
         }}>
           {t(
-            'Upload a photo and get science-backed hairstyle recommendations based on the geometry of your face.',
-            'Wrzuć zdjęcie i otrzymaj propozycje fryzur oparte na geometrii Twojej twarzy.'
+            'Upload a photo and get personalised hairstyle recommendations based on your facial geometry.',
+            'Wrzuć zdjęcie i otrzymaj propozycje fryzur dopasowane do geometrii Twojej twarzy.'
           )}
         </p>
 
@@ -217,7 +217,7 @@ export function Landing() {
         <div style={{ maxWidth: 880, margin: '0 auto' }}>
           <SectionLabel text={t('How it works?', 'Jak to działa?')} />
           <h2 style={sectionH2}>
-            {t('Three steps to your perfect hairstyle', 'Trzy kroki do Twojej idealnej fryzury')}
+            {t('Three steps to find your best-fitting styles', 'Trzy kroki do fryzury dopasowanej do Ciebie')}
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, marginTop: 40 }}>
             {STEPS.map(s => (
@@ -378,8 +378,8 @@ export function Landing() {
             lineHeight: 1.7, marginBottom: 24
           }}>
             {t(
-              'Use FaceFit AI as a consultation tool. Show clients data-driven style suggestions before the cut. Currently in beta, contact us for early access.',
-              'Używaj FaceFit AI jako narzędzia konsultacyjnego, zaproponuj klientom analizę fryzur opartą na danych przed strzyżeniem. Aktualnie we fazie beta, skontaktuj się po dostęp.'
+              'Use FaceFit AI as a consultation tool to explore data-driven hairstyle recommendations with your clients before the cut. We\'re currently in beta — contact us for early access.',
+              'Używaj FaceFit AI jako narzędzia konsultacyjnego, zaproponuj klientom analizę fryzur opartą na danych przed strzyżeniem. Jesteśmy obecnie w fazie beta. Skontaktuj się z nami, aby uzyskać dostęp dla swojego salonu.'
             )}
           </p>
           
@@ -396,7 +396,7 @@ export function Landing() {
         background: 'var(--surface)', borderTop: '1px solid var(--border)',
         padding: '64px 24px', textAlign: 'center'}}>
         <h2 style={{ ...sectionH2, marginBottom: 12 }}>
-          {t('Ready to find your style?', 'Gotowy odkryć idealną fryzurę?')}
+          {t('Ready to find what suits you?', 'Sprawdź, co naprawdę Ci pasuje.')}
         </h2>
         <p style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 300, marginBottom: 28}}>
           {t('Free · No account · Results in seconds', 'Bezpłatne · Bez rejestracji · Wyniki w kilka sekund')}
