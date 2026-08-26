@@ -8,6 +8,7 @@ import { ErrorBox } from './components/ErrorBox'
 import { PhotoTutorial } from './components/PhotoTutorial'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from './lib/supabase'
 import './App.css'
 
 function App() {
@@ -25,6 +26,14 @@ function App() {
 
   const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data, error }) => {
+      console.log('=== SUPABASE TEST ===')
+      console.log('Session:', data.session)
+      console.log('Error:', error)
+    })
+  }, [])
 
   useEffect(() => {
     document.body.setAttribute('data-theme', dark ? 'dark' : 'light')
