@@ -1,9 +1,19 @@
+import { supabase } from '../lib/supabase'
+
 const BASE = import.meta.env.VITE_API_URL || '/api'
+
+async function getAuthHeaders() {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
 
 export async function analysePhoto(file, lang) {
   const form = new FormData()
   form.append('file', file)
-  const res = await fetch(`${BASE}/analyse?lang=${lang}`, { method: 'POST', body: form })
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${BASE}/analyse?lang=${lang}`, 
+    { method: 'POST', body: form, headers})
   if (!res.ok) {
     const err = await res.json()
     throw new Error(JSON.stringify(
