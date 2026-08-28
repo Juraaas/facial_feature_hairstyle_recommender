@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 export function PremiumGate({ children, isPremium, onUnlock }) {
   const { i18n } = useTranslation()
   const pl = i18n.language === 'pl'

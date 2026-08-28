@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 export function PremiumPopup({ onClose, onUpgrade, onLogin, user }) {
   const { i18n } = useTranslation()
   const pl = i18n.language === 'pl'

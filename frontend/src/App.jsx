@@ -36,14 +36,6 @@ function App() {
   const isPremium = user?.user_metadata?.plan === 'premium' || false
   const [showPremium, setShowPremium] = useState(false)
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data, error }) => {
-      console.log('=== SUPABASE TEST ===')
-      console.log('Session:', data.session)
-      console.log('Error:', error)
-    })
-  }, [])
-
   function handleFile(f) {
     if (!f) return
     setFile(f)
