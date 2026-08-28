@@ -245,17 +245,17 @@ function App() {
                 </div>
               ))}
             </div>
-            <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}>
+            {/* <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}> */}
               <FaceAnalysis analysis={analysis} />
-            </PremiumGate>
+            {/* </PremiumGate> */}
             <FaceProportions features={result.features} norms={result.norms} />
-            <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}>
+            {/* <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}> */}
               <StylesSection
                 styles={styles}
                 features={result.features}
                 gender={result.gender}
               />
-            </PremiumGate>
+            {/* </PremiumGate> */}
 
             {showPremium && (
               <PremiumPopup
