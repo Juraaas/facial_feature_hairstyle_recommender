@@ -9,7 +9,7 @@ import { PhotoTutorial } from './components/PhotoTutorial'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
-//import { AuthModal } from './components/AuthModal' ?? nieuzywane w przyciskach zaloguj idk czemu
+import { AuthModal } from './components/AuthModal'
 import { PremiumGate } from './components/PremiumGate'
 import { PremiumPopup } from './components/PremiumPopup'
 import { supabase } from './lib/supabase'
@@ -33,7 +33,7 @@ function App() {
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
   const { user, loading: authLoading, signOut, getToken } = useAuth()
   const [showAuth, setShowAuth] = useState(false)
-  //const isPremium = user?.user_metadata?.plan === 'premium' || false ?? uzgodnic czy potrzebne
+  const isPremium = user?.user_metadata?.plan === 'premium' || false
   const [showPremium, setShowPremium] = useState(false)
 
   useEffect(() => {
