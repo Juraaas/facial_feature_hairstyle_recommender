@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import { AuthModal } from './components/AuthModal'
 import { PremiumGate } from './components/PremiumGate'
-import { Premiumpopup } from './components/PremiumPopup'
+import { PremiumPopup } from './components/PremiumPopup'
 import { supabase } from './lib/supabase'
 import { useDarkMode } from './hooks/useDarkMode'
 import './App.css'
@@ -34,6 +34,7 @@ function App() {
   const { user, loading: authLoading, signOut, getToken } = useAuth()
   const [showAuth, setShowAuth] = useState(false)
   const isPremium = user?.user_metadata?.plan === 'premium' || false
+  const [showPremium, setShowPremium] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data, error }) => {
@@ -246,13 +247,26 @@ function App() {
                 </div>
               ))}
             </div>
-            <FaceAnalysis analysis={analysis} />
+            <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}>
+              <FaceAnalysis analysis={analysis} />
+            </PremiumGate>
             <FaceProportions features={result.features} norms={result.norms} />
-            <StylesSection
-              styles={styles}
-              features={result.features}
-              gender={result.gender}
-            />
+            <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}>
+              <StylesSection
+                styles={styles}
+                features={result.features}
+                gender={result.gender}
+              />
+            </PremiumGate>
+
+            {showPremium && (
+              <PremiumPopup
+                onClose={() => setShowPremium(false)}
+                onUpgrade={() => {}}
+                onLogin={() => { setShowPremium(false); setShowAuth(true) }}
+                user={user}
+              />
+            )}
             <FeedbackSection
               features={result.features}
               qualityScore={result.quality.score}
