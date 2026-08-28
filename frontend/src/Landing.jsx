@@ -147,7 +147,7 @@ export function Landing() {
             onClick={() => navigate('/analyse')}
             style={btnAccent}
           >
-            {t('Try Stylizzer', 'Przetestuj Stylizzer')}
+            {t('Try it', 'Przetestuj')}
           </button>
         </div>
       </nav>
@@ -401,7 +401,7 @@ export function Landing() {
           {t('Ready to see what suits you?', 'Sprawdź, co naprawdę Ci pasuje.')}
         </h2>
         <p style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 300, marginBottom: 28}}>
-          {t('Personalised results · Saved analyses · Results in seconds', 'Spersonalizowane wyniki · Zapisane analizy · Wyniki w kilka sekund')}
+          {t('Tailored recommendations · Saved analyses · Results in seconds', 'Dopasowane rekomendacje · Zapisane analizy · Wyniki w kilka sekund')}
         </p>
         <button
           onClick={() => navigate('/analyse')}
@@ -419,7 +419,7 @@ export function Landing() {
           Stylizzer
         </span>
         <span style={{ fontSize: 11, color: 'var(--text-hint)', fontFamily: 'var(--font-mono)' }}>
-          © 2026 Stylizzer
+          © 2026 Stylizzer · Privacy · Terms
         </span>
       </footer>
     </div>
