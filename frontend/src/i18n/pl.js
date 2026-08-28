@@ -1,5 +1,5 @@
 export default {
-  app_title: "FaceFit AI",
+  app_title: "Stylizzer",
   app_subtitle: "Wrzuć zdjęcie i otrzymaj spersonalizowane rekomendacje fryzur idealnie dopasowane do Twojej twarzy",
   photo_tips: "📷 Wskazówki",
 

@@ -1,5 +1,5 @@
 export default {
-  app_title: "FaceFit AI",
+  app_title: "Stylizzer",
   app_subtitle: "Upload a photo to get personalised hairstyle recommendations based on your facial features",
   photo_tips: "📷 Photo tips",
 
