@@ -8,14 +8,19 @@ import { ErrorBox } from './components/ErrorBox'
 import { PhotoTutorial } from './components/PhotoTutorial'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from './hooks/useAuth'
+import { AuthModal } from './components/AuthModal'
+import { PremiumGate } from './components/PremiumGate'
+import { Premiumpopup } from './components/PremiumPopup'
 import { supabase } from './lib/supabase'
+import { useDarkMode } from './hooks/useDarkMode'
 import './App.css'
 
 function App() {
   const { result, loading, error, analyse, reset} = useAnalysis()
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useDarkMode()
   const [tutorialDone, setTutorialDone] = useState(
   () => localStorage.getItem('tutorial_done') === '1'
   )
@@ -26,6 +31,9 @@ function App() {
 
   const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
+  const { user, loading: authLoading, signOut, getToken } = useAuth()
+  const [showAuth, setShowAuth] = useState(false)
+  const isPremium = user?.user_metadata?.plan === 'premium' || false
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data, error }) => {
@@ -34,10 +42,6 @@ function App() {
       console.log('Error:', error)
     })
   }, [])
-
-  useEffect(() => {
-    document.body.setAttribute('data-theme', dark ? 'dark' : 'light')
-  }, [dark])
 
   function handleFile(f) {
     if (!f) return
@@ -60,7 +64,8 @@ function App() {
 
   async function handleAnalyse() {
     if (!file) return
-    analyse(file, i18n.language)
+    const token = await getToken()
+    analyse(file, i18n.language, token)
   }
 
   const headerBtnStyle = {
@@ -84,35 +89,61 @@ function App() {
           <h1>{t('app_title')}</h1>
           <p>{t('app_subtitle')}</p>
         </div>
-        <div style={{ position: 'absolute', right: 0, top: 0, display: 'flex', 
-          flexDirection: 'row', gap: 6, alignItems: 'flex-end',
+        {/* left - nav */}
+        <div style={{ position: 'absolute', left: 0, top: 0, display: 'flex', 
+          flexDirection: 'row', gap: 6, alignItems: 'center',
          }}>
-          <button onClick={() => setDark(d => !d)}
-            style={{
-              ...headerBtnStyle, display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px'}}>
-            {/* track */}
-            <span style={{
-              width: 28, height: 14, borderRadius: 7, background: dark ? 'var(--accent)' : 'var(--border)',
-              position: 'relative', display: 'block', transition: 'background .2s', flexShrink: 0,
-            }}>
-              {/* knob */}
-              <span style={{
-                position: 'absolute', top: 2, left: dark ? 14 : 2, width: 10, height: 10,
-                borderRadius: '50%', background: '#fff', transition: 'left .2s'
-              }} />
-            </span>
-          </button>
-          <button onClick={toggleLang} style={headerBtnStyle}>
-            {i18n.language === 'pl' ? 'EN' : 'PL'}
-          </button>
-          {tutorialDone && !showTutorial && (
-            <button onClick={() => setShowTutorial(true)} style={headerBtnStyle}>
-              {t('photo_tips')}
-            </button>
-          )}
           <button onClick={() => navigate('/')} style={headerBtnStyle}>
             ← {pl ? 'Strona główna' : 'Home'}
           </button>
+        </div>
+        {/* right - settings + user */}
+        <div style={{position: 'absolute', right: 0, top: 0, display: 'flex', gap: 6, alignItems: 'center'}}>
+          <button onClick={() => setDark(d => !d)}
+              style={{
+                ...headerBtnStyle, display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px'}}>
+              <span style={{ fontSize: 12 }}>{dark ? '☀️' : '🌙'}</span>
+              {/* track */}
+              <span style={{
+                width: 28, height: 14, borderRadius: 7, background: dark ? 'var(--accent)' : 'var(--border)',
+                position: 'relative', display: 'block', transition: 'background .2s', flexShrink: 0,
+              }}>
+                {/* knob */}
+                <span style={{
+                  position: 'absolute', top: 2, left: dark ? 14 : 2, width: 10, height: 10,
+                  borderRadius: '50%', background: '#fff', transition: 'left .2s'
+                }} />
+              </span>
+            </button>
+            <button onClick={toggleLang} style={headerBtnStyle}>
+              {i18n.language === 'pl' ? 'EN' : 'PL'}
+            </button>
+            {tutorialDone && !showTutorial && (
+              <button onClick={() => setShowTutorial(true)} style={headerBtnStyle}>
+                {t('photo_tips')}
+              </button>
+            )}
+            <div style={{ width: 1, height: 16, background: 'var(--border)' }} />
+            {user ? (
+              <>
+                <span style={{
+                  fontSize: 11, color: 'var(--text-muted)',
+                  fontFamily: 'var(--font-mono)', padding: '5px 8px',
+                }}>
+                  {user.email?.split('@')[0]}
+                </span>
+                <button onClick={signOut} style={headerBtnStyle}>
+                  {pl ? 'Wyloguj' : 'Out'}
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowAuth(true)}
+                style={{...headerBtnStyle, borderColor: 'var(--accent)', color: 'var(--accent)'}}
+              >
+                {pl ? 'Zaloguj' : 'Sign in'}
+            </button>
+            )}
         </div>
       </header>
 

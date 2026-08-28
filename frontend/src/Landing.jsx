@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
+import { useDarkMode } from './hooks/useDarkMode'
 
 const API_URL = import.meta.env.VITE_API_URL
 const DEMO_CASES_MAN = [
@@ -95,7 +96,7 @@ export function Landing() {
   const { i18n } = useTranslation()
   const navigate  = useNavigate()
   const pl = i18n.language === 'pl'
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useDarkMode()
 
   function toggleLang() {
     const next = pl ? 'en' : 'pl'
@@ -109,7 +110,7 @@ export function Landing() {
 
   return (
     <div style={{minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', 
-    fontFamily: 'var(--font-body)'}} data-theme={dark ? 'dark' : 'light'}>
+    fontFamily: 'var(--font-body)'}}>
 
       {/* ── nav ── */}
       <nav style={{
@@ -127,6 +128,7 @@ export function Landing() {
             style={{
               ...btnOutline, padding: '0 10px', height: 32, display: 'flex', alignItems: 'center'}}>
             {/* track */}
+            <span style={{ fontSize: 12 }}>{dark ? '☀️' : '🌙'}</span>
             <span style={{
               width: 28, height: 14, borderRadius: 7, background: dark ? 'var(--accent)' : 'var(--border)',
               position: 'relative', display: 'block', transition: 'background .2s', flexShrink: 0,
