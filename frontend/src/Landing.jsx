@@ -70,8 +70,8 @@ const STEPS = [
   {
     num: '02',
     icon: '🔬',
-    title_en: 'AI analyses your face',
-    title_pl: 'AI analizuje Twoją twarz',
+    title_en: 'We analyse your facial geometry',
+    title_pl: 'Analizujemy geometrię Twojej twarzy',
     desc_en:  'We measure 15 facial proportions using 478 landmark points.',
     desc_pl:  'Analizujemy 15 proporcji twarzy na podstawie 478 punktów charakterystycznych.',
   },
@@ -86,10 +86,10 @@ const STEPS = [
 ]
 
 const FEATURES = [
-  { icon: '📐', title_en: 'Geometric analysis', title_pl: 'Analiza geometryczna', desc_en: '15 facial ratios measured against population norms', desc_pl: '15 proporcji twarzy zmierzonych względem norm populacyjnych' },
-  { icon: '💇', title_en: 'Hair detection',  title_pl: 'Detekcja włosów', desc_en: 'Hair type and hairline shape detected automatically', desc_pl: 'Automatyczne rozpoznanie typu włosów i kształtu linii włosów' },
-  { icon: '⚖️', title_en: 'Balance-first scoring', title_pl: 'System oceny', desc_en: 'Styles ranked by how well they balance and enhance your features', desc_pl: 'Fryzury oceniane pod kątem równoważenia proporcji i podkreślania Twoich rysów' },
-  { icon: '🤖', title_en: 'AI face analysis', title_pl: 'Analiza AI', desc_en: 'Clear explanations of how your features influence hairstyle recommendations', desc_pl: 'Jasne wyjaśnienie, jak Twoje cechy twarzy wpływają na rekomendowane fryzury' },
+  { icon: '📐', title_en: 'Facial geometry', title_pl: 'Geometria twarzy', desc_en: '15 facial ratios measured against population norms', desc_pl: '15 proporcji twarzy porównanych z normami populacyjnymi' },
+  { icon: '💇', title_en: 'Hair & hairline detection',  title_pl: 'Typ i linia włosów', desc_en: 'Hair type and hairline shape detected automatically', desc_pl: 'Automatyczne rozpoznanie typu włosów i kształtu linii włosów' },
+  { icon: '⚖️', title_en: 'Style scoring', title_pl: 'Ocena dopasowania', desc_en: 'Styles ranked by how well they balance and enhance your features', desc_pl: 'Fryzury oceniane pod kątem równoważenia proporcji i podkreślania Twoich rysów' },
+  { icon: '💡', title_en: 'Explainable recommendations', title_pl: 'Wyjaśnienie rekomendacji', desc_en: 'See why each style works with your facial features', desc_pl: 'Zobacz, dlaczego dana fryzura do Ciebie pasuje' },
 ]
 
 export function Landing() {
@@ -121,7 +121,7 @@ export function Landing() {
       }}>
         <div style={{fontFamily: 'var(--font-display)', fontSize: 18,
           fontWeight: 500, letterSpacing: '.01em'}}>
-          FaceFit <span style={{ color: 'var(--accent)' }}>AI</span>
+           Stylizzer
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button onClick={() => setDark(d => !d)}
@@ -147,7 +147,7 @@ export function Landing() {
             onClick={() => navigate('/analyse')}
             style={btnAccent}
           >
-            {t('Try it', 'Przetestuj')}
+            {t('Try Stylizzer', 'Przetestuj Stylizzer')}
           </button>
         </div>
       </nav>
@@ -165,7 +165,7 @@ export function Landing() {
           background: 'var(--accent-soft)', padding: '4px 12px', borderRadius: 20,
           marginBottom: 24, border: '1px solid var(--accent)',
         }}>
-          {t('AI-Powered · Free to try', 'Oparte na AI · Przetestuj za darmo')}
+          {t('AI-Powered · Free to try', 'Analiza AI · Wypróbuj za darmo')}
         </div>
 
         <h1 style={{
@@ -178,8 +178,8 @@ export function Landing() {
           color: 'var(--text)',
         }}>
           {t(
-            'Find hairstyles that actually suit your face',
-            'Znajdź fryzurę która naprawdę pasuje do Twojej twarzy'
+            'Find the hairstyles that fit you.',
+            'Znajdź fryzurę, która naprawdę do Ciebie pasuje.'
           )}
         </h1>
 
@@ -188,8 +188,8 @@ export function Landing() {
           fontWeight: 300, lineHeight: 1.65, maxWidth: 560, margin: '0 auto 36px',
         }}>
           {t(
-            'Upload a photo and get personalised hairstyle recommendations based on your facial geometry.',
-            'Wrzuć zdjęcie i otrzymaj propozycje fryzur dopasowane do geometrii Twojej twarzy.'
+            'Stylizzer analyses your facial geometry and recommends hairstyles that work with your features.',
+            'Stylizzer analizuje geometrię Twojej twarzy i dobiera fryzury, które współgrają z Twoimi rysami.'
           )}
         </p>
 
@@ -204,8 +204,8 @@ export function Landing() {
 
         {/* trust line */}
         <p style={{ marginTop: 28, fontSize: 12, color: 'var(--text-hint)', fontFamily: 'var(--font-mono)' }}>
-          {t('478 landmarks · 15 facial ratios · free · no account needed',
-             '478 punktów · 15 proporcji twarzy · bezpłatne · bez rejestracji')}
+          {t('478 facial landmarks · 15 facial ratios · personalised results',
+             '478 punktów · 15 proporcji twarzy · spersonalizowane wyniki')}
         </p>
       </section>
 
@@ -284,7 +284,7 @@ export function Landing() {
           <SectionLabel text={t('Example results', 'Przykładowa analiza')} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
             <h2 style={sectionH2}>
-              {t('See what the system recommends', 'Zobacz co doradza system')}
+              {t('See Stylizzer in action', 'Sprawdź Stylizzer w akcji')}
             </h2>
             {/* gender toggle */}
             <div style={{ display: 'flex', gap: 6 }}>
@@ -380,8 +380,8 @@ export function Landing() {
             lineHeight: 1.7, marginBottom: 24
           }}>
             {t(
-              'Use FaceFit AI as a consultation tool to explore data-driven hairstyle recommendations with your clients before the cut. We\'re currently in beta — contact us for early access.',
-              'Używaj FaceFit AI jako narzędzia konsultacyjnego, zaproponuj klientom analizę fryzur opartą na danych przed strzyżeniem. Jesteśmy obecnie w fazie beta. Skontaktuj się z nami, aby uzyskać dostęp dla swojego salonu.'
+              'Use Stylizzer as a consultation tool to explore data-driven hairstyle recommendations with your clients before the cut. We\'re currently in beta — contact us for early access.',
+              'Używaj Stylizzer jako narzędzia konsultacyjnego, aby wspólnie z klientem sprawdzić propozycje fryzur dopasowanych do geometrii jego twarzy. Jesteśmy obecnie w fazie beta. Skontaktuj się z nami, aby uzyskać dostęp dla swojego salonu.'
             )}
           </p>
           
@@ -398,10 +398,10 @@ export function Landing() {
         background: 'var(--surface)', borderTop: '1px solid var(--border)',
         padding: '64px 24px', textAlign: 'center'}}>
         <h2 style={{ ...sectionH2, marginBottom: 12 }}>
-          {t('Ready to find what suits you?', 'Sprawdź, co naprawdę Ci pasuje.')}
+          {t('Ready to see what suits you?', 'Sprawdź, co naprawdę Ci pasuje.')}
         </h2>
         <p style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 300, marginBottom: 28}}>
-          {t('Free · No account · Results in seconds', 'Bezpłatne · Bez rejestracji · Wyniki w kilka sekund')}
+          {t('Personalised results · Saved analyses · Results in seconds', 'Spersonalizowane wyniki · Zapisane analizy · Wyniki w kilka sekund')}
         </p>
         <button
           onClick={() => navigate('/analyse')}
@@ -416,10 +416,10 @@ export function Landing() {
         borderTop: '1px solid var(--border)', padding: '20px 40px', display: 'flex',
         justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8}}>
         <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: 'var(--text-muted)' }}>
-          FaceFit <span style={{ color: 'var(--accent)' }}>AI</span>
+          Stylizzer
         </span>
         <span style={{ fontSize: 11, color: 'var(--text-hint)', fontFamily: 'var(--font-mono)' }}>
-          {t('Built with MediaPipe · Python · React', 'Zbudowane z MediaPipe · Python · React')}
+          © 2026 Stylizzer
         </span>
       </footer>
     </div>
