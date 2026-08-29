@@ -143,6 +143,14 @@ export function Landing() {
           <button onClick={toggleLang} style={btnOutline}>
             {pl ? 'EN' : 'PL'}
           </button>
+          {/* separator */}
+          <div style={{ width: 1, height: 16, background: 'var(--border)' }} />
+          <button
+            onClick={() => navigate('/analyse?login=1')}
+            style={{ ...btnOutline, borderColor: 'var(--accent)', color: 'var(--accent)' }}
+          >
+            {t('Sign in', 'Zaloguj się')}
+          </button>
           <button
             onClick={() => navigate('/analyse')}
             style={btnAccent}
@@ -280,7 +288,7 @@ export function Landing() {
         background: 'var(--surface)', borderTop: '1px solid var(--border)',
         borderBottom: '1px solid var(--border)', padding: '64px 24px'
       }}>
-        <div style={{ maxWidth: 880, margin: '0 auto' }}>
+        <div style={{ maxWidth: 880, margin: '0 auto', textAlign: 'center' }}>
           <SectionLabel text={t('Example results', 'Przykładowa analiza')} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
             <h2 style={sectionH2}>
