@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { useDarkMode } from './hooks/useDarkMode'
+import { btnAccent, btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob, sectionH2 } from './styles/shared'
 
 const API_URL = import.meta.env.VITE_API_URL
 const DEMO_CASES_MAN = [
@@ -125,21 +126,14 @@ export function Landing() {
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button onClick={() => setDark(d => !d)}
-            style={{
-              ...btnOutline, padding: '0 10px', height: 32, display: 'flex', alignItems: 'center'}}>
-            {/* track */}
-            <span style={{ fontSize: 12 }}>{dark ? '☀️' : '🌙'}</span>
-            <span style={{
-              width: 28, height: 14, borderRadius: 7, background: dark ? 'var(--accent)' : 'var(--border)',
-              position: 'relative', display: 'block', transition: 'background .2s', flexShrink: 0,
-            }}>
-              {/* knob */}
-              <span style={{
-                position: 'absolute', top: 2, left: dark ? 14 : 2, width: 10, height: 10,
-                borderRadius: '50%', background: '#fff', transition: 'left .2s'
-              }} />
-            </span>
-          </button>
+              style={darkToggleBtn(dark)}>
+              <span style={{ fontSize: 12 }}>{dark ? '☀️' : '🌙'}</span>
+                {/* track */}
+                <span style={darkToggleTrack(dark)}>
+                {/* knob */}
+                <span style={darkToggleKnob(dark)} />
+              </span>
+            </button>
           <button onClick={toggleLang} style={btnOutline}>
             {pl ? 'EN' : 'PL'}
           </button>
@@ -432,43 +426,6 @@ export function Landing() {
       </footer>
     </div>
   )
-}
-
-/* ── shared styles ── */
-const btnAccent = {
-  background: 'var(--accent)',
-  color: '#fff',
-  border: 'none',
-  borderRadius: 'var(--radius-md)',
-  padding: '10px 20px',
-  fontSize: 13,
-  fontFamily: 'var(--font-body)',
-  fontWeight: 500,
-  cursor: 'pointer',
-  letterSpacing: '.02em',
-  transition: 'background .15s',
-}
-
-const btnOutline = {
-  background: 'none',
-  color: 'var(--text-muted)',
-  border: '1px solid var(--border)',
-  borderRadius: 'var(--radius-sm)',
-  padding: '7px 14px',
-  fontSize: 12,
-  fontFamily: 'var(--font-body)',
-  cursor: 'pointer',
-  letterSpacing: '.02em',
-  transition: 'border-color .15s',
-}
-
-const sectionH2 = {
-  fontFamily: 'var(--font-display)',
-  fontSize: 'clamp(22px, 3vw, 30px)',
-  fontWeight: 500,
-  letterSpacing: '.01em',
-  color: 'var(--text)',
-  marginBottom: 8,
 }
 
 function SectionLabel({ text }) {

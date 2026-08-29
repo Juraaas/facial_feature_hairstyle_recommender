@@ -15,6 +15,7 @@ import { PremiumPopup } from './components/PremiumPopup'
 import { supabase } from './lib/supabase'
 import { useDarkMode } from './hooks/useDarkMode'
 import { useLocation } from 'react-router-dom'
+import { btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob } from './styles/shared'
 import './App.css'
 
 function App() {
@@ -84,20 +85,6 @@ function App() {
     }
   }, [location.search])
 
-  const headerBtnStyle = {
-    background: 'none',
-    border: '1px solid var(--border)',
-    borderRadius: 'var(--radius-sm)',
-    cursor: 'pointer',
-    fontSize: 11,
-    color: 'var(--text-muted)',
-    padding: '5px 10px',
-    fontFamily: 'var(--font-body)',
-    letterSpacing: '.02em',
-    transition: 'border-color .15s, color .15s',
-    whiteSpace: 'nowrap',
-  }
-
   return (
     <div className="app">
       <header className="app-header">
@@ -109,33 +96,26 @@ function App() {
         <div style={{ position: 'absolute', left: 0, top: 0, display: 'flex', 
           flexDirection: 'row', gap: 6, alignItems: 'center',
          }}>
-          <button onClick={() => navigate('/')} style={headerBtnStyle}>
+          <button onClick={() => navigate('/')} style={btnOutline}>
             ← {pl ? 'Strona główna' : 'Home'}
           </button>
         </div>
         {/* right - settings + user */}
         <div style={{position: 'absolute', right: 0, top: 0, display: 'flex', gap: 6, alignItems: 'center'}}>
           <button onClick={() => setDark(d => !d)}
-              style={{
-                ...headerBtnStyle, display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px'}}>
+              style={darkToggleBtn(dark)}>
               <span style={{ fontSize: 12 }}>{dark ? '☀️' : '🌙'}</span>
               {/* track */}
-              <span style={{
-                width: 28, height: 14, borderRadius: 7, background: dark ? 'var(--accent)' : 'var(--border)',
-                position: 'relative', display: 'block', transition: 'background .2s', flexShrink: 0,
-              }}>
+              <span style={darkToggleTrack(dark)}>
                 {/* knob */}
-                <span style={{
-                  position: 'absolute', top: 2, left: dark ? 14 : 2, width: 10, height: 10,
-                  borderRadius: '50%', background: '#fff', transition: 'left .2s'
-                }} />
+                <span style={darkToggleKnob(dark)} />
               </span>
             </button>
-            <button onClick={toggleLang} style={headerBtnStyle}>
+            <button onClick={toggleLang} style={btnOutline}>
               {i18n.language === 'pl' ? 'EN' : 'PL'}
             </button>
             {tutorialDone && !showTutorial && (
-              <button onClick={() => setShowTutorial(true)} style={headerBtnStyle}>
+              <button onClick={() => setShowTutorial(true)} style={btnOutline}>
                 {t('photo_tips')}
               </button>
             )}
@@ -148,14 +128,14 @@ function App() {
                 }}>
                   {user.email?.split('@')[0]}
                 </span>
-                <button onClick={signOut} style={headerBtnStyle}>
+                <button onClick={signOut} style={btnOutline}>
                   {pl ? 'Wyloguj' : 'Out'}
                 </button>
               </>
             ) : (
               <button
                 onClick={() => setShowAuth(true)}
-                style={{...headerBtnStyle, borderColor: 'var(--accent)', color: 'var(--accent)'}}
+                style={{...btnOutline, borderColor: 'var(--accent)', color: 'var(--accent)'}}
               >
                 {pl ? 'Zaloguj' : 'Sign in'}
             </button>
