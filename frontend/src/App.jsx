@@ -1,4 +1,4 @@
-import { useEffect, useState, useSyncExternalStore } from 'react'
+import { useState, useEffect } from 'react'
 import { useAnalysis } from './hooks/useAnalysis'
 import { FaceAnalysis } from './components/FaceAnalysis'
 import { FaceProportions } from './components/FaceProportions'
@@ -14,6 +14,7 @@ import { PremiumGate } from './components/PremiumGate'
 import { PremiumPopup } from './components/PremiumPopup'
 import { supabase } from './lib/supabase'
 import { useDarkMode } from './hooks/useDarkMode'
+import { useLocation } from 'react-router-dom'
 import './App.css'
 
 function App() {
@@ -33,8 +34,10 @@ function App() {
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
   const { user, loading: authLoading, signOut, getToken } = useAuth()
   const [showAuth, setShowAuth] = useState(false)
-  const isPremium = user?.user_metadata?.plan === 'premium' || false
+  const [userPlan, setUserPlan] = useState('free')
+  const isPremium = userPlan === 'premium'
   const [showPremium, setShowPremium] = useState(false)
+  const location = useLocation()
 
   function handleFile(f) {
     if (!f) return
@@ -60,6 +63,26 @@ function App() {
     const token = await getToken()
     analyse(file, i18n.language, token)
   }
+
+  useEffect(() => {
+    if (!user) { setUserPlan('free'); return }
+    supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.plan) setUserPlan(data.plan)
+      })
+  }, [user])
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    if (params.get('login') === '1') {
+      setShowAuth(true)
+      window.history.replaceState({}, '', '/analyse')
+    }
+  }, [location.search])
 
   const headerBtnStyle = {
     background: 'none',
