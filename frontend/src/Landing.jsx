@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { useDarkMode } from './hooks/useDarkMode'
 import { btnAccent, btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob, sectionH2 } from './styles/shared'
+import { AuthModal } from './components/AuthModal'
+import { useAuth } from './hooks/useAuth'
 
 const API_URL = import.meta.env.VITE_API_URL
 const DEMO_CASES_MAN = [
@@ -108,6 +110,9 @@ export function Landing() {
   const t = (en, plStr) => pl ? plStr : en
   const [demoGender, setDemoGender] = useState('Man')
   const demoCases = demoGender === 'Man' ? DEMO_CASES_MAN : DEMO_CASES_WOMAN
+  
+  const { user, signOut } = useAuth()
+  const [showAuth, setShowAuth] = useState(false)
 
   return (
     <div style={{minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', 
@@ -121,8 +126,11 @@ export function Landing() {
         top: 0, background: 'var(--bg)', zIndex: 100,
       }}>
         <div style={{fontFamily: 'var(--font-display)', fontSize: 18,
-          fontWeight: 500, letterSpacing: '.01em'}}>
-           Stylizzer
+          fontWeight: 500, letterSpacing: '.01em', display: 'flex',
+          alignItems: 'center', gap: 8}}>
+          <img src="/android-chrome-192x192.png" alt="Stylizzer"
+            style={{ width: 24, height: 24, borderRadius: 4 }} />
+          Stylizzer
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button onClick={() => setDark(d => !d)}
