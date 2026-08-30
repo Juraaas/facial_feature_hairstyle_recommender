@@ -45,7 +45,8 @@ export function AuthModal({ onClose, onSuccess }) {
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',zIndex: 201,
         background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
         border: '1px solid var(--border)', padding: '32px 28px',
-        width: '100%',maxWidth: 400, animation: 'fadeIn .2s ease',
+        width: 'calc(100% - 32px)', maxWidth: 400, 
+        boxShadow: '0 24px 64px rgba(0,0,0,.25)', animation: 'modalIn .2s ease',
       }}>
         {/* close */}
         <button
