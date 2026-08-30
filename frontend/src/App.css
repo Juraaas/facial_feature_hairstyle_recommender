@@ -176,6 +176,11 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes modalIn {
+  from { opacity: 0; transform: translate(-50%, -46%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
 /* ─── feedback boxes ─────────────────────────────────────── */
 .error-box {
   background: #FEF4F2;
@@ -271,7 +276,6 @@ body {
 @media (max-width: 720px) {
   .styles-grid { grid-template-columns: 1fr; }
   .style-card-img { height: 460px; }
-  .vis-grid { grid-template-columns: 1fr; }
   .app-header { padding: 0 48px; }
   .brand h1 { font-size: 22px; }
 }
@@ -288,18 +292,33 @@ body {
     gap: 10px;
   }
 
-  .app-header > div[style*="absolute"],
-  .app-header > div[style*="position"] {
+  .header-left,
+  .header-right {
     position: static !important;
-    flex-direction: row !important;
     flex-wrap: wrap;
     justify-content: center;
+    gap: 6px;
   }
 
   .brand { order: -1; padding: 0; }
+
+  nav {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px 16px !important;
+  }
+
+  nav > div:last-child {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 480px) {
   .app { padding: 20px 14px; }
-  .app-header { padding: 0 0 10px; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -52%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
 }

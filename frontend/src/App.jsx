@@ -93,15 +93,15 @@ function App() {
           <p>{t('app_subtitle')}</p>
         </div>
         {/* left - nav */}
-        <div style={{ position: 'absolute', left: 0, top: 0, display: 'flex', 
-          flexDirection: 'row', gap: 6, alignItems: 'center',
-         }}>
+        <div className="header-left" style={{ position: 'absolute', left: 0, top: 0,
+         display: 'flex', flexDirection: 'row', gap: 6, alignItems: 'center'}}>
           <button onClick={() => navigate('/')} style={btnOutline}>
             ← {pl ? 'Strona główna' : 'Home'}
           </button>
         </div>
         {/* right - settings + user */}
-        <div style={{position: 'absolute', right: 0, top: 0, display: 'flex', gap: 6, alignItems: 'center'}}>
+        <div className="header-right" style={{ position: 'absolute', right: 0, top: 0,
+           display: 'flex', gap: 6, alignItems: 'center'}}>
           <button onClick={() => setDark(d => !d)}
               style={darkToggleBtn(dark)}>
               <span style={{ fontSize: 12 }}>{dark ? '☀️' : '🌙'}</span>
