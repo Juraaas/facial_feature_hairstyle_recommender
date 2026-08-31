@@ -147,18 +147,30 @@ export function Landing() {
           </button>
           {/* separator */}
           <div style={{ width: 1, height: 16, background: 'var(--border)' }} />
-          <button
-            onClick={() => navigate('/analyse?login=1')}
-            style={{ ...btnOutline, borderColor: 'var(--accent)', color: 'var(--accent)' }}
-          >
-            {t('Sign in', 'Zaloguj się')}
-          </button>
+          {user ? (
+            <button onClick={signOut} style={btnOutline}>
+              {t('Sign out', 'Wyloguj')}
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowAuth(true)}
+              style={{ ...btnOutline, borderColor: 'var(--accent)', color: 'var(--accent)' }}
+            >
+              {t('Sign in', 'Zaloguj się')}
+            </button>
+          )}
           <button
             onClick={() => navigate('/analyse')}
             style={btnAccent}
           >
             {t('Try it', 'Przetestuj')}
           </button>
+          {showAuth && (
+            <AuthModal
+              onClose={() => setShowAuth(false)}
+              onSuccess={() => setShowAuth(false)}
+            />
+          )}
         </div>
       </nav>
 
