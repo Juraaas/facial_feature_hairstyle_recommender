@@ -56,7 +56,7 @@ export function PhotoTutorial({ onDone }) {
       borderRadius: 16,
       padding:      '28px 24px',
       marginBottom: 24,
-      animation:    'tutorialIn .3s ease',
+      animation:    'fadeIn .2s ease',
     }}>
       {/* progress dots */}
       <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 24 }}>
