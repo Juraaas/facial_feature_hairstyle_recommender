@@ -49,7 +49,7 @@ body {
 }
 
 /* ─── layout ─────────────────────────────────────────────── */
-.app { max-width: 960px; margin: 0 auto; padding: 28px 20px; }
+.app { max-width: 960px; margin: 0 auto; padding: 0 28px 20px; }
 
 /* ─── header ─────────────────────────────────────────────── */
 .app-header {
@@ -172,8 +172,8 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes modalIn {
@@ -292,12 +292,18 @@ body {
     gap: 10px;
   }
 
-  .header-left,
-  .header-right {
+  .header-left {
     position: static !important;
     flex-wrap: wrap;
     justify-content: center;
     gap: 6px;
+  }
+
+  .header-right {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    max-width: calc(100vw - 32px);
   }
 
   .brand { order: -1; padding: 0; }
