@@ -77,31 +77,24 @@ function App() {
       })
   }, [user])
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    if (params.get('login') === '1') {
-      setShowAuth(true)
-      window.history.replaceState({}, '', '/analyse')
-    }
-  }, [location.search])
-
   return (
     <div className="app">
-      <header className="app-header">
-        <div className="brand">
-          <h1>{t('app_title')}</h1>
-          <p>{t('app_subtitle')}</p>
-        </div>
-        {/* left - nav */}
-        <div className="header-left" style={{ position: 'absolute', left: 0, top: 0,
-         display: 'flex', flexDirection: 'row', gap: 6, alignItems: 'center'}}>
-          <button onClick={() => navigate('/')} style={btnOutline}>
-            ← {pl ? 'Strona główna' : 'Home'}
-          </button>
+      <header style={{
+        display: 'flex', justifyContent: 'space-between',
+        alignItems: 'center', padding: '16px 28px',  marginBottom: 28,
+        borderBottom: '1px solid var(--border)', position: 'sticky',
+        top: 0, background: 'var(--bg)', zIndex: 100}}>
+        {/* logo + name nav home */}
+        <div onClick={() => navigate('/')} style={{
+            fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 500,
+            letterSpacing: '.01em', cursor: 'pointer', display: 'flex',
+            alignItems: 'center', gap: 8, color: 'var(--text)'}}>
+          <img src="/android-chrome-192x192.png" alt=""
+            style={{ width: 22, height: 22, borderRadius: 4 }} />
+          Stylizzer
         </div>
         {/* right - settings + user */}
-        <div className="header-right" style={{ position: 'absolute', right: 0, top: 0,
-           display: 'flex', gap: 6, alignItems: 'center'}}>
+        <div className="header-right" style={{display: 'flex', gap: 6, alignItems: 'center'}}>
           <button onClick={() => setDark(d => !d)}
               style={darkToggleBtn(dark)}>
               <span style={{ fontSize: 12 }}>{dark ? '☀️' : '🌙'}</span>
@@ -124,7 +117,7 @@ function App() {
               <>
                 <span style={{
                   fontSize: 11, color: 'var(--text-muted)',
-                  fontFamily: 'var(--font-mono)', padding: '5px 8px',
+                  fontFamily: 'var(--font-mono)', padding: '5px 4px',
                 }}>
                   {user.email?.split('@')[0]}
                 </span>
@@ -148,6 +141,24 @@ function App() {
             )}
         </div>
       </header>
+
+      {/* intro */}
+      {!result && !loading && (
+        <div style={{ textAlign: 'center', padding: '32px 0 20px' }}>
+          <h1 style={{
+            fontFamily: 'var(--font-display)', fontSize: 'clamp(22px, 4vw, 32px)',
+            fontWeight: 500, color: 'var(--text)', marginBottom: 8}}>
+            {pl ? 'Twoja analiza twarzy' : 'Your face analysis'}
+          </h1>
+          <p style={{
+            fontSize: 14, color: 'var(--text-muted)',
+            fontWeight: 300, maxWidth: 480, margin: '0 auto'}}>
+            {pl
+              ? 'Wrzuć zdjęcie i otrzymaj rekomendacje fryzur dopasowane do geometrii Twojej twarzy'
+              : 'Upload a photo and get hairstyle recommendations tailored to your face geometry'}
+          </p>
+        </div>
+      )}
 
       <main className="app-main">
         {(showTutorial || !tutorialDone) ? (
