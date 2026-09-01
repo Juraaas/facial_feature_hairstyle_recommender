@@ -17,6 +17,7 @@ import { useDarkMode } from './hooks/useDarkMode'
 import { useLocation } from 'react-router-dom'
 import { btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob } from './styles/shared'
 import { StylePlayground } from './components/StylePlayground'
+import { createCheckout } from './api/client'
 import './App.css'
 
 function App() {
@@ -67,14 +68,25 @@ function App() {
     analyse(file, i18n.language, token)
   }
 
+  async function handleUpgrade() {
+    if (!user) { setShowAuth(true); return }
+    try {
+      await createCheckout()
+    } catch (e) {
+      console.error('Checkout error:', e)
+    }
+  }
+
   useEffect(() => {
     if (!user) { setUserPlan('free'); return }
+    console.log('Fetching plan for user:', user.id)
     supabase
       .from('profiles')
       .select('plan')
       .eq('id', user.id)
       .single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        console.log('Plan data:', data, error)
         if (data?.plan) setUserPlan(data.plan)
       })
   }, [user])
