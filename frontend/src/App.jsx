@@ -310,7 +310,7 @@ function App() {
               {showPremium && (
                 <PremiumPopup
                   onClose={() => setShowPremium(false)}
-                  onUpgrade={() => {}}
+                  onUpgrade={() => {handleUpgrade}}
                   onLogin={() => { setShowPremium(false); setShowAuth(true) }}
                   user={user}
                 />
