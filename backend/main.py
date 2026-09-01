@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import sys
 import os
-from fastapi import FastAPI, UploadFile, File, HTTPException, Query
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Form, Depends, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
@@ -19,6 +19,8 @@ from src.exceptions import (
     INVALID_IMAGE, NO_FACE_DETECTED, FACE_TOO_SMALL,
     FACE_ROTATED, FACE_TILTED, POOR_ALIGNMENT, INTERNAL_ERROR
 )
+from src.style_generator import generate_preview
+from src.auth import require_premium
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -276,3 +278,21 @@ async def debug_hair(file: UploadFile = File(...)):
         import traceback
         print(traceback.format_exc())
         raise http_error(INTERNAL_ERROR, "Hair debug failed", status=500)
+
+@app.post("/style-preview")
+async def style_preview(
+    file: UploadFile = File(...),
+    style_name: str = Form(...),
+    color_id: str = Form("natural"),
+    user = Depends(require_premium),
+):
+    try:
+        contents = await file.read()
+        result = await generate_preview(contents, style_name, color_id)
+        return Response(content=result, media_type="image/jpeg")
+    except HTTPException:
+        raise
+    except Exception:
+        import traceback
+        print(traceback.format_exc())
+        raise http_error(INTERNAL_ERROR, "Preview generation failed", 500)
