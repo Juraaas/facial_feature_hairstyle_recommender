@@ -19,3 +19,5 @@ Pillow
 supabase
 fal-client
 httpx
+stripe
+slowapi
