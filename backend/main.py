@@ -3,29 +3,36 @@ import numpy as np
 import pandas as pd
 import sys
 import os
-from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Form, Depends, HTTPException, Response
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Form, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from src.landmarks import FaceLandmarkDetector
 from src.pipeline import run_pipeline
 from src.feedback import save_session, save_vote
-from src.hair_segmentation import segment_face, find_hairline_y, get_hair_coverage
+from src.hair_segmentation import segment_face
 from src.hair_classifier import classify_hair
-from src.geometry import FaceGeometry
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response
-from src.drawing import draw_landmarks
 from huggingface_hub import hf_hub_download
 from src.exceptions import (
     INVALID_IMAGE, NO_FACE_DETECTED, FACE_TOO_SMALL,
     FACE_ROTATED, FACE_TILTED, POOR_ALIGNMENT, INTERNAL_ERROR
 )
 from src.style_generator import generate_preview
-from src.auth import require_premium
+from src.auth import require_premium, require_auth, get_current_user, get_supabase
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from fastapi.responses import JSONResponse
+from src.payments import router as payments_router
+
 
 sys.path.insert(0, os.path.dirname(__file__))
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "face_landmarker.task")
+
+limiter = Limiter(key_func=get_remote_address)
 
 _detector = None
 _norms = None
@@ -100,11 +107,14 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", 
                    "http://localhost:3000",
-                   "https://face-fit-ai.vercel.app"],
+                   "https://face-fit-ai.vercel.app",
+                   "https://stylizzer.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(payments_router)
+app.state.limiter = limiter
 
 app.mount("/images", StaticFiles(directory=os.path.join(BASE_DIR, "images")), name="images")
 
@@ -124,12 +134,25 @@ def root():
 def root_head():
     return None
 
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"code": "RATE_LIMITED", "message": "Too many requests — try again later"}
+    )
+
 @app.post("/analyse")
-def analyse(file: UploadFile = File(...),
+@limiter.limit("5/minute")
+async def analyse(request: Request,
+            file: UploadFile = File(...),
             lang: str = Query("pl"),
-            debug: bool = Query(False)):
+            debug: bool = Query(False),
+            user = Depends(get_current_user)):
     try:
+        MAX_FILE_SIZE = 10 * 1024 * 1024 
         contents = file.file.read()
+        if len(contents) > MAX_FILE_SIZE:
+            raise http_error("FILE_TOO_LARGE", "File too large — max 10MB", 400)
         arr = np.frombuffer(contents, np.uint8)
         img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
 
@@ -207,6 +230,22 @@ def analyse(file: UploadFile = File(...),
                     for i, style in enumerate(recs.get("top_styles", []))
                 ],
             }
+        if user and landmarks is not None:
+            try:
+                sb = get_supabase()
+                top3 = []
+                styles_list = recs["all_styles"].get("pl", []) if isinstance(recs["all_styles"], dict) else recs["all_styles"]
+                for s in styles_list[:3]:
+                    top3.append({"name": s.get("name"), "score": s.get("display_score", 0)})
+                sb.table("analyses").insert({
+                    "user_id": str(user.id),
+                    "traits": traits,
+                    "top_styles": top3,
+                    "gender": gender,
+                }).execute()
+            except Exception as e:
+                print(f"Failed to save analysis: {e}")
+        
         return response
     except HTTPException:
         raise
@@ -247,7 +286,10 @@ async def feedback(body: dict):
 @app.post("/debug-hair")
 async def debug_hair(file: UploadFile = File(...)):
     try:
+        MAX_FILE_SIZE = 10 * 1024 * 1024 
         contents = await file.read()
+        if len(contents) > MAX_FILE_SIZE:
+            raise http_error("FILE_TOO_LARGE", "File too large — max 10MB", 400)
         img = decode_and_resize_image(contents)
         if img is None:
             raise http_error(INVALID_IMAGE, "Could not decode image", status=400)
@@ -296,3 +338,14 @@ async def style_preview(
         import traceback
         print(traceback.format_exc())
         raise http_error(INTERNAL_ERROR, "Preview generation failed", 500)
+
+@app.get("/history")
+async def get_history(user = Depends(require_auth)):
+    sb = get_supabase()
+    data = sb.table("analyses")\
+        .select("id, traits, top_styles, gender, created_at")\
+        .eq("user_id", str(user.id))\
+        .order("created_at", desc=True)\
+        .limit(20)\
+        .execute()
+    return {"analyses": data.data}
