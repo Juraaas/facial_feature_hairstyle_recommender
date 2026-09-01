@@ -44,3 +44,13 @@ export async function sendFeedback(features, qualityScore, topStyles, rating, co
     }),
   })
 }
+
+export async function createCheckout() {
+  const headers = await getAuthHeaders()
+  const res = await fetch(`${BASE}/create-checkout`, {
+    method: 'POST', headers,
+  })
+  if (!res.ok) throw new Error('Checkout failed')
+  const { url } = await res.json()
+  window.location.href = url 
+}
