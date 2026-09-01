@@ -17,3 +17,5 @@ google-auth
 reportlab
 Pillow
 supabase
+fal-client
+httpx
