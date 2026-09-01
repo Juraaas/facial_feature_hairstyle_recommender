@@ -24,7 +24,7 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
             border: isTop ? '1.5px solid var(--accent)' : '1px solid var(--border)',
             display: 'flex',
             flexDirection: 'column',
-            animation: 'fadeIn .3s ease',
+            animation: 'cardIn .3s ease',
             transition: 'box-shadow .2s',
         }}>
         {/* image */}
