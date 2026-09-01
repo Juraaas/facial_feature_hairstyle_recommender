@@ -308,7 +308,7 @@ body {
 
   .brand { order: -1; padding: 0; }
 
-  nav {
+  nav, .site-nav {
     flex-wrap: wrap;
     gap: 10px;
     padding: 14px 16px !important;
@@ -317,6 +317,12 @@ body {
   nav > div:last-child {
     flex-wrap: wrap;
     justify-content: center;
+  }
+  
+  .site-nav > div:last-child {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
   }
 }
 
