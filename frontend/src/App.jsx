@@ -16,6 +16,7 @@ import { supabase } from './lib/supabase'
 import { useDarkMode } from './hooks/useDarkMode'
 import { useLocation } from 'react-router-dom'
 import { btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob } from './styles/shared'
+import { StylePlayground } from './components/StylePlayground'
 import './App.css'
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
   const isPremium = userPlan === 'premium'
   const [showPremium, setShowPremium] = useState(false)
   const location = useLocation()
+  const [showPlayground, setShowPlayground] = useState(false)
 
   function handleFile(f) {
     if (!f) return
@@ -79,7 +81,7 @@ function App() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      <header style={{
+      <header className="site-nav" style={{
           display: 'flex', justifyContent: 'space-between',
           alignItems: 'center', padding: '16px 28px',  marginBottom: 28,
           borderBottom: '1px solid var(--border)', position: 'sticky',
@@ -122,7 +124,7 @@ function App() {
                     {user.email?.split('@')[0]}
                   </span>
                   <button onClick={signOut} style={btnOutline}>
-                    {pl ? 'Wyloguj' : 'Out'}
+                    {pl ? 'Wyloguj' : 'Sign out'}
                   </button>
                 </>
               ) : (
@@ -264,11 +266,33 @@ function App() {
               {/* </PremiumGate> */}
               <FaceProportions features={result.features} norms={result.norms} />
               {/* <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}> */}
+                {result && styles.length > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+                    <button
+                      onClick={() => setShowPlayground(true)}
+                      style={{
+                        ...btnOutline,borderColor: 'var(--accent)',
+                        color: 'var(--accent)', gap: 6, display: 'flex', alignItems: 'center'
+                      }}
+                    >
+                      ✨ {pl ? 'Przymierzalnia' : 'Style Playground'}
+                    </button>
+                  </div>
+                )}
                 <StylesSection
                   styles={styles}
                   features={result.features}
                   gender={result.gender}
                 />
+                {showPlayground && (
+                  <StylePlayground
+                    styles={styles}
+                    originalFile={file}
+                    isPremium={isPremium}
+                    onUpgrade={() => setShowPlayground(false)}
+                    onClose={() => setShowPlayground(false)}
+                  />
+                )}
               {/* </PremiumGate> */}
 
               {showPremium && (
