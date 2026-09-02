@@ -79,16 +79,21 @@ function App() {
 
   useEffect(() => {
     if (!user) { setUserPlan('free'); return }
+    
     console.log('Fetching plan for user:', user.id)
-    supabase
-      .from('profiles')
-      .select('plan')
-      .eq('id', user.id)
-      .single()
-      .then(({ data, error }) => {
-        console.log('Plan data:', data, error)
-        if (data?.plan) setUserPlan(data.plan)
-      })
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Session exists:', !!session)
+      
+      supabase
+        .from('profiles')
+        .select('plan')
+        .eq('id', user.id)
+        .single()
+        .then(({ data, error }) => {
+          console.log('Plan data:', data, error)
+          if (data?.plan) setUserPlan(data.plan)
+        })
+    })
   }, [user])
 
   return (
