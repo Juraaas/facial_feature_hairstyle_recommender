@@ -37,11 +37,21 @@ async def stripe_webhook(request: Request):
         raise HTTPException(400, detail=str(e))
 
     if event["type"] == "checkout.session.completed":
-        user_id = event["data"]["object"]["metadata"]["user_id"]
-        sb = get_supabase()
-        sb.table("profiles")\
-          .update({"plan": "premium"})\
-          .eq("id", user_id)\
-          .execute()
+        session = event["data"]["object"]
+        user_id = session.get("metadata", {}).get("user_id")
+        if not user_id:
+            print(f"Webhook: no user_id in metadata, skipping")
+            return {"ok": True}
+
+        try:
+            sb = get_supabase()
+            sb.table("profiles")\
+              .update({"plan": "premium"})\
+              .eq("id", user_id)\
+              .execute()
+            print(f"Upgraded user {user_id} to premium")
+        except Exception as e:
+            print(f"Failed to upgrade user: {e}")
+            raise HTTPException(500, detail="Database error")
 
     return {"ok": True}
