@@ -329,3 +329,10 @@ body {
 @media (max-width: 480px) {
   .app { padding: 20px 14px; }
 }
+
+@media (max-width: 600px) {
+  div[style*="gridTemplateColumns: '280px 1fr'"],
+  div[style*="gridTemplateColumns: '1fr 1fr'"] {
+    grid-template-columns: 1fr !important;
+  }
+}
