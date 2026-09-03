@@ -19,12 +19,12 @@ from src.exceptions import (
 )
 from src.style_generator import generate_preview
 from src.auth import require_premium, require_auth, get_current_user, get_supabase
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import JSONResponse
 from src.payments import router as payments_router
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -95,6 +95,12 @@ def decode_and_resize_image(contents, max_size=640):
 
     return img
 
+def validate_image_bytes(contents: bytes) -> bool:
+    return (
+        contents[:2] == b'\xff\xd8' or
+        contents[:4] == b'\x89PNG'
+    )
+
 def http_error(code: str, message: str, status: int = 422) -> HTTPException:
     return HTTPException(status_code=status, detail={
         "code": code,
@@ -113,6 +119,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
+
+app.add_middleware(SecurityHeadersMiddleware)
 app.include_router(payments_router)
 app.state.limiter = limiter
 
@@ -160,6 +176,9 @@ async def analyse(request: Request,
             raise http_error(INVALID_IMAGE,
                              "Could not decode image - try a JPG or PNG file",
                              status=400)
+
+        if not validate_image_bytes(contents):
+            raise http_error("INVALID_IMAGE", "Only JPEG and PNG files are accepted", 400)
     
         h, w = img.shape[:2]
         if max(h, w) > 640:
@@ -322,7 +341,9 @@ async def debug_hair(file: UploadFile = File(...)):
         raise http_error(INTERNAL_ERROR, "Hair debug failed", status=500)
 
 @app.post("/style-preview")
+@limiter.limit("3/minute")
 async def style_preview(
+    request: Request,
     file: UploadFile = File(...),
     style_name: str = Form(...),
     color_id: str = Form("natural"),
@@ -330,6 +351,8 @@ async def style_preview(
 ):
     try:
         contents = await file.read()
+        if not validate_image_bytes(contents):
+            raise http_error("INVALID_IMAGE", "Only JPEG and PNG files are accepted", 400)
         result = await generate_preview(contents, style_name, color_id)
         return Response(content=result, media_type="image/jpeg")
     except HTTPException:
