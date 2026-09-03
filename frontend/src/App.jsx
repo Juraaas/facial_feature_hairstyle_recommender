@@ -378,7 +378,7 @@ function App() {
               <section style={{ marginBottom: 32 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between',
                   alignItems: 'center', marginBottom: 16 }}>
-                  <div>
+                  <div style={{ display: 'flex', alignItems: 'center'}}>
                     <h2 className="section-title" style={{ marginBottom: 4 }}>
                       {pl ? 'Przymierzalnia' : 'Style Playground'}
                     </h2>
