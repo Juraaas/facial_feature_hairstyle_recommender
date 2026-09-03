@@ -26,11 +26,21 @@ COLOR_PROMPTS = {
 def build_prompt(style_name: str, color_id: str) -> str:
     style = STYLE_PROMPTS.get(style_name, f"{style_name} hairstyle")
     color = COLOR_PROMPTS.get(color_id, "")
-    parts = [f"Change only the hairstyle to: {style}"]
+    
+    prompt = f"Transform the hairstyle to {style}"
+    
     if color:
-        parts.append(f"Change hair color to {color}")
-    parts.append("Keep the person's face shape, eyebrows, ears, eye color, skin tone, facial hair, expression, clothing and background pixel-perfect identical. Only modify hair.")
-    return ". ".join(parts)
+        prompt += f" with {color}"
+    
+    prompt += (
+        ". The new hairstyle shape, cut, and length must be clearly visible. "
+        "Preserve exactly: face, skin tone, eyes, eyebrows, ears, "
+        "facial hair, expression, clothing, background. "
+        "Change only the hair."
+    )
+    
+    print(f"FLUX PROMPT [{style_name} + {color_id}]: {prompt}")
+    return prompt
 
 
 async def generate_preview(img_bytes: bytes, style_name: str, color_id: str) -> bytes:
@@ -45,7 +55,7 @@ async def generate_preview(img_bytes: bytes, style_name: str, color_id: str) -> 
             "image_url": image_url,
             "prompt": prompt,
             "num_inference_steps": 28,
-            "guidance_scale": 3.5,
+            "guidance_scale": 6.0,
             "safety_tolerance": "5",
         }
     )
