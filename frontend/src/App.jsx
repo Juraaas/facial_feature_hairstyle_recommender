@@ -42,6 +42,7 @@ function App() {
   const [showPremium, setShowPremium] = useState(false)
   const location = useLocation()
   const [showPlayground, setShowPlayground] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
 
   function handleFile(f) {
     if (!f) return
@@ -133,24 +134,107 @@ function App() {
               )}
               <div style={{ width: 1, height: 16, background: 'var(--border)' }} />
               {user ? (
-                <>
-                  <span style={{
-                    fontSize: 11, color: 'var(--text-muted)',
-                    fontFamily: 'var(--font-mono)', padding: '5px 4px',
-                  }}>
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setShowUserMenu(m => !m)}
+                    style={{
+                      ...btnOutline, fontFamily: 'var(--font-mono)',
+                      gap: 6, display: 'flex', alignItems: 'center',
+                    }}
+                  >
+                    <span style={{
+                      width: 20, height: 20, borderRadius: '50%',
+                      background: 'var(--accent)', color: '#fff', fontSize: 10,
+                      alignItems: 'center', justifyContent: 'center', display: 'flex',
+                      fontFamily: 'var(--font-body)', fontWeight: 600,
+                    }}>
+                      {user.email?.[0]?.toUpperCase()}
+                    </span>
                     {user.email?.split('@')[0]}
-                  </span>
-                  <button onClick={signOut} style={btnOutline}>
-                    {pl ? 'Wyloguj' : 'Sign out'}
+                    <span style={{ fontSize: 9, color: 'var(--text-hint)' }}>▾</span>
                   </button>
-                </>
+
+                  {showUserMenu && (
+                    <>
+                      <div
+                        onClick={() => setShowUserMenu(false)}
+                        style={{ position: 'fixed', inset: 0, zIndex: 98 }}
+                      />
+                      <div style={{
+                        position: 'absolute', top: 'calc(100% + 6px)',
+                        right: 0, zIndex: 99, background: 'var(--surface)',
+                        border: '1px solid var(--border)', borderRadius: 'var(--radius-md)',
+                        boxShadow: '0 8px 24px rgba(0,0,0,.15)', minWidth: 180,
+                        overflow: 'hidden', animation: 'fadeIn .15s ease',
+                      }}>
+                        {/* plan badge */}
+                        <div style={{
+                          padding: '10px 14px', background: 'var(--surface-2)',
+                          borderBottom: '1px solid var(--border)',
+                        }}>
+                          <p style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 300 }}>
+                            {user.email}
+                          </p>
+                          <p style={{
+                            fontSize: 10, color: isPremium ? 'var(--accent)' : 'var(--text-hint)',
+                            fontFamily: 'var(--font-mono)', marginTop: 2,
+                          }}>
+                            {isPremium ? '✨ Premium' : '○ Free plan'}
+                          </p>
+                        </div>
+
+                        {/* options */}
+                        {[
+                          {
+                            icon: '📊',
+                            label: pl ? 'Historia analiz' : 'Analysis history',
+                            action: () => { setShowPanel(true); setShowUserMenu(false) },
+                          },
+                          !isPremium && {
+                            icon: '✨',
+                            label: pl ? 'Kup Premium' : 'Upgrade to Premium',
+                            action: () => { handleUpgrade(); setShowUserMenu(false) },
+                            accent: true,
+                          },
+                          {
+                            icon: '📷',
+                            label: pl ? 'Wskazówki zdjęciowe' : 'Photo tips',
+                            action: () => { setShowTutorial(true); setShowUserMenu(false) },
+                          },
+                          {
+                            icon: '→',
+                            label: pl ? 'Wyloguj' : 'Sign out',
+                            action: () => { signOut(); setShowUserMenu(false) },
+                          },
+                        ].filter(Boolean).map(item => (
+                          <button
+                            key={item.label}
+                            onClick={item.action}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 10,
+                              width: '100%', padding: '9px 14px', background: 'none',
+                              border: 'none', cursor: 'pointer', fontSize: 12, textAlign: 'left',
+                              color: item.accent ? 'var(--accent)' : 'var(--text)',
+                              fontFamily: 'var(--font-body)', transition: 'background .1s',
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'var(--surface-2)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                          >
+                            <span style={{ fontSize: 14, width: 18 }}>{item.icon}</span>
+                            {item.label}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
               ) : (
                 <button
                   onClick={() => setShowAuth(true)}
-                  style={{...btnOutline, borderColor: 'var(--accent)', color: 'var(--accent)'}}
+                  style={{ ...btnOutline, borderColor: 'var(--accent)', color: 'var(--accent)' }}
                 >
                   {pl ? 'Zaloguj' : 'Sign in'}
-              </button>
+                </button>
               )}
               {showAuth && (
                 <AuthModal
@@ -278,53 +362,118 @@ function App() {
                   </div>
                 ))}
               </div>
-              {/* <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}> */}
+              <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}>
                 <FaceAnalysis analysis={analysis} />
-              {/* </PremiumGate> */}
+              </PremiumGate>
+
               <FaceProportions features={result.features} norms={result.norms} />
-              {/* <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}> */}
-                {result && styles.length > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+
+              <StylesSection
+                styles={styles}
+                features={result.features}
+                gender={result.gender}
+              />
+
+              {/* try-on */}
+              <section style={{ marginBottom: 32 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between',
+                  alignItems: 'center', marginBottom: 16 }}>
+                  <div>
+                    <h2 className="section-title" style={{ marginBottom: 4 }}>
+                      {pl ? 'Przymierzalnia' : 'Style Playground'}
+                    </h2>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300 }}>
+                      {pl ? 'Podgląd fryzury na Twoim zdjęciu' : 'Preview hairstyles on your photo'}
+                    </p>
+                  </div>
+                </div>
+
+                {!isPremium ? (
+                  <div style={{
+                    background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
+                    border: '1px solid var(--border)', padding: '32px 24px', textAlign: 'center',
+                  }}>
+                    <div style={{
+                      width: 48, height: 48, borderRadius: '50%',
+                      background: 'var(--accent-soft)', border: '1.5px solid var(--accent)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 20, margin: '0 auto 16px',
+                    }}>✨</div>
+                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15,
+                      fontWeight: 500, color: 'var(--text)', marginBottom: 8 }}>
+                      {pl ? 'Funkcja Premium' : 'Premium Feature'}
+                    </h3>
+                    <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300,
+                      lineHeight: 1.6, maxWidth: 360, margin: '0 auto 20px' }}>
+                      {pl
+                        ? 'Sprawdź różne style na swoim zdjęciu.'
+                        : 'Try on hairstyles and colors on your photo.'}
+                    </p>
                     <button
-                      onClick={() => setShowPlayground(true)}
-                      style={{
-                        ...btnOutline,borderColor: 'var(--accent)',
-                        color: 'var(--accent)', gap: 6, display: 'flex', alignItems: 'center'
-                      }}
+                      onClick={() => setShowPremium(true)}
+                      className="analyse-btn"
+                      style={{ maxWidth: 240, margin: '0 auto' }}
                     >
-                      ✨ {pl ? 'Przymierzalnia' : 'Style Playground'}
+                      {user ? (pl ? 'Kup Premium →' : 'Get Premium →')
+                            : (pl ? 'Zaloguj się →' : 'Sign in →')}
                     </button>
                   </div>
+                ) : (
+                  <div
+                    onClick={() => setShowPlayground(true)}
+                    style={{
+                      background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
+                      border: '1px solid var(--border)', padding: '24px',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center',
+                      gap: 16, transition: 'border-color .15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                  >
+                    <div style={{
+                      width: 60, height: 60, borderRadius: 'var(--radius-md)',
+                      background: 'var(--surface-2)', display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0,
+                    }}>✂️</div>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>
+                        {pl ? 'Otwórz przymierzalnię' : 'Open Style Playground'}
+                      </p>
+                      <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300 }}>
+                        {pl ? 'Wybierz fryzurę i kolor'
+                            : 'Choose a style and color'}
+                      </p>
+                    </div>
+                    <span style={{ marginLeft: 'auto', color: 'var(--text-hint)', fontSize: 18 }}>→</span>
+                  </div>
                 )}
-                <StylesSection
-                  styles={styles}
-                  features={result.features}
-                  gender={result.gender}
-                />
-                {showPlayground && (
-                  <StylePlayground
-                    styles={styles}
-                    originalFile={file}
-                    isPremium={isPremium}
-                    onUpgrade={() => setShowPlayground(false)}
-                    onClose={() => setShowPlayground(false)}
-                  />
-                )}
-              {/* </PremiumGate> */}
+              </section>
 
-              {showPremium && (
-                <PremiumPopup
-                  onClose={() => setShowPremium(false)}
-                  onUpgrade={() => {handleUpgrade}}
-                  onLogin={() => { setShowPremium(false); setShowAuth(true) }}
-                  user={user}
+
+              {showPlayground && (
+                <StylePlayground
+                  styles={styles}
+                  originalFile={file}
+                  isPremium={isPremium}
+                  onUpgrade={() => {setShowPlayground(false); setShowPremium(true) }}
+                  onClose={() => setShowPlayground(false)}
                 />
               )}
+
               <FeedbackSection
                 features={result.features}
                 qualityScore={result.quality.score}
                 topStyles={styles.slice(0, 3)}
               />
+
+              {showPremium && (
+                <PremiumPopup
+                  onClose={() => setShowPremium(false)}
+                  onUpgrade={handleUpgrade}
+                  onLogin={() => { setShowPremium(false); setShowAuth(true) }}
+                  user={user}
+                />
+              )}
             </>
           )}
         </main>
