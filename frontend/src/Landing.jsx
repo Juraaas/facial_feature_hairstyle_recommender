@@ -259,7 +259,12 @@ export function Landing() {
                     fontFamily: 'var(--font-mono)', fontSize: 11,
                     color: 'var(--accent)', letterSpacing: '.06em',
                   }}>{s.num}</span>
-                  <span style={{ fontSize: 22 }}>{s.icon}</span>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: 8, background: 'var(--accent-soft)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <s.Icon size={16} color="var(--accent)" strokeWidth={1.5} />
+                  </div>
                 </div>
                 <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: 'var(--text)' }}>
                   {pl ? s.title_pl : s.title_en}
@@ -289,7 +294,12 @@ export function Landing() {
                 background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
                 border: '1px solid var(--border)', padding: '20px',
               }}>
-                <span style={{ fontSize: 24, display: 'block', marginBottom: 12 }}>{f.icon}</span>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 8, background: 'var(--accent-soft)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+                }}>
+                  <f.Icon size={18} color="var(--accent)" strokeWidth={1.5} />
+                </div>
                 <p style={{ fontSize: 13, fontWeight: 500, marginBottom: 6, color: 'var(--text)' }}>
                   {pl ? f.title_pl : f.title_en}
                 </p>
