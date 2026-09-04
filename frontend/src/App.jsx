@@ -17,6 +17,7 @@ import { useDarkMode } from './hooks/useDarkMode'
 import { useLocation } from 'react-router-dom'
 import { btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob } from './styles/shared'
 import { StylePlayground } from './components/StylePlayground'
+import { UserPanel } from './components/UserPanel'
 import { createCheckout } from './api/client'
 import './App.css'
 
@@ -43,6 +44,7 @@ function App() {
   const location = useLocation()
   const [showPlayground, setShowPlayground] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [showPanel, setShowPanel] = useState(false)
 
   function handleFile(f) {
     if (!f) return
@@ -195,11 +197,6 @@ function App() {
                             label: pl ? 'Kup Premium' : 'Upgrade to Premium',
                             action: () => { handleUpgrade(); setShowUserMenu(false) },
                             accent: true,
-                          },
-                          {
-                            icon: '📷',
-                            label: pl ? 'Wskazówki zdjęciowe' : 'Photo tips',
-                            action: () => { setShowTutorial(true); setShowUserMenu(false) },
                           },
                           {
                             icon: '→',
