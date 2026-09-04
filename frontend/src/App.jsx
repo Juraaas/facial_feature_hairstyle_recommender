@@ -470,10 +470,20 @@ function App() {
                   user={user}
                 />
               )}
+
+
             </>
           )}
         </main>
       </div>
+      {showPanel && (
+        <UserPanel
+          user={user}
+          isPremium={isPremium}
+          onClose={() => setShowPanel(false)}
+          onUpgrade={handleUpgrade}
+        />
+      )}
     </div>
   )
 }
