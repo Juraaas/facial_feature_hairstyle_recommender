@@ -5,11 +5,7 @@ import { useDarkMode } from './hooks/useDarkMode'
 import { btnAccent, btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob, sectionH2 } from './styles/shared'
 import { AuthModal } from './components/AuthModal'
 import { useAuth } from './hooks/useAuth'
-import {
-  Camera, ScanFace, Scissors,
-  Ruler, Waves, BarChart2, Lightbulb,
-  Sparkles, Star, Users
-} from 'lucide-react'
+import { Camera, ScanFace, Scissors, Ruler, Waves, BarChart2, Lightbulb, Sparkles, Star, Users } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL
 const DEMO_CASES_MAN = [
@@ -92,6 +88,9 @@ const STEPS = [
     desc_pl:  'Uporządkowane według dopasowania do geometrii Twojej twarzy.',
   },
 ]
+
+const Icon = s.icon
+const Icon2 = f.icon
 
 const FEATURES = [
   { icon: Ruler, title_en: 'Facial geometry', title_pl: 'Geometria twarzy', desc_en: '15 facial ratios measured against population norms', desc_pl: '15 proporcji twarzy porównanych z normami populacyjnymi' },
@@ -263,7 +262,7 @@ export function Landing() {
                     width: 32, height: 32, borderRadius: 8, background: 'var(--accent-soft)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <s.Icon size={16} color="var(--accent)" strokeWidth={1.5} />
+                    <Icon size={16} color="var(--accent)" strokeWidth={1.5} />
                   </div>
                 </div>
                 <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: 'var(--text)' }}>
@@ -298,7 +297,7 @@ export function Landing() {
                   width: 36, height: 36, borderRadius: 8, background: 'var(--accent-soft)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12,
                 }}>
-                  <f.Icon size={18} color="var(--accent)" strokeWidth={1.5} />
+                  <Icon2 size={18} color="var(--accent)" strokeWidth={1.5} />
                 </div>
                 <p style={{ fontSize: 13, fontWeight: 500, marginBottom: 6, color: 'var(--text)' }}>
                   {pl ? f.title_pl : f.title_en}
