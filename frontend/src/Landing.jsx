@@ -5,7 +5,7 @@ import { useDarkMode } from './hooks/useDarkMode'
 import { btnAccent, btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob, sectionH2 } from './styles/shared'
 import { AuthModal } from './components/AuthModal'
 import { useAuth } from './hooks/useAuth'
-import { Camera, ScanFace, Scissors, Ruler, Waves, BarChart2, Lightbulb, Sparkles, Star, Users } from 'lucide-react'
+import { Camera, ScanFace, SquareScissors ,Scissors, Ruler, Waves, BarChart2, Lightbulb, Sparkles, Star, Users } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL
 const DEMO_CASES_MAN = [
