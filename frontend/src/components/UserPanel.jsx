@@ -14,6 +14,8 @@ export function UserPanel({ user, onClose, isPremium, onUpgrade }) {
     async function load() {
       const { data } = await supabase.auth.getSession()
       const token = data.session?.access_token
+      if (!token) { setLoading(false); return }
+      
       const res = await fetch(`${BASE}/history`, {
         headers: { Authorization: `Bearer ${token}` }
       })
