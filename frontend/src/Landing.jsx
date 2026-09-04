@@ -89,9 +89,6 @@ const STEPS = [
   },
 ]
 
-const Icon = s.icon
-const Icon2 = f.icon
-
 const FEATURES = [
   { icon: Ruler, title_en: 'Facial geometry', title_pl: 'Geometria twarzy', desc_en: '15 facial ratios measured against population norms', desc_pl: '15 proporcji twarzy porównanych z normami populacyjnymi' },
   { icon: Waves, title_en: 'Hair & hairline detection',  title_pl: 'Typ i linia włosów', desc_en: 'Hair type and hairline shape detected automatically', desc_pl: 'Automatyczne rozpoznanie typu włosów i kształtu linii włosów' },
@@ -248,31 +245,34 @@ export function Landing() {
             {t('Three steps to find your best-fitting styles', 'Trzy kroki do fryzury dopasowanej do Ciebie')}
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, marginTop: 40 }}>
-            {STEPS.map(s => (
-              <div key={s.num} style={{
-                background: 'var(--bg)', borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--border)', padding: '24px 22px',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 11,
-                    color: 'var(--accent)', letterSpacing: '.06em',
-                  }}>{s.num}</span>
-                  <div style={{
-                    width: 32, height: 32, borderRadius: 8, background: 'var(--accent-soft)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <Icon size={16} color="var(--accent)" strokeWidth={1.5} />
+            {STEPS.map(s => {
+              const Icon = s.icon
+              return (
+                <div key={s.num} style={{
+                  background: 'var(--bg)', borderRadius: 'var(--radius-lg)',
+                  border: '1px solid var(--border)', padding: '24px 22px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                    <span style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 11,
+                      color: 'var(--accent)', letterSpacing: '.06em',
+                    }}>{s.num}</span>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: 8, background: 'var(--accent-soft)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <Icon size={16} color="var(--accent)" strokeWidth={1.5} />
+                    </div>
                   </div>
+                  <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: 'var(--text)' }}>
+                    {pl ? s.title_pl : s.title_en}
+                  </p>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6 }}>
+                    {pl ? s.desc_pl : s.desc_en}
+                  </p>
                 </div>
-                <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: 'var(--text)' }}>
-                  {pl ? s.title_pl : s.title_en}
-                </p>
-                <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6 }}>
-                  {pl ? s.desc_pl : s.desc_en}
-                </p>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -288,25 +288,28 @@ export function Landing() {
             display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: 16, marginTop: 40,
           }}>
-            {FEATURES.map(f => (
-              <div key={f.icon} style={{
-                background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--border)', padding: '20px',
-              }}>
-                <div style={{
-                  width: 36, height: 36, borderRadius: 8, background: 'var(--accent-soft)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+            {FEATURES.map(f => {
+              const Icon = f.icon
+              return (
+                <div key={f.icon} style={{
+                  background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
+                  border: '1px solid var(--border)', padding: '20px',
                 }}>
-                  <Icon2 size={18} color="var(--accent)" strokeWidth={1.5} />
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 8, background: 'var(--accent-soft)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+                  }}>
+                    <Icon size={18} color="var(--accent)" strokeWidth={1.5} />
+                  </div>
+                  <p style={{ fontSize: 13, fontWeight: 500, marginBottom: 6, color: 'var(--text)' }}>
+                    {pl ? f.title_pl : f.title_en}
+                  </p>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.55 }}>
+                    {pl ? f.desc_pl : f.desc_en}
+                  </p>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 500, marginBottom: 6, color: 'var(--text)' }}>
-                  {pl ? f.title_pl : f.title_en}
-                </p>
-                <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.55 }}>
-                  {pl ? f.desc_pl : f.desc_en}
-                </p>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
