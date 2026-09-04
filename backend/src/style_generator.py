@@ -41,21 +41,19 @@ def build_prompt(style_name: str, color_id: str) -> str:
 
 
 async def generate_preview(img_bytes: bytes, style_name: str, color_id: str) -> bytes:
-    import base64
-    img_b64 = base64.b64encode(img_bytes).decode()
-    image_url = f"data:image/jpeg;base64,{img_b64}"
+    import httpx
     prompt = build_prompt(style_name, color_id)
-
+    url = fal_client.upload(img_bytes, content_type="image/jpeg")
+    
     result = fal_client.run(
         "fal-ai/flux-pro/kontext",
         arguments={
-            "image_url": image_url,
+            "image_url": url,
             "prompt": prompt,
             "safety_tolerance": "5",
         }
     )
 
     out_url  = result["images"][0]["url"]
-    import httpx
-    response = httpx.get(out_url, timeout=30)
+    response = httpx.get(out_url, timeout=60)
     return response.content
