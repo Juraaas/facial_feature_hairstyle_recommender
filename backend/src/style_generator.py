@@ -2,7 +2,7 @@ import os
 import fal_client
 
 STYLE_PROMPTS = {
-    "French Crop": "french crop hairstyle, short textured top with fringe, tapered sides",
+    "French Crop": "french crop hairstyle, short textured top with a soft fringe falling over the forehead, clean tapered sides",
     "Messy Crop": "messy crop hairstyle, short textured top, natural look",
     "Buzz Cut": "buzz cut, very short uniform hair",
     "Pompadour": "pompadour hairstyle, volume swept back from forehead",
@@ -27,16 +27,13 @@ def build_prompt(style_name: str, color_id: str) -> str:
     style = STYLE_PROMPTS.get(style_name, f"{style_name} hairstyle")
     color = COLOR_PROMPTS.get(color_id, "")
     
-    prompt = f"Transform the hairstyle to {style}"
+    prompt = f"Change only the hairstyle to {style}"
     
     if color:
         prompt += f" with {color}"
     
     prompt += (
-        ". The new hairstyle shape, cut, and length must be clearly visible. "
-        "Preserve exactly: face, skin tone, eyes, eyebrows, ears, "
-        "facial hair, expression, clothing, background. "
-        "Change only the hair."
+        ". Keep the person's face shape, eyebrows, ears, eye color, skin tone, facial hair, expression, clothing and background pixel-perfect identical."
     )
     
     print(f"FLUX PROMPT [{style_name} + {color_id}]: {prompt}")
@@ -54,8 +51,6 @@ async def generate_preview(img_bytes: bytes, style_name: str, color_id: str) -> 
         arguments={
             "image_url": image_url,
             "prompt": prompt,
-            "num_inference_steps": 28,
-            "guidance_scale": 6.0,
             "safety_tolerance": "5",
         }
     )

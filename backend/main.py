@@ -364,11 +364,15 @@ async def style_preview(
 
 @app.get("/history")
 async def get_history(user = Depends(require_auth)):
-    sb = get_supabase()
-    data = sb.table("analyses")\
-        .select("id, traits, top_styles, gender, created_at")\
-        .eq("user_id", str(user.id))\
-        .order("created_at", desc=True)\
-        .limit(20)\
-        .execute()
-    return {"analyses": data.data}
+    try:
+        sb = get_supabase()
+        data = sb.table("analyses")\
+            .select("id, traits, top_styles, gender, created_at")\
+            .eq("user_id", str(user.id))\
+            .order("created_at", desc=True)\
+            .limit(20)\
+            .execute()
+        return {"analyses": data.data}
+    except Exception as e:
+        print(f"History error: {e}")
+        return {"analyses": []}
