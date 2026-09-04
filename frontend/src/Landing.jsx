@@ -5,6 +5,11 @@ import { useDarkMode } from './hooks/useDarkMode'
 import { btnAccent, btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob, sectionH2 } from './styles/shared'
 import { AuthModal } from './components/AuthModal'
 import { useAuth } from './hooks/useAuth'
+import {
+  Camera, ScanFace, Scissors,
+  Ruler, Waves, BarChart2, Lightbulb,
+  Sparkles, Star, Users
+} from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL
 const DEMO_CASES_MAN = [
@@ -64,7 +69,7 @@ const DEMO_CASES_WOMAN = [
 const STEPS = [
   {
     num: '01',
-    icon: '📸',
+    icon: Camera,
     title_en: 'Upload a photo',
     title_pl: 'Wrzuć zdjęcie',
     desc_en:  'A clear, front-facing photo in good lighting is all you need.',
@@ -72,7 +77,7 @@ const STEPS = [
   },
   {
     num: '02',
-    icon: '🔬',
+    icon: ScanFace,
     title_en: 'We analyse your facial geometry',
     title_pl: 'Analizujemy geometrię Twojej twarzy',
     desc_en:  'We measure 15 facial proportions using 478 landmark points.',
@@ -80,7 +85,7 @@ const STEPS = [
   },
   {
     num: '03',
-    icon: '✂️',
+    icon: Scissors,
     title_en: 'Get personalised hairstyle recommendations',
     title_pl: 'Otrzymaj spersonalizowane rekomendacje fryzur',
     desc_en:  'Ranked by how well they suit your facial geometry.',
@@ -89,10 +94,10 @@ const STEPS = [
 ]
 
 const FEATURES = [
-  { icon: '📐', title_en: 'Facial geometry', title_pl: 'Geometria twarzy', desc_en: '15 facial ratios measured against population norms', desc_pl: '15 proporcji twarzy porównanych z normami populacyjnymi' },
-  { icon: '💇', title_en: 'Hair & hairline detection',  title_pl: 'Typ i linia włosów', desc_en: 'Hair type and hairline shape detected automatically', desc_pl: 'Automatyczne rozpoznanie typu włosów i kształtu linii włosów' },
-  { icon: '⚖️', title_en: 'Style scoring', title_pl: 'Ocena dopasowania', desc_en: 'Styles ranked by how well they balance and enhance your features', desc_pl: 'Fryzury oceniane pod kątem równoważenia proporcji i podkreślania Twoich rysów' },
-  { icon: '💡', title_en: 'Explainable recommendations', title_pl: 'Wyjaśnienie rekomendacji', desc_en: 'See why each style works with your facial features', desc_pl: 'Zobacz, dlaczego dana fryzura do Ciebie pasuje' },
+  { icon: Ruler, title_en: 'Facial geometry', title_pl: 'Geometria twarzy', desc_en: '15 facial ratios measured against population norms', desc_pl: '15 proporcji twarzy porównanych z normami populacyjnymi' },
+  { icon: Waves, title_en: 'Hair & hairline detection',  title_pl: 'Typ i linia włosów', desc_en: 'Hair type and hairline shape detected automatically', desc_pl: 'Automatyczne rozpoznanie typu włosów i kształtu linii włosów' },
+  { icon: BarChart2, title_en: 'Style scoring', title_pl: 'Ocena dopasowania', desc_en: 'Styles ranked by how well they balance and enhance your features', desc_pl: 'Fryzury oceniane pod kątem równoważenia proporcji i podkreślania Twoich rysów' },
+  { icon: Lightbulb, title_en: 'Explainable recommendations', title_pl: 'Wyjaśnienie rekomendacji', desc_en: 'See why each style works with your facial features', desc_pl: 'Zobacz, dlaczego dana fryzura do Ciebie pasuje' },
 ]
 
 export function Landing() {
