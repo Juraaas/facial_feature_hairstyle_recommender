@@ -294,11 +294,12 @@ export function Landing() {
               return (
                 <div key={f.title_en} style={{
                   background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
-                  border: '1px solid var(--border)', padding: '20px', justifyContent: 'center',
+                  border: '1px solid var(--border)', padding: '20px', 
+                  justifyContent: 'center', textAlign: 'center',
                 }}>
                   <div style={{
                     width: 44, height: 44, borderRadius: 10, background: 'var(--accent-soft)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px',
                   }}>
                     <Icon size={22} color="var(--accent)" strokeWidth={1.5} />
                   </div>
@@ -411,7 +412,7 @@ export function Landing() {
           maxWidth: 640, margin: '0 auto', textAlign: 'center', background: 'var(--surface)',
           borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', padding: '40px 32px'
         }}>
-          <span style={{ fontSize: 32, display: 'block', marginBottom: 16 }}>✂️</span>
+          <SquareScissors size={24} color="var(--accent)" strokeWidth={1.5} />
           <h2 style={{ ...sectionH2, marginBottom: 12 }}>
             {t('For hairstylists & salons', 'Dla fryzjerów i salonów')}
           </h2>
