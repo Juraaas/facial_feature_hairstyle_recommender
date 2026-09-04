@@ -64,7 +64,7 @@ const DEMO_CASES_WOMAN = [
 
 const STEPS = [
   {
-    num: '01',
+    num: '1',
     icon: Camera,
     title_en: 'Upload a photo',
     title_pl: 'Wrzuć zdjęcie',
@@ -72,7 +72,7 @@ const STEPS = [
     desc_pl:  'Wystarczy wyraźne zdjęcie twarzy z przodu, wykonane w dobrym oświetleniu.',
   },
   {
-    num: '02',
+    num: '2',
     icon: ScanFace,
     title_en: 'We analyse your facial geometry',
     title_pl: 'Analizujemy geometrię Twojej twarzy',
@@ -80,7 +80,7 @@ const STEPS = [
     desc_pl:  'Analizujemy 15 proporcji twarzy na podstawie 478 punktów charakterystycznych.',
   },
   {
-    num: '03',
+    num: '3',
     icon: Scissors,
     title_en: 'Get personalised hairstyle recommendations',
     title_pl: 'Otrzymaj spersonalizowane rekomendacje fryzur',
@@ -250,18 +250,19 @@ export function Landing() {
               return (
                 <div key={s.num} style={{
                   background: 'var(--bg)', borderRadius: 'var(--radius-lg)',
-                  border: '1px solid var(--border)', padding: '24px 22px',
+                  border: '1px solid var(--border)', padding: '24px 22px', textAlign: 'center',
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', 
+                    justifyContent: 'center', gap: 10, marginBottom: 16 }}>
                     <span style={{
                       fontFamily: 'var(--font-mono)', fontSize: 11,
                       color: 'var(--accent)', letterSpacing: '.06em',
                     }}>{s.num}</span>
                     <div style={{
-                      width: 32, height: 32, borderRadius: 8, background: 'var(--accent-soft)',
+                      width: 40, height: 40, borderRadius: 10, background: 'var(--accent-soft)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <Icon size={16} color="var(--accent)" strokeWidth={1.5} />
+                      <Icon size={20} color="var(--accent)" strokeWidth={1.5} />
                     </div>
                   </div>
                   <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: 'var(--text)' }}>
@@ -291,15 +292,15 @@ export function Landing() {
             {FEATURES.map(f => {
               const Icon = f.icon
               return (
-                <div key={f.icon} style={{
+                <div key={f.title_en} style={{
                   background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
-                  border: '1px solid var(--border)', padding: '20px',
+                  border: '1px solid var(--border)', padding: '20px', justifyContent: 'center',
                 }}>
                   <div style={{
-                    width: 36, height: 36, borderRadius: 8, background: 'var(--accent-soft)',
+                    width: 44, height: 44, borderRadius: 10, background: 'var(--accent-soft)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12,
                   }}>
-                    <Icon size={18} color="var(--accent)" strokeWidth={1.5} />
+                    <Icon size={22} color="var(--accent)" strokeWidth={1.5} />
                   </div>
                   <p style={{ fontSize: 13, fontWeight: 500, marginBottom: 6, color: 'var(--text)' }}>
                     {pl ? f.title_pl : f.title_en}
