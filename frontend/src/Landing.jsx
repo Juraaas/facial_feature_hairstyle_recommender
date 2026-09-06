@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { useDarkMode } from './hooks/useDarkMode'
 import { btnAccent, btnOutline, sectionH2 } from './styles/shared'
-import { Camera, ScanFace, Scissors, Ruler, Waves, BarChart2, Lightbulb, Mail, ArrowRight } from 'lucide-react'
+import { Camera, ScanFace, Scissors, Ruler, Waves, BarChart2, Lightbulb, ArrowRight, Mars, Venus } from 'lucide-react'
 import { NavBar } from './components/NavBar'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -266,22 +266,25 @@ export function Landing() {
             </h2>
             {/* gender toggle */}
             <div style={{ display: 'flex', gap: 6 }}>
-              {['Man', 'Woman'].map(g => (
-                <button
-                  key={g}
-                  onClick={() => setDemoGender(g)}
-                  style={{
-                    ...btnOutline,
-                    borderColor:   demoGender === g ? 'var(--accent)' : 'var(--border)',
-                    color:         demoGender === g ? 'var(--accent)' : 'var(--text-muted)',
-                    background:    demoGender === g ? 'var(--accent-soft)' : 'none',
-                  }}
-                >
-                  {g === 'Man'
-                    ? t('Men', 'Mężczyźni')
-                    : t('Women', 'Kobiety')}
-                </button>
-              ))}
+              {['Man', 'Woman'].map(g => {
+                const Icon = g === 'Man' ? Mars : Venus
+                return (
+                  <button
+                    key={g}
+                    onClick={() => setDemoGender(g)}
+                    style={{
+                      ...btnOutline,
+                      borderColor: demoGender === g ? 'var(--accent)' : 'var(--border)',
+                      color: demoGender === g ? 'var(--accent)' : 'var(--text-muted)',
+                      background: demoGender === g ? 'var(--accent-soft)' : 'none',
+                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                    }}
+                  >
+                    <Icon size={13} strokeWidth={1.5} />
+                    {g === 'Man' ? t('Men', 'Mężczyźni') : t('Women', 'Kobiety')}
+                  </button>
+                )
+              })}
             </div>
         </div>
 
