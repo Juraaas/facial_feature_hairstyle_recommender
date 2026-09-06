@@ -7,18 +7,15 @@ import { FeedbackSection } from './components/FeedbackSection'
 import { ErrorBox } from './components/ErrorBox'
 import { PhotoTutorial } from './components/PhotoTutorial'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
-import { AuthModal } from './components/AuthModal'
 import { PremiumGate } from './components/PremiumGate'
 import { PremiumPopup } from './components/PremiumPopup'
 import { supabase } from './lib/supabase'
 import { useDarkMode } from './hooks/useDarkMode'
-import { useLocation } from 'react-router-dom'
-import { btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob } from './styles/shared'
 import { StylePlayground } from './components/StylePlayground'
 import { UserPanel } from './components/UserPanel'
 import { createCheckout } from './api/client'
+import { NavBar } from './components/NavBar'
 import './App.css'
 
 function App() {
@@ -31,19 +28,15 @@ function App() {
   )
   const [showTutorial, setShowTutorial] = useState(false)
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
   const pl = i18n.language === 'pl'
 
   const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
   const { user, loading: authLoading, signOut, getToken } = useAuth()
-  const [showAuth, setShowAuth] = useState(false)
   const [userPlan, setUserPlan] = useState('free')
   const isPremium = userPlan === 'premium'
   const [showPremium, setShowPremium] = useState(false)
-  const location = useLocation()
   const [showPlayground, setShowPlayground] = useState(false)
-  const [showUserMenu, setShowUserMenu] = useState(false)
   const [showPanel, setShowPanel] = useState(false)
 
   function handleFile(f) {
@@ -57,12 +50,6 @@ function App() {
     localStorage.setItem('tutorial_done', '1')
     setTutorialDone(true)
     setShowTutorial(false)
-  }
-
-  function toggleLang() {
-    const next = i18n.language === 'pl' ? 'en' : 'pl'
-    i18n.changeLanguage(next)
-    localStorage.setItem('lang', next)
   }
 
   async function handleAnalyse() {
@@ -100,147 +87,15 @@ function App() {
   }, [user])
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      <header className="site-nav" style={{
-          display: 'flex', justifyContent: 'space-between',
-          alignItems: 'center', padding: '16px 28px',  marginBottom: 28,
-          borderBottom: '1px solid var(--border)', position: 'sticky',
-          top: 0, background: 'var(--bg)', zIndex: 100}}>
-          {/* logo + name nav home */}
-          <div onClick={() => navigate('/')} style={{
-              fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 500,
-              letterSpacing: '.01em', cursor: 'pointer', display: 'flex',
-              alignItems: 'center', gap: 8, color: 'var(--text)'}}>
-            <img src="/android-chrome-192x192.png" alt=""
-              style={{ width: 22, height: 22, borderRadius: 4 }} />
-            Stylizzer
-          </div>
-          {/* right - settings + user */}
-          <div className="header-right" style={{display: 'flex', gap: 6, alignItems: 'center'}}>
-            <button onClick={() => setDark(d => !d)}
-                style={darkToggleBtn(dark)}>
-                <span style={{ fontSize: 12 }}>{dark ? '☀️' : '🌙'}</span>
-                {/* track */}
-                <span style={darkToggleTrack(dark)}>
-                  {/* knob */}
-                  <span style={darkToggleKnob(dark)} />
-                </span>
-              </button>
-              <button onClick={toggleLang} style={btnOutline}>
-                {i18n.language === 'pl' ? 'EN' : 'PL'}
-              </button>
-              {tutorialDone && !showTutorial && (
-                <button onClick={() => setShowTutorial(true)} style={btnOutline}>
-                  {t('photo_tips')}
-                </button>
-              )}
-              <div style={{ width: 1, height: 16, background: 'var(--border)' }} />
-              {user ? (
-                <div style={{ position: 'relative' }}>
-                  <button
-                    onClick={() => setShowUserMenu(m => !m)}
-                    style={{
-                      ...btnOutline, fontFamily: 'var(--font-mono)',
-                      gap: 6, display: 'flex', alignItems: 'center',
-                    }}
-                  >
-                    <span style={{
-                      width: 20, height: 20, borderRadius: '50%',
-                      background: 'var(--accent)', color: '#fff', fontSize: 10,
-                      alignItems: 'center', justifyContent: 'center', display: 'flex',
-                      fontFamily: 'var(--font-body)', fontWeight: 600,
-                    }}>
-                      {user.email?.[0]?.toUpperCase()}
-                    </span>
-                    {user.email?.split('@')[0]}
-                    <span style={{ fontSize: 9, color: 'var(--text-hint)' }}>▾</span>
-                  </button>
-
-                  {showUserMenu && (
-                    <>
-                      <div
-                        onClick={() => setShowUserMenu(false)}
-                        style={{ position: 'fixed', inset: 0, zIndex: 98 }}
-                      />
-                      <div style={{
-                        position: 'absolute', top: 'calc(100% + 6px)',
-                        right: 0, zIndex: 99, background: 'var(--surface)',
-                        border: '1px solid var(--border)', borderRadius: 'var(--radius-md)',
-                        boxShadow: '0 8px 24px rgba(0,0,0,.15)', minWidth: 180,
-                        overflow: 'hidden', animation: 'fadeIn .15s ease',
-                      }}>
-                        {/* plan badge */}
-                        <div style={{
-                          padding: '10px 14px', background: 'var(--surface-2)',
-                          borderBottom: '1px solid var(--border)',
-                        }}>
-                          <p style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 300 }}>
-                            {user.email}
-                          </p>
-                          <p style={{
-                            fontSize: 10, color: isPremium ? 'var(--accent)' : 'var(--text-hint)',
-                            fontFamily: 'var(--font-mono)', marginTop: 2,
-                          }}>
-                            {isPremium ? '✨ Premium' : '○ Free plan'}
-                          </p>
-                        </div>
-
-                        {/* options */}
-                        {[
-                          {
-                            icon: '📊',
-                            label: pl ? 'Historia analiz' : 'Analysis history',
-                            action: () => { setShowPanel(true); setShowUserMenu(false) },
-                          },
-                          !isPremium && {
-                            icon: '✨',
-                            label: pl ? 'Kup Premium' : 'Upgrade to Premium',
-                            action: () => { handleUpgrade(); setShowUserMenu(false) },
-                            accent: true,
-                          },
-                          {
-                            icon: '→',
-                            label: pl ? 'Wyloguj' : 'Sign out',
-                            action: () => { signOut(); setShowUserMenu(false) },
-                          },
-                        ].filter(Boolean).map(item => (
-                          <button
-                            key={item.label}
-                            onClick={item.action}
-                            style={{
-                              display: 'flex', alignItems: 'center', gap: 10,
-                              width: '100%', padding: '9px 14px', background: 'none',
-                              border: 'none', cursor: 'pointer', fontSize: 12, textAlign: 'left',
-                              color: item.accent ? 'var(--accent)' : 'var(--text)',
-                              fontFamily: 'var(--font-body)', transition: 'background .1s',
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'var(--surface-2)'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'none'}
-                          >
-                            <span style={{ fontSize: 14, width: 18 }}>{item.icon}</span>
-                            {item.label}
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowAuth(true)}
-                  style={{ ...btnOutline, borderColor: 'var(--accent)', color: 'var(--accent)' }}
-                >
-                  {pl ? 'Zaloguj' : 'Sign in'}
-                </button>
-              )}
-              {showAuth && (
-                <AuthModal
-                  onClose={() => setShowAuth(false)}
-                  onSuccess={() => setShowAuth(false)}
-                />
-              )}
-          </div>
-        </header>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}
+      data-theme={dark ? 'dark' : 'light'}>
+      <NavBar
+        variant="app"
+        onShowPanel={() => setShowPanel(true)}
+        onShowTutorial={() => setShowTutorial(true)}
+        onUpgrade={handleUpgrade}
+        isPremium={isPremium}
+      />
       <div className="app">
         <main className="app-main">
           {/* intro */}

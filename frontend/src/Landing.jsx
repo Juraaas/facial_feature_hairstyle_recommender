@@ -2,10 +2,9 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { useDarkMode } from './hooks/useDarkMode'
-import { btnAccent, btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob, sectionH2 } from './styles/shared'
-import { AuthModal } from './components/AuthModal'
-import { useAuth } from './hooks/useAuth'
-import { Camera, ScanFace, SquareScissors ,Scissors, Ruler, Waves, BarChart2, Lightbulb, Sparkles, Star, Users } from 'lucide-react'
+import { btnAccent, btnOutline, sectionH2 } from './styles/shared'
+import { Camera, ScanFace, Scissors, Ruler, Waves, BarChart2, Lightbulb, Mail, ArrowRight } from 'lucide-react'
+import { NavBar } from './components/NavBar'
 
 const API_URL = import.meta.env.VITE_API_URL
 const DEMO_CASES_MAN = [
@@ -102,78 +101,15 @@ export function Landing() {
   const pl = i18n.language === 'pl'
   const [dark, setDark] = useDarkMode()
 
-  function toggleLang() {
-    const next = pl ? 'en' : 'pl'
-    i18n.changeLanguage(next)
-    localStorage.setItem('lang', next)
-  }
-
   const t = (en, plStr) => pl ? plStr : en
   const [demoGender, setDemoGender] = useState('Man')
   const demoCases = demoGender === 'Man' ? DEMO_CASES_MAN : DEMO_CASES_WOMAN
-  
-  const { user, signOut } = useAuth()
-  const [showAuth, setShowAuth] = useState(false)
 
   return (
     <div style={{minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', 
-    fontFamily: 'var(--font-body)'}}>
+    fontFamily: 'var(--font-body)'}} data-theme={dark ? 'dark' : 'light'}>
 
-      {/* ── nav ── */}
-      <nav style={{
-        display: 'flex', justifyContent: 'space-between',
-        alignItems: 'center', padding: '18px 40px',
-        borderBottom: '1px solid var(--border)', position: 'sticky',
-        top: 0, background: 'var(--bg)', zIndex: 100,
-      }}>
-        <div style={{fontFamily: 'var(--font-display)', fontSize: 18,
-          fontWeight: 500, letterSpacing: '.01em', display: 'flex',
-          alignItems: 'center', gap: 8}}>
-          <img src="/android-chrome-192x192.png" alt="Stylizzer"
-            style={{ width: 24, height: 24, borderRadius: 4 }} />
-          Stylizzer
-        </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button onClick={() => setDark(d => !d)}
-              style={darkToggleBtn(dark)}>
-              <span style={{ fontSize: 12 }}>{dark ? '☀️' : '🌙'}</span>
-                {/* track */}
-                <span style={darkToggleTrack(dark)}>
-                {/* knob */}
-                <span style={darkToggleKnob(dark)} />
-              </span>
-            </button>
-          <button onClick={toggleLang} style={btnOutline}>
-            {pl ? 'EN' : 'PL'}
-          </button>
-          {/* separator */}
-          <div style={{ width: 1, height: 16, background: 'var(--border)' }} />
-          {user ? (
-            <button onClick={signOut} style={btnOutline}>
-              {t('Sign out', 'Wyloguj')}
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowAuth(true)}
-              style={{ ...btnOutline, borderColor: 'var(--accent)', color: 'var(--accent)' }}
-            >
-              {t('Sign in', 'Zaloguj się')}
-            </button>
-          )}
-          <button
-            onClick={() => navigate('/analyse')}
-            style={btnAccent}
-          >
-            {t('Try it', 'Przetestuj')}
-          </button>
-          {showAuth && (
-            <AuthModal
-              onClose={() => setShowAuth(false)}
-              onSuccess={() => setShowAuth(false)}
-            />
-          )}
-        </div>
-      </nav>
+      <NavBar variant="landing" />
 
       {/* ── hero ── */}
       <section style={{
@@ -218,7 +154,8 @@ export function Landing() {
 
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
           <button onClick={() => navigate('/analyse')} style={{ ...btnAccent, fontSize: 15, padding: '13px 32px' }}>
-            {t('Analyse my face →', 'Analizuj moją twarz →')}
+            {t('Analyse my face', 'Analizuj moją twarz ')}
+            <ArrowRight size={15} strokeWidth={2} />
           </button>
           <a href="#how-it-works" style={{ ...btnOutline, fontSize: 15, padding: '13px 32px', textDecoration: 'none' }}>
             {t('See how it works', 'Zobacz działanie')}
@@ -376,7 +313,8 @@ export function Landing() {
                 height: 200, background: 'var(--surface-2)',
                 display: 'none', alignItems: 'center', justifyContent: 'center',
                 fontSize: 48, borderBottom: '1px solid var(--border)',
-              }}>✂️</div>
+              }}><Scissors size={40} color="var(--text-hint)" strokeWidth={1} />
+              </div>
 
               <div style={{ padding: '16px' }}>
                 <div style={{
@@ -412,7 +350,7 @@ export function Landing() {
           maxWidth: 640, margin: '0 auto', textAlign: 'center', background: 'var(--surface)',
           borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', padding: '40px 32px'
         }}>
-          <SquareScissors size={24} color="var(--accent)" strokeWidth={1.5} />
+          <Scissors size={30} color="var(--accent)" strokeWidth={1.5} />
           <h2 style={{ ...sectionH2, marginBottom: 12 }}>
             {t('For hairstylists & salons', 'Dla fryzjerów i salonów')}
           </h2>
@@ -430,6 +368,7 @@ export function Landing() {
             style={{ ...btnAccent, textDecoration: 'none', display: 'inline-block' }}
           >
             {t('Contact us', 'Napisz do nas')}
+            <Mail size={14} strokeWidth={1}/>
           </a>
         </div>
       </section>
@@ -448,7 +387,8 @@ export function Landing() {
           onClick={() => navigate('/analyse')}
           style={{ ...btnAccent, fontSize: 15, padding: '13px 36px' }}
         >
-          {t('Analyse my face →', 'Analizuj moją twarz →')}
+          {t('Analyse my face ', 'Analizuj moją twarz ')}
+          <ArrowRight size={15} strokeWidth={2} />
         </button>
       </section>
 
