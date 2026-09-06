@@ -10,7 +10,6 @@ const HAIR_COLORS = [
   { id: 'dark',     label_pl: 'Ciemny brąz',    label_en: 'Dark brown',   prompt: 'dark brown hair color' },
   { id: 'black',    label_pl: 'Czarny',         label_en: 'Black',        prompt: 'jet black hair color' },
   { id: 'auburn',   label_pl: 'Rudy',           label_en: 'Auburn',       prompt: 'auburn red hair color' },
-  { id: 'grey',     label_pl: 'Siwy',           label_en: 'Grey',         prompt: 'silver grey hair color' },
 ]
 
 export function StylePlayground({ styles, originalFile, onClose, isPremium, onUpgrade }) {
