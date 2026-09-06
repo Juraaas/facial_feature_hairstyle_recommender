@@ -5,6 +5,51 @@ import { ChevronRight, Sparkles, X } from 'lucide-react'
 
 const BASE = import.meta.env.VITE_API_URL || '/api'
 
+const TRAIT_NAMES_PL = {
+  face_ratio: 'Proporcje twarzy',
+  jaw_ratio: 'Szerokość szczęki',
+  eye_ratio: 'Rozstaw oczu',
+  eye_height: 'Otwartość oczu',
+  lip_ratio: 'Szerokość ust',
+  nose_position: 'Pozycja nosa',
+  lower_face_ratio: 'Dolna część twarzy',
+  chin_prominence: 'Projekcja brody',
+  symmetry: 'Symetria',
+  upper_third: 'Czoło',
+  middle_third: 'Środkowa część',
+  mid_lower_ratio: 'Balans środek/dół',
+  hair_type: 'Typ włosów',
+  hairline: 'Linia włosów',
+  jaw: 'Szczęka',
+  eyes: 'Oczy',
+  forehead: 'Czoło',
+  face_length: 'Długość twarzy',
+  facial_thirds: 'Tercje twarzy',
+}
+
+const TRAIT_VALUES_PL = {
+  narrow: 'wąska',
+  wide: 'szeroka',
+  high: 'wysoka',
+  low: 'niska',
+  long: 'długa',
+  short: 'krótka',
+  prominent: 'wyraźna',
+  recessed: 'cofnięta',
+  close: 'blisko',
+  balanced: 'zbalansowana',
+  middle_dominant: 'dominuje środek',
+  top_heavy: 'dominuje góra',
+  bottom_heavy: 'dominuje dół',
+  straight: 'proste',
+  wavy: 'falowane',
+  curly: 'kręcone',
+  coily: 'spiralne',
+  receding: 'cofnięta',
+  uneven: 'nierówna',
+  normal: 'normalna',
+}
+
 export function UserPanel({ user, onClose, isPremium, onUpgrade }) {
   const { i18n } = useTranslation()
   const pl = i18n.language === 'pl'
@@ -207,10 +252,10 @@ export function UserPanel({ user, onClose, isPremium, onUpgrade }) {
                           <span style={{
                             fontFamily: 'var(--font-mono)', color: 'var(--text-hint)',
                           }}>
-                            {key.replace(/_/g, ' ')}
+                            {pl ? (TRAIT_NAMES_PL[key] || key.replace(/_/g, ' ')) : key.replace(/_/g, ' ')}
                           </span>
                           <span style={{ color: 'var(--text)', fontWeight: 500 }}>
-                            {String(val)}
+                            {pl ? (TRAIT_VALUES_PL[String(val)] || String(val)) : String(val)}
                           </span>
                         </div>
                       ))
