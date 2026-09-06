@@ -278,8 +278,8 @@ export function Landing() {
                   }}
                 >
                   {g === 'Man'
-                    ? t('👨 Men', '👨 Mężczyźni')
-                    : t('👩 Women', '👩 Kobiety')}
+                    ? t('Men', 'Mężczyźni')
+                    : t('Women', 'Kobiety')}
                 </button>
               ))}
             </div>
@@ -368,7 +368,6 @@ export function Landing() {
             style={{ ...btnAccent, textDecoration: 'none', display: 'inline-block' }}
           >
             {t('Contact us', 'Napisz do nas')}
-            <Mail size={14} strokeWidth={1}/>
           </a>
         </div>
       </section>
