@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useDarkMode } from '../hooks/useDarkMode'
 import { useAuth } from '../hooks/useAuth'
-import { History, Sparkles, Camera, LogOut, User, Languages, ChevronDown, Scissors } from 'lucide-react'
+import { History, Sparkles, Camera, LogOut, User, Languages, ChevronDown, Scissors, Sun, Moon } from 'lucide-react'
 import { btnAccent, btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob } from '../styles/shared'
 import { AuthModal } from './AuthModal'
 
@@ -52,7 +52,7 @@ export function NavBar({
     },
     {
       Icon: Languages,
-      label: pl ? 'English' : 'Polski',
+      label: pl ? 'English version' : 'Wersja polska',
       action: () => { toggleLang(); setShowUserMenu(false) },
     },
     {
@@ -110,7 +110,7 @@ export function NavBar({
 
           {/* dark toggle */}
           <button onClick={() => setDark(d => !d)} style={darkToggleBtn(dark)}>
-            <span style={{ fontSize: 12 }}>{dark ? '☀️' : '🌙'}</span>
+            <span>{dark ? <Sun size={13} strokeWidth={1.5} /> : <Moon size={13} strokeWidth={1.5} />}</span>
             <span style={darkToggleTrack(dark)}>
               <span style={darkToggleKnob(dark)} />
             </span>
