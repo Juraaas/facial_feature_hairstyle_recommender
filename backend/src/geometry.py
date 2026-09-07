@@ -47,8 +47,8 @@ class FaceGeometry:
     def eye_dist(self):
         return self.dist(self.left_eye(), self.right_eye())
     
-    def nose_position_ratio(self):
-        return (self.nose()[1] - self.forehead_top()[1]) / self.face_height()
+    # def nose_position_ratio(self):
+    #     return (self.nose()[1] - self.forehead_top()[1]) / self.face_height()
     
     def face_ratio(self):
         return self.face_height() / self.face_width()
@@ -56,11 +56,27 @@ class FaceGeometry:
     def jaw_ratio(self):
         return self.jaw_width() / self.face_width()
     
+    # def symmetry_score(self):
+    #     mid = (self._p(33) + self._p(263)) / 2
+    #     left_dist = np.linalg.norm(self._p(234) - mid)
+    #     right_dist = np.linalg.norm(self._p(454) - mid)
+    #     return abs(left_dist - right_dist) / self.face_width()
+
     def symmetry_score(self):
-        mid = (self._p(33) + self._p(263)) / 2
-        left_dist = np.linalg.norm(self._p(234) - mid)
-        right_dist = np.linalg.norm(self._p(454) - mid)
-        return abs(left_dist - right_dist) / self.face_width()
+        nose_x = self._p(1)[0]
+        
+        pairs = [
+            (self._p(234), self._p(454)),
+            (self._p(172), self._p(397)),
+            (self._p(33),  self._p(263)), 
+        ]
+        
+        deviations = []
+        for left, right in pairs:
+            expected_right_x = 2 * nose_x - left[0]
+            deviations.append(abs(expected_right_x - right[0]))
+        
+        return np.mean(deviations) / self.face_width()
     
     def jaw_to_height(self):
         return self.jaw_width() / self.face_height()
@@ -108,6 +124,9 @@ class FaceGeometry:
     
     def lower_third(self):
         return abs(self.chin()[1] - self.nose_base_y())
+
+    def cheekbone_to_jaw_ratio(self):
+        return self.face_width() / self.jaw_width()
     
     def facial_thirds_ratio(self):
         u = self.upper_third()
@@ -126,3 +145,12 @@ class FaceGeometry:
         m = self.middle_third()
         l = self.lower_third()
         return m / l if l > 0 else 1.0
+
+    def nose_position_ratio(self):
+        left_eye  = self.left_eye()
+        right_eye = self.right_eye()
+        glabella = (left_eye + right_eye) / 2
+        nose_base = self._p(2)
+        
+        chin = self.chin()
+        return self.dist(glabella, nose_base) / self.dist(glabella, chin)

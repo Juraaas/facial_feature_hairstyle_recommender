@@ -1,30 +1,28 @@
 THRESHOLDS = {
     "Man": {
-        "face_ratio": {"long": 1.38, "short": 1.215},
-        "jaw_ratio": {"wide": 0.825, "narrow": 0.8},
+        "face_ratio": {"long": 1.386, "short": 1.215},
+        "jaw_ratio": {"wide": 0.825, "narrow": 0.79},
         "jaw_to_height": {"high": 0.66,  "low": 0.58},
+        "cheekbone_to_jaw": {"triangle": 1.26, "square": 1.2},
         "eye_ratio": {"wide": 0.64,  "close": 0.6},
-        "eye_height": {"open": 0.36,  "narrow": 0.27},
-        "lip_ratio": {"wide": 0.43,  "narrow": 0.35},
-        "nose_position": {"lower": 0.628,"upper": 0.568},
-        "lower_face_ratio": {"long": 0.316, "short": 0.269},
+        "lip_ratio": {"wide": 0.43,  "narrow": 0.357},
+        "nose_position": {"lower": 0.38,"upper": 0.432},
+        "lower_face_ratio": {"long": 0.316, "short": 0.268},
         "chin_prominence": {"prom": 0.219, "rec": 0.173},
-        "symmetry": {"high": 0.032, "medium": 0.163},
-        "mid_lower_ratio": {"lower_dom": 0.78, "middle_dom": 0.913},
+        "symmetry": {"high": 0.055, "medium": 0.22},
         "upper_third": {"high": 0.356, "low": 0.286},
     },
     "Woman": {
         "face_ratio": {"long": 1.3, "short": 1.085},
-        "jaw_ratio": {"wide": 0.81, "narrow": 0.77},
+        "jaw_ratio": {"wide": 0.81, "narrow": 0.774},
         "jaw_to_height": {"high": 0.735, "low": 0.61},
+        "cheekbone_to_jaw": {"triangle": 1.3, "square": 1.23},
         "eye_ratio": {"wide": 0.66,  "close": 0.62},
-        "eye_height": {"open": 0.4,   "narrow": 0.3},
-        "lip_ratio": {"wide": 0.45,  "narrow": 0.36},
-        "nose_position": {"lower": 0.62, "upper": 0.53},
+        "lip_ratio": {"wide": 0.457,  "narrow": 0.36},
+        "nose_position": {"lower": 0.395, "upper": 0.453},
         "lower_face_ratio": {"long": 0.348, "short": 0.28},
         "chin_prominence":  {"prom": 0.25,  "rec": 0.2},
-        "symmetry": {"high": 0.038, "medium": 0.21},
-        "mid_lower_ratio": {"lower_dom": 0.80, "middle_dom": 1.0},
+        "symmetry": {"high": 0.06, "medium": 0.276},
         "upper_third": {"high": 0.325, "low": 0.195},
     },
 }
@@ -64,14 +62,6 @@ def interpret_face(features, gender="Man"):
         traits["eyes"] = "close"
     else:
         traits["eyes"] = "normal"
-
-    eh = features["eye_height"]
-    if eh > t["eye_height"]["open"]:
-        traits["eye_openness"] = "open"
-    elif eh < t["eye_height"]["narrow"]:
-        traits["eye_openness"] = "narrow"
-    else:
-        traits["eye_openness"] = "normal"
 
     lr = features["lip_ratio"]
     if lr > t["lip_ratio"]["wide"]:
@@ -113,14 +103,6 @@ def interpret_face(features, gender="Man"):
     else:
         traits["symmetry"] = "low"
 
-    mlr = features["mid_lower_ratio"]
-    if mlr < t["mid_lower_ratio"]["lower_dom"]:
-        traits["facial_thirds"] = "lower_dominant"
-    elif mlr > t["mid_lower_ratio"]["middle_dom"]:
-        traits["facial_thirds"] = "middle_dominant"
-    else:
-        traits["facial_thirds"] = "balanced"
-
     ut = features["upper_third"]
     if ut > t["upper_third"]["high"]:
         traits["forehead"] = "high"
@@ -128,6 +110,14 @@ def interpret_face(features, gender="Man"):
         traits["forehead"] = "low"
     else:
         traits["forehead"] = "normal"
+
+    ctj = features["cheekbone_to_jaw"]
+    if ctj > t["cheekbone_to_jaw"]["triangle"]:
+        traits["face_shape_type"] = "triangle"
+    elif ctj < t["cheekbone_to_jaw"]["square"]:
+        traits["face_shape_type"] = "square"
+    else:
+        traits["face_shape_type"] = "oval"
 
     u = features["upper_third"]
     m = features["middle_third"]

@@ -88,9 +88,6 @@ TRAIT_EXPLANATIONS = {
         "high": "high facial symmetry — clean geometric styles suit you well",
         "low": "noticeable asymmetry — textured styles redistribute visual balance",
     },
-    "eye_openness": {
-        "narrow": "narrower eyes — avoid heavy fringe to keep eyes visible",
-    },
     "thirds_vertical": {
         "top_heavy": "forehead dominates — fringe and side volume balance the face",
         "bottom_heavy": "lower face dominates — height on top corrects the balance",
@@ -142,10 +139,6 @@ TRAIT_EXPLANATIONS_PL = {
     "symmetry": {
         "high": "wysoka symetria twarzy - uporządkowane, geometryczne fryzury dobrze współgrają z proporcjami",
         "low": "zauważalna asymetria - teksturowane fryzury pomagają rozłożyć uwagę i zrównoważyć twarz",
-    },
-
-    "eye_openness": {
-        "narrow": "węższe oczy - warto unikać ciężkiej grzywki, aby nie zasłaniać oczu",
     },
 
     "thirds_vertical": {
