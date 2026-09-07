@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export function StyleCard({style, rank, features, gender, onReplace }) {
+export function StyleCard({style, rank, features, gender, isPremium = False }) {
     const { t } = useTranslation()
     const [voted, setVoted] = useState(null)
     const score = style.display_score ?? Math.round(style.score * 100)
@@ -84,7 +84,7 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
             )}
 
             {/* why it works */}
-            {style.contributions?.length > 0 && (
+            {(isPremium || rank === 0) && style.contributions?.length > 0 && (
             <div>
                 <p style={{fontSize: 9, fontWeight: 600, color: 'var(--text-hint)',
                 textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8, 
@@ -108,6 +108,27 @@ export function StyleCard({style, rank, features, gender, onReplace }) {
                 ))}
             </div>
             )}
+
+            {!isPremium && rank > 0 && (
+                <div style={{
+                    position: 'relative', padding: '8px 0', marginBottom: 8,
+                }}>
+                    <div style={{
+                    height: 40, borderRadius: 4, opacity: 0.5, marginBottom: 4,
+                    background: 'linear-gradient(90deg, var(--border) 25%, var(--surface-2) 50%, var(--border) 75%)',
+                    }} />
+                    <div style={{
+                    height: 24, width: '60%', borderRadius: 4, opacity: 0.4,
+                    background: 'linear-gradient(90deg, var(--border) 25%, var(--surface-2) 50%, var(--border) 75%)',
+                    }} />
+                    <p style={{
+                    position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', fontSize: 10, color: 'var(--text-hint)',
+                    }}>
+                    🔒 {pl ? 'Premium' : 'Premium only'}
+                    </p>
+                </div>
+                )}
 
             {/* negatives */}
             {style.negatives?.length > 0 && (

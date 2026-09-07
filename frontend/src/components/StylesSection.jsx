@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import { StyleCard } from "./StyleCard"
 import { useTranslation } from 'react-i18next'
+import { ArrowRight, Sparkles } from 'lucide-react'
 
-export function StylesSection({ styles, features, gender}) {
+export function StylesSection({ styles, features, gender, isPremium, onPremiumClick}) {
     const { t, i18n } = useTranslation()
     const [page, setPage] = useState(0)
     const isDesktop = window.innerWidth >= 720
@@ -54,6 +55,7 @@ export function StylesSection({ styles, features, gender}) {
                         rank={start + i}
                         features={features}
                         gender={gender}
+                        isPremium={isPremium}
                     />
                 ))}
             </div>
@@ -73,6 +75,27 @@ export function StylesSection({ styles, features, gender}) {
                     />
                 ))}
             </div>
+            {!isPremium && totalPages > 1 && page === 0 && (
+                <div
+                    onClick={onPremiumClick}
+                    style={{
+                    marginTop: 16, padding: '12px 16px', background: 'var(--accent-soft)',
+                    border: '1px solid var(--accent)', borderRadius: 'var(--radius-md)',
+                    display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
+                    }}
+                >
+                    <Sparkles size={16} color="var(--accent)" strokeWidth={1.5} />
+                    <div>
+                    <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--accent)' }}>
+                        {pl ? `+${styles.length - 3} kolejnych rekomendacji` : `+${styles.length - 3} more recommendations`}
+                    </p>
+                    <p style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 300 }}>
+                        {pl ? 'Ulepsz do Premium aby zobaczyć wszystkie z wyjaśnieniami' : 'Get Premium to see all with explanations'}
+                    </p>
+                    </div>
+                    <ArrowRight size={14} color="var(--accent)" style={{ marginLeft: 'auto' }} />
+                </div>
+                )}
         </section>
     )
 }
