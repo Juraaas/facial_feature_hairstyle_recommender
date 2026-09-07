@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 const API_URL = import.meta.env.VITE_API_URL;
 
 export function StyleCard({style, rank, features, gender, isPremium = False }) {
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
     const [voted, setVoted] = useState(null)
     const score = style.display_score ?? Math.round(style.score * 100)
     const isTop = rank === 0
