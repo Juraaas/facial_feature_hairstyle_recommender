@@ -104,6 +104,9 @@ export function Landing() {
   const t = (en, plStr) => pl ? plStr : en
   const [demoGender, setDemoGender] = useState('Man')
   const demoCases = demoGender === 'Man' ? DEMO_CASES_MAN : DEMO_CASES_WOMAN
+  const [showContact, setShowContact] = useState(false)
+  const [contactMsg,  setContactMsg]  = useState('')
+  const [contactSent, setContactSent] = useState(false)
 
   return (
     <div style={{minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', 
@@ -366,12 +369,62 @@ export function Landing() {
               'Używaj Stylizzer jako narzędzia konsultacyjnego, aby wspólnie z klientem sprawdzić propozycje fryzur dopasowanych do geometrii jego twarzy. Jesteśmy obecnie w fazie beta. Skontaktuj się z nami, aby uzyskać dostęp dla swojego salonu.'
             )}
           </p>
-          
-            <a href="mailto:jurewiczjuras@gmail.com"
-            style={{ ...btnAccent, textDecoration: 'none', display: 'inline-block' }}
-          >
-            {t('Contact us', 'Napisz do nas')}
-          </a>
+            <button
+              onClick={() => setShowContact(s => !s)}
+              style={{ ...btnAccent, textDecoration: 'none', display: 'inline-flex',
+                alignItems: 'center', gap: 6 }}
+            >
+              <Mail size={14} strokeWidth={1.5} />
+              {t('Contact us', 'Skontaktuj się')}
+            </button>
+            {showContact && !contactSent && (
+              <div style={{
+                marginTop: 16, padding: '16px',
+                background: 'var(--bg)', borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border)', animation: 'fadeIn .2s ease',
+              }}>
+                <input
+                  type="email"
+                  placeholder={t('Your email', 'Twój email')}
+                  style={{
+                    width: '100%', padding: '9px 12px', marginBottom: 8,
+                    border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)',
+                    background: 'var(--surface)', color: 'var(--text)',
+                    fontSize: 13, fontFamily: 'var(--font-body)', outline: 'none',
+                  }}
+                  id="contact-email"
+                />
+                <textarea
+                  placeholder={t('Your message', 'Twoja wiadomość')}
+                  rows={3}
+                  style={{
+                    width: '100%', padding: '9px 12px', marginBottom: 10,
+                    border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)',
+                    background: 'var(--surface)', color: 'var(--text)',
+                    fontSize: 13, fontFamily: 'var(--font-body)',
+                    resize: 'vertical', outline: 'none',
+                  }}
+                  id="contact-msg"
+                />
+                <button
+                  onClick={async () => {
+                    const email = document.getElementById('contact-email').value
+                    const msg = document.getElementById('contact-msg').value
+                    if (!email || !msg) return
+                    window.location.href = `mailto:jurewiczjuras@gmail.com?subject=Stylizzer contact from ${email}&body=${encodeURIComponent(msg)}`
+                    setContactSent(true)
+                  }}
+                  style={{ ...btnAccent, width: '100%' }}
+                >
+                  {t('Send', 'Wyślij')}
+                </button>
+              </div>
+            )}
+            {contactSent && (
+              <p style={{ marginTop: 12, fontSize: 13, color: '#2d8f4e', fontWeight: 300 }}>
+                {t('Message sent.', 'Wiadomość wysłana.')}
+              </p>
+            )}
         </div>
       </section>
 
