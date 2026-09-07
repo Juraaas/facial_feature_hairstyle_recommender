@@ -21,7 +21,7 @@ def validate_landmarks(landmarks) -> ValidationResult:
 
 def validate_features(features: dict) -> ValidationResult:
     EXPECTED_KEYS = {
-        "face_ratio", "jaw_ratio", "jaw_to_height", "cheekbone_to_jaw"
+        "face_ratio", "jaw_ratio", "jaw_to_height", "cheekbone_to_jaw",
         "eye_ratio", "lip_ratio", "nose_position", "lower_face_ratio",
         "chin_prominence", "symmetry", "upper_third",
         "middle_third", "lower_third", "thirds_balance"
