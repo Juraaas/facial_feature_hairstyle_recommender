@@ -14,7 +14,7 @@ export function PremiumPopup({ onClose, onUpgrade, onLogin, user }) {
         position: 'fixed', top: '50%', left: '50%',transform: 'translate(-50%, -50%)',
         zIndex: 201, width: '100%', maxWidth: 380,background: 'var(--surface)',
         borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)',
-        padding: '32px 28px', textAlign: 'center', animation: 'fadeIn .2s ease',
+        padding: '32px 28px', textAlign: 'center', animation: 'modalIn .2s ease',
       }}>
         <button onClick={onClose} style={{
           position: 'absolute', top: 14, right: 14,
@@ -33,7 +33,7 @@ export function PremiumPopup({ onClose, onUpgrade, onLogin, user }) {
           fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 500,
           color: 'var(--text)', marginBottom: 8,
         }}>
-          {pl ? 'Odblokuj FaceFit Premium' : 'Unlock FaceFit Premium'}
+          {pl ? 'Odblokuj Stylizzer Premium' : 'Unlock Stylizzer Premium'}
         </h3>
 
         <p style={{fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6, marginBottom: 20}}>
