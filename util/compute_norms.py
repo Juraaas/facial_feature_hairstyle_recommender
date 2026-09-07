@@ -1,3 +1,7 @@
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'backend'))
+
 import cv2
 import numpy as np
 import pandas as pd
@@ -15,7 +19,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {DEVICE}")
 
 def load_models():
-    detector  = FaceLandmarkDetector(model_path="models/face_landmarker.task")
+    detector  = FaceLandmarkDetector(model_path="backend/models/face_landmarker.task")
     processor = SegformerImageProcessor.from_pretrained("jonathandinu/face-parsing")
     model     = SegformerForSemanticSegmentation.from_pretrained(
         "jonathandinu/face-parsing"
@@ -139,11 +143,11 @@ def compute_norms(dataset_dir, gender="0", batch_size=16):
 
 if __name__ == "__main__":
     stats, df = compute_norms("dataset/part123/", gender="0", batch_size=16)
-    stats.to_csv("data/norms/male_norms_v2.csv")
+    stats.to_csv("backend/data/norms/male_norms_v3.csv")
     print("=== MALE ===")
     print(stats)
 
     stats, df = compute_norms("dataset/part123/", gender="1", batch_size=16)
-    stats.to_csv("data/norms/female_norms_v2.csv")
+    stats.to_csv("backend/data/norms/female_norms_v3.csv")
     print("=== FEMALE ===")
     print(stats)

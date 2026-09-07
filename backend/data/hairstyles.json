@@ -41,25 +41,6 @@
     },
 
     {
-      "name": "Side Part",
-      "image": "images/male/side_part.jpg",
-      "category": "classic",
-      "tags": ["sophisticated", "formal"],
-      "tags_pl": ["wyrafinowana", "formalna"],
-      "description": "Classic side-parted style with controlled shape and clean separation. Adds structure and polish for formal or smart-casual looks. Medium styling effort.",
-      "description_pl": "Klasyczne uczesanie z przedziałkiem z boku i uporządkowanym kształtem. Dodaje twarzy wyraźnej struktury i dobrze pasuje do eleganckiego lub smart-casualowego stylu.",
-      "attributes": {
-        "volume_top": 0.7,
-        "volume_sides": 0.3,
-        "short_sides": 0.5,
-        "longer_hair": 0.5,
-        "fringe": 0.0,
-        "clean_lines": 0.8,
-        "soft_texture": 0.3,
-        "textured_top": 0.0
-      }
-    },
-    {
       "name": "Comb Over",
       "image": "images/male/comb_over.jpg",
       "category": "classic",
@@ -95,26 +76,6 @@
         "clean_lines": 1.0,
         "soft_texture": 0.0,
         "textured_top": 0.0
-      }
-    },
-
-    {
-      "name": "Pompadour",
-      "image": "images/male/pompadour.jpg",
-      "category": "structured",
-      "tags": ["bold", "high-volume"],
-      "tags_pl": ["wyrazista", "objętość"],
-      "description": "High-volume top swept upward and back. Creates a bold, elongated silhouette and works best when extra height is desired. High styling effort.",
-      "description_pl": "Wysoko uniesiona góra zaczesana do tyłu. Tworzy mocną, wydłużoną fryzurę i wyraźnie zwiększa objętość, ale wymaga więcej czasu na stylizację.",
-      "attributes": {
-        "volume_top": 1.0,
-        "volume_sides": 0.0,
-        "short_sides": 0.8,
-        "longer_hair": 0.5,
-        "fringe": 0.0,
-        "clean_lines": 0.5,
-        "soft_texture": 0.0,
-        "textured_top": 0.5
       }
     },
     {
@@ -214,25 +175,43 @@
       }
     },
     {
-      "name": "Curly Volume",
-      "image": "images/male/curly_volume.jpg",
+      "name": "Wolf Cut",
+      "image": "images/male/wolf_cut.jpg",
       "category": "textured",
-      "tags": ["curly", "volume"],
-      "tags_pl": ["objętość", "loki"],
-      "description": "Natural curls shaped with fuller sides and controlled volume. Adds width, texture, and movement while keeping the look relaxed. Medium styling effort.",
-      "description_pl": "Naturalne loki z kontrolowaną objętością i wyraźną teksturą. Podkreśla naturalny ruch włosów i tworzy pełniejszy, bardziej przestrzenny kształt.",
+      "tags": ["modern", "layered"],
+      "tags_pl": ["nowoczesna", "warstwowa"],
+      "description": "Layered shaggy cut with a choppy fringe and volume at the crown. Blends structure with effortless texture for a modern, expressive look.",
+      "description_pl": "Warstwowe cięcie z postrzępioną grzywką i objętością na czubku. Łączy strukturę z naturalną teksturą.",
       "attributes": {
-        "volume_top": 0.8,
-        "volume_sides": 1.0,
-        "short_sides": 0.0,
-        "longer_hair": 0.6,
-        "fringe": 0.3,
-        "clean_lines": 0.0,
-        "soft_texture": 1.0,
-        "textured_top": 0.8
+        "volume_top": 0.9,
+        "volume_sides": 0.6,
+        "short_sides": 0.2,
+        "longer_hair": 0.8,
+        "fringe": 0.7,
+        "clean_lines": 0.1,
+        "soft_texture": 0.9,
+        "textured_top": 0.9
       }
     },
-
+    {
+      "name": "Modern Mullet",
+      "image": "images/male/modern_mullet.jpg",
+      "category": "textured",
+      "tags": ["bold", "retro"],
+      "tags_pl": ["odważna", "retro"],
+      "description": "Short sides with longer textured back and a forward fringe. A bold modern take on a retro silhouette with strong visual contrast.",
+      "description_pl": "Krótkie boki z dłuższym tyłem i grzywką. Odważna, nowoczesna interpretacja fryzury retro.",
+      "attributes": {
+        "volume_top": 0.5,
+        "volume_sides": 0.3,
+        "short_sides": 0.9,
+        "longer_hair": 0.9,
+        "fringe": 0.6,
+        "clean_lines": 0.3,
+        "soft_texture": 0.7,
+        "textured_top": 0.6
+      }
+    },
     {
       "name": "Layered Medium",
       "image": "images/male/layered_medium.jpg",
@@ -250,6 +229,25 @@
         "clean_lines": 0.3,
         "soft_texture": 1.0,
         "textured_top": 0.3
+      }
+    },
+    {
+      "name": "Curtain Bangs",
+      "image": "images/male/curtain_bangs.jpg",
+      "category": "medium",
+      "tags": ["modern", "fringe"],
+      "tags_pl": ["nowoczesna", "grzywka"],
+      "description": "Centre-parted fringe that falls softly on both sides of the forehead, paired with medium-length hair. Gives a relaxed, face-framing finish.",
+      "description_pl": "Środkowy przedziałek z grzywką opadającą po obu stronach czoła i średnią długością włosów.",
+      "attributes": {
+        "volume_top": 0.4,
+        "volume_sides": 0.5,
+        "short_sides": 0.2,
+        "longer_hair": 0.7,
+        "fringe": 0.7, 
+        "clean_lines": 0.2,
+        "soft_texture": 0.8,
+        "textured_top": 0.5
       }
     },
     {
