@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { useDarkMode } from './hooks/useDarkMode'
 import { btnAccent, btnOutline, sectionH2 } from './styles/shared'
-import { Camera, ScanFace, Scissors, Ruler, Waves, BarChart2, Lightbulb, ArrowRight, Mars, Venus } from 'lucide-react'
+import { Camera, ScanFace, Scissors, Ruler, Waves, BarChart2, Lightbulb, ArrowRight, Mars, Venus, Mail } from 'lucide-react'
 import { NavBar } from './components/NavBar'
 
 const API_URL = import.meta.env.VITE_API_URL
