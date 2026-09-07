@@ -221,9 +221,11 @@ function App() {
               <FaceProportions features={result.features} norms={result.norms} />
 
               <StylesSection
-                styles={styles}
+                styles={isPremium ? styles : styles.slice(0, 3)}
                 features={result.features}
                 gender={result.gender}
+                isPremium={isPremium}
+                onPremiumClick={() => setShowPremium(true)}
               />
 
               {/* try-on */}
