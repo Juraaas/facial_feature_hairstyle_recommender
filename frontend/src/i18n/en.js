@@ -122,6 +122,12 @@ export default {
   label_cheek_dominant: 'Cheekbone-dominant',
   label_balanced: 'Balanced',
   label_imbalanced: 'Uneven',
+  label_short_mid: "Short mid face",
+  label_long_mid: "Long mid face",
+  label_short_lower2: "Short lower",
+  label_long_lower2: "Long lower",
+  label_lower_dom: 'Lower dominant',
+  label_mid_dom:   'Mid dominant',
 
   trait_below: "below the typical range",
   trait_above: "above the typical range",

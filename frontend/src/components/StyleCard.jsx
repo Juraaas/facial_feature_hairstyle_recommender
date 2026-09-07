@@ -10,6 +10,7 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
     const score = style.display_score ?? Math.round(style.score * 100)
     const isTop = rank === 0
     const imgPath = style.image ? `${API_URL}/${style.image.replace(/^\/+/, "")}` : null
+    const pl = i18n.language === 'pl'
 
     async function handleVote(v) {
         setVoted(v)

@@ -123,6 +123,12 @@ export default {
   label_cheek_dominant: 'Cheekbone-dominant',
   label_balanced: 'Balanced',
   label_imbalanced: 'Uneven',
+  label_short_mid: "Krótka środkowa część",
+  label_long_mid: "Długa środkowa część",
+  label_short_lower2: "Krótka dolna część",
+  label_long_lower2: "Długa dolna część",
+  label_lower_dom: 'Dominuje dół',
+  label_mid_dom:   'Dominuje środek',
 
   trait_below: "poniżej typowego zakresu",
   trait_above: "powyżej typowego zakresu",

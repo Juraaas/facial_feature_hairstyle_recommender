@@ -46,12 +46,6 @@ function App() {
     reset()
   }
 
-  function toggleLang() {
-    const next = i18n.language === 'pl' ? 'en' : 'pl'
-    i18n.changeLanguage(next)
-    localStorage.setItem('lang', next)
-  }
-
   function handleTutorialDone() {
     localStorage.setItem('tutorial_done', '1')
     setTutorialDone(true)
