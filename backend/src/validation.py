@@ -21,10 +21,10 @@ def validate_landmarks(landmarks) -> ValidationResult:
 
 def validate_features(features: dict) -> ValidationResult:
     EXPECTED_KEYS = {
-        "face_ratio", "jaw_ratio", "jaw_to_height", "eye_ratio",
-        "eye_height", "lip_ratio", "nose_position", "lower_face_ratio",
+        "face_ratio", "jaw_ratio", "jaw_to_height", "cheekbone_to_jaw"
+        "eye_ratio", "lip_ratio", "nose_position", "lower_face_ratio",
         "chin_prominence", "symmetry", "upper_third",
-        "middle_third", "lower_third", "mid_lower_ratio"
+        "middle_third", "lower_third", "thirds_balance"
     }
 
     missing = EXPECTED_KEYS - set(features.keys())
@@ -46,7 +46,6 @@ def validate_features(features: dict) -> ValidationResult:
         "upper_third": (0.1, 0.6),
         "middle_third": (0.1, 0.6),
         "lower_third": (0.1, 0.6),
-        "mid_lower_ratio": (0.2, 3.0),
     }
 
     for key, (lo, hi) in SANITY_BOUNDS.items():
