@@ -16,6 +16,7 @@ import { StylePlayground } from './components/StylePlayground'
 import { UserPanel } from './components/UserPanel'
 import { createCheckout } from './api/client'
 import { NavBar } from './components/NavBar'
+import { X } from 'lucide-react'
 import './App.css'
 
 function App() {
@@ -120,16 +121,42 @@ function App() {
             <PhotoTutorial onDone={handleTutorialDone} />
           ) : (
             <section style={{ marginBottom: 32 }}>
-              <div
-                className="dropzone"
-                onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]) }}
-                onDragOver={e => e.preventDefault()}
-                onClick={() => document.getElementById('file-input').click()}
-              >
-                {preview
-                  ? <img src={preview} alt="uploaded" className="preview-img" />
-                  : <p className="dropzone-hint">{t('dropzone_hint')}</p>
-                }
+              <div style={{ position: 'relative' }}>
+                <div
+                  className="dropzone"
+                  onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]) }}
+                  onDragOver={e => e.preventDefault()}
+                  onClick={() => !preview && document.getElementById('file-input').click()}
+                  style={{ cursor: preview ? 'default' : 'pointer' }}
+                >
+                  {preview
+                    ? <img src={preview} alt="uploaded" className="preview-img" />
+                    : <p className="dropzone-hint">{t('dropzone_hint')}</p>
+                  }
+                </div>
+                {preview && (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation()
+                      setFile(null)
+                      setPreview(null)
+                      reset()
+                      const input = document.getElementById('file-input')
+                      if (input) input.value = ''
+                    }}
+                    style={{
+                      position: 'absolute', top: 8, right: 8, width: 28, height: 28,
+                      borderRadius: '50%', background: 'rgba(15,15,14,.7)',
+                      backdropFilter: 'blur(4px)', border: 'none', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#fff', zIndex: 10, transition: 'background .15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,0,0,.8)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(15,15,14,.7)'}
+                  >
+                    <X size={14} strokeWidth={2} />
+                  </button>
+                )}
               </div>
               <input id="file-input" type="file" accept="image/jpeg,image/png"
                 onChange={e => handleFile(e.target.files[0])}
