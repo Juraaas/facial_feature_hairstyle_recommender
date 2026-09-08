@@ -85,6 +85,27 @@
       }
     },
     {
+      "name": "Wolf Cut",
+      "image": "images/female/wolf_cut.jpg",
+      "category": "textured",
+      "tags": ["modern", "layered"],
+      "tags_pl": ["nowoczesna", "warstwowa"],
+      "description": "Shaggy layered cut with a chunky fringe and volume through the crown. One of the most popular cuts for texture and movement.",
+      "description_pl": "Warstwowe cięcie z postrzępioną grzywką i objętością na górze. Daje dużo tekstury i ruchu.",
+      "attributes": {
+        "volume_top": 0.9, 
+        "volume_sides": 0.7, 
+        "layers": 1.0,
+        "longer_hair": 0.7, 
+        "fringe": 0.8, 
+        "clean_lines": 0.0,
+        "soft_texture": 1.0, 
+        "textured_top": 0.9, 
+        "updo": 0.0, 
+        "curtain_fringe": 0.3
+      }
+    },
+    {
       "name": "Lob (Long Bob)",
       "image": "images/female/lob.jpg",
       "category": "medium",
@@ -103,6 +124,27 @@
         "textured_top": 0.0,
         "updo": 0.0,
         "curtain_fringe": 0.3
+      }
+    },
+    {
+      "name": "Soft Shag",
+      "image": "images/female/soft_shag.jpg",
+      "category": "medium",
+      "tags": ["textured", "casual"],
+      "tags_pl": ["teksturowana", "swobodna"],
+      "description": "Layered medium cut with a relaxed fringe and feathered ends. Effortless and versatile with strong movement throughout.",
+      "description_pl": "Warstwowe cięcie średniej długości z luźną grzywką i lekkimi końcówkami. Swobodne i wszechstronne z naturalnym ruchem.",
+      "attributes": {
+        "volume_top": 0.6,
+        "volume_sides": 0.8, 
+        "layers": 0.9,
+        "longer_hair": 0.5, 
+        "fringe": 0.7, 
+        "clean_lines": 0.0,
+        "soft_texture": 1.0, 
+        "textured_top": 0.7, 
+        "updo": 0.0, 
+        "curtain_fringe": 0.5
       }
     },
     {
@@ -169,24 +211,24 @@
       }
     },
     {
-      "name": "Voluminous Blowout",
-      "image": "images/female/voluminous_blowout.jpg",
+      "name": "Butterfly Cut",
+      "image": "images/female/butterfly_cut.jpg",
       "category": "medium",
-      "tags": ["volume", "glamour"],
-      "tags_pl": ["objętość", "glamour"],
-      "description": "Full, rounded style with lifted roots and soft volume. Adds width, movement, and a more glamorous finish. High styling effort.",
-      "description_pl": "Pełna fryzura z uniesionymi nasadami, zaokrąglonym kształtem i lekką objętością. Tworzy efektowny, elegancki wygląd.",
+      "tags": ["voluminous", "layered"],
+      "tags_pl": ["objętość", "warstwowa"],
+      "description": "Long layered cut with a volume flip at the midpoint, creating a wing-like silhouette. Adds width and movement at the sides.",
+      "description_pl": "Długie włosy z warstwami i charakterystycznym uniesiem w połowie długości. Tworzy fryzurę przypominającą skrzydła motyla.",
       "attributes": {
-        "volume_top": 0.8,
+        "volume_top": 0.5,
         "volume_sides": 1.0,
-        "layers": 0.6,
-        "longer_hair": 0.5,
-        "fringe": 0.0,
-        "clean_lines": 0.3,
-        "soft_texture": 0.8,
-        "textured_top": 0.3,
-        "updo": 0.0,
-        "curtain_fringe": 0.0
+        "layers": 1.0,
+        "longer_hair": 1.0,
+        "fringe": 0.2,
+        "clean_lines": 0.0,
+        "soft_texture": 0.9, 
+        "textured_top": 0.5, 
+        "updo": 0.0, 
+        "curtain_fringe": 0.4
       }
     },
     {
