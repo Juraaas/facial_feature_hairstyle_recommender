@@ -1,7 +1,7 @@
 import os
 import fal_client
 
-STYLE_PROMPTS = {
+STYLE_PROMPTS_MALE = {
     "French Crop": (
         "french crop hairstyle: short back and sides with a skin fade, "
         "textured top approximately 2-3 inches long, soft fringe swept forward "
@@ -73,6 +73,8 @@ STYLE_PROMPTS = {
         "on both sides of the forehead, framing the face. Medium overall length (4-5 inches). "
         "Relaxed, natural movement. The centre part and face-framing fringe are the key feature."
     ),
+}
+STYLE_PROMPTS_FEMALE = {
     "French Bob": (
         "French Bob hairstyle: blunt horizontal cut sitting precisely at jaw length. "
         "A straight, heavy fringe cut across the forehead above the eyebrows. "
@@ -146,12 +148,12 @@ COLOR_PROMPTS = {
     "auburn": "change hair color to warm auburn red, natural reddish-brown",
 }
 
-def build_prompt(style_name: str, color_id: str) -> str:
-    style = STYLE_PROMPTS.get(style_name, f"{style_name} hairstyle")
+def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
+    prompts = STYLE_PROMPTS_FEMALE if gender == "Woman" else STYLE_PROMPTS_MALE
+    style = prompts.get(style_name) or STYLE_PROMPTS_MALE.get(style_name) or f"{style_name} hairstyle"
     color = COLOR_PROMPTS.get(color_id, "")
     
     prompt = f"Change the hairstyle to {style}"
-    
     if color:
         prompt += f".Also {color}"
     
@@ -159,7 +161,7 @@ def build_prompt(style_name: str, color_id: str) -> str:
         ". Keep the person's face shape, eyebrows, ears, eye color, skin tone, facial hair, expression, clothing and background pixel-perfect identical."
     )
     
-    print(f"FLUX PROMPT [{style_name} + {color_id}]: {prompt}")
+    print(f"FLUX [{style_name} + {color_id} + {gender}]: {prompt}")
     return prompt
 
 
