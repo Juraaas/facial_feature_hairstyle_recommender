@@ -38,6 +38,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
       form.append('file', originalFile)
       form.append('style_name', selectedStyle)
       form.append('color_id', selectedColor)
+      form.append('gender', gender)
 
       const res = await fetch(`${BASE}/style-preview`, {
         method: 'POST', 
