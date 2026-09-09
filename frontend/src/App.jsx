@@ -16,57 +16,31 @@ import { StylePlayground } from './components/StylePlayground'
 import { UserPanel } from './components/UserPanel'
 import { createCheckout } from './api/client'
 import { NavBar } from './components/NavBar'
-import { X } from 'lucide-react'
+import { X, Scissors, Sparkles, ArrowRight, AlertTriangle, Waves, ScanLine } from 'lucide-react'
 import './App.css'
 
 function App() {
   const { result, loading, error, analyse, reset} = useAnalysis()
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
-  const [dark, setDark] = useDarkMode()
+  const [dark] = useDarkMode()
   const [tutorialDone, setTutorialDone] = useState(
   () => localStorage.getItem('tutorial_done') === '1'
   )
   const [showTutorial, setShowTutorial] = useState(false)
-  const { t, i18n } = useTranslation()
-  const pl = i18n.language === 'pl'
-
-  const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
-  const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
-  const { user, loading: authLoading, signOut, getToken } = useAuth()
-  const [userPlan, setUserPlan] = useState('free')
-  const isPremium = userPlan === 'premium'
   const [showPremium, setShowPremium] = useState(false)
   const [showPlayground, setShowPlayground] = useState(false)
   const [showPanel, setShowPanel] = useState(false)
+  const [showAuth, setShowAuth] = useState(false)
 
-  function handleFile(f) {
-    if (!f) return
-    setFile(f)
-    setPreview(URL.createObjectURL(f))
-    reset()
-  }
+  const { t, i18n } = useTranslation()
+  const pl = i18n.language === 'pl'
+  const { user, signOut } = useAuth()
+  const [userPlan, setUserPlan] = useState('free')
+  const isPremium = userPlan === 'premium'
 
-  function handleTutorialDone() {
-    localStorage.setItem('tutorial_done', '1')
-    setTutorialDone(true)
-    setShowTutorial(false)
-  }
-
-  async function handleAnalyse() {
-    if (!file) return
-    const token = await getToken()
-    analyse(file, i18n.language, token)
-  }
-
-  async function handleUpgrade() {
-    if (!user) { setShowAuth(true); return }
-    try {
-      await createCheckout()
-    } catch (e) {
-      console.error('Checkout error:', e)
-    }
-  }
+  const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
+  const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
 
   useEffect(() => {
     if (!user) { setUserPlan('free'); return }
@@ -87,6 +61,27 @@ function App() {
     })
   }, [user])
 
+  function handleFile(f) {
+    if (!f) return
+    setFile(f); setPreview(URL.createObjectURL(f)); reset()
+  }
+
+  function handleTutorialDone() {
+    localStorage.setItem('tutorial_done', '1')
+    setTutorialDone(true); setShowTutorial(false)
+  }
+
+  async function handleAnalyse() {
+    if (!file) return
+    analyse(file, i18n.language, token)
+  }
+
+  async function handleUpgrade() {
+    if (!user) { setShowAuth(true); return }
+    try { await createCheckout()} 
+    catch (e) { console.error('Checkout error:', e) }
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}
       data-theme={dark ? 'dark' : 'light'}>
@@ -100,7 +95,7 @@ function App() {
       <div className="app">
         <main className="app-main">
           {/* intro */}
-          {!result && !loading && (
+          {!result && !loading && tutorialDone && !showTutorial && (
             <div style={{ textAlign: 'center', padding: '32px 0 20px' }}>
               <h1 style={{
                 fontFamily: 'var(--font-display)', fontSize: 'clamp(22px, 4vw, 32px)',
@@ -203,43 +198,44 @@ function App() {
               </div>
 
               {result.quality.warnings?.map((w, i) => (
-                <div key={i} className="warning-box">⚠️ {w}</div>
+                <div key={i} className="warning-box" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <AlertTriangle size={14} color="#7A6010" strokeWidth={1.5} />
+                  {w}
+                </div>
               ))}
 
               {/* hair trait badges */}
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
                 {[
                   {
-                    icon:  '💇',
+                    icon:  Waves,
                     label: result.traits?.hair_type
                       ? `${t(`hair_type_${result.traits.hair_type}`)} ${t('hair_type_label')}`
                       : t('hair_type_not_detected'),
                     dashed: !result.traits?.hair_type,
                   },
                   {
-                    icon:  '📐',
+                    icon:  ScanLine,
                     label: (result.traits?.hairline && result.traits.hairline !== 'normal')
                       ? t(`hairline_${result.traits.hairline}`)
                       : t('hairline_normal'),
                     dashed: false,
                   },
-                ].map(({ icon, label, dashed }) => (
-                  <div key={label} style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    fontSize: 11,
-                    padding: '4px 12px',
-                    borderRadius: 20,
-                    background: 'var(--surface)',
-                    border: `1px ${dashed ? 'dashed' : 'solid'} var(--border)`,
-                    color: 'var(--text-muted)',
-                    fontWeight: 300,
-                  }}>
-                    <span>{icon}</span>
-                    <span>{label}</span>
-                  </div>
-                ))}
+                ].map(({ icon, label, dashed }) => {
+                  const Icon = icon
+                  return (
+                    <div key={label} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      fontSize: 11, padding: '4px 12px', borderRadius: 20,
+                      background: 'var(--surface)',
+                      border: `1px ${dashed ? 'dashed' : 'solid'} var(--border)`,
+                      color: 'var(--text-muted)', fontWeight: 300,
+                    }}>
+                      <Icon size={12} strokeWidth={1.5} color="var(--text-hint)" />
+                      <span>{label}</span>
+                    </div>
+                  )
+                })}
               </div>
               <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}>
                 <FaceAnalysis analysis={analysis} />
@@ -260,6 +256,7 @@ function App() {
                 <div style={{ marginBottom: 16 }}>
                   <div>
                     <h2 className="section-title" style={{ marginBottom: 4 }}>
+                      <Scissors size={18} color="var(--accent)" strokeWidth={1.5} />
                       {pl ? 'Przymierzalnia' : 'Style Playground'}
                     </h2>
                     <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300 }}>
@@ -278,7 +275,9 @@ function App() {
                       background: 'var(--accent-soft)', border: '1.5px solid var(--accent)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 20, margin: '0 auto 16px',
-                    }}>✨</div>
+                    }}>
+                      <Sparkles size={20} color="var(--accent)" strokeWidth={1.5} />
+                    </div>
                     <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15,
                       fontWeight: 500, color: 'var(--text)', marginBottom: 8 }}>
                       {pl ? 'Funkcja Premium' : 'Premium Feature'}
@@ -286,14 +285,15 @@ function App() {
                     <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300,
                       lineHeight: 1.6, maxWidth: 360, margin: '0 auto 20px' }}>
                       {pl
-                        ? 'Sprawdź różne style na swoim zdjęciu.'
+                        ? 'Sprawdź różne fryzury i style na swoim zdjęciu.'
                         : 'Try on hairstyles and colors on your photo.'}
                     </p>
                     <button
                       onClick={() => setShowPremium(true)}
                       className="analyse-btn"
-                      style={{ maxWidth: 240, margin: '0 auto' }}
-                    >
+                      style={{ maxWidth: 240, margin: '0 auto', display: 'flex',
+                        alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                      <Sparkles size={14} strokeWidth={1.5} />
                       {user ? (pl ? 'Kup Premium →' : 'Get Premium →')
                             : (pl ? 'Zaloguj się →' : 'Sign in →')}
                     </button>
@@ -311,10 +311,12 @@ function App() {
                     onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
                   >
                     <div style={{
-                      width: 60, height: 60, borderRadius: 'var(--radius-md)',
+                      width: 56, height: 56, borderRadius: 'var(--radius-md)',
                       background: 'var(--surface-2)', display: 'flex',
                       alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0,
-                    }}>✂️</div>
+                    }}>
+                      <Scissors size={24} color="var(--accent)" strokeWidth={1.5} />
+                    </div>
                     <div>
                       <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>
                         {pl ? 'Otwórz przymierzalnię' : 'Open Style Playground'}
@@ -324,21 +326,10 @@ function App() {
                             : 'Choose a style and color'}
                       </p>
                     </div>
-                    <span style={{ marginLeft: 'auto', color: 'var(--text-hint)', fontSize: 18 }}>→</span>
+                    <ArrowRight size={16} color="var(--text-hint)" style={{ marginLeft: 'auto' }} />
                   </div>
                 )}
               </section>
-
-
-              {showPlayground && (
-                <StylePlayground
-                  styles={styles}
-                  originalFile={file}
-                  isPremium={isPremium}
-                  onUpgrade={() => {setShowPlayground(false); setShowPremium(true) }}
-                  onClose={() => setShowPlayground(false)}
-                />
-              )}
 
               <FeedbackSection
                 features={result.features}
@@ -355,6 +346,16 @@ function App() {
                 />
               )}
 
+              {showPlayground && (
+                <StylePlayground
+                  styles={styles}
+                  originalFile={file}
+                  isPremium={isPremium}
+                  onUpgrade={() => {setShowPlayground(false); setShowPremium(true) }}
+                  onClose={() => setShowPlayground(false)}
+                />
+              )}
+
 
             </>
           )}
@@ -366,6 +367,13 @@ function App() {
           isPremium={isPremium}
           onClose={() => setShowPanel(false)}
           onUpgrade={handleUpgrade}
+        />
+      )}
+
+      {showAuth && (
+        <AuthModal
+          onClose={() => setShowAuth(false)}
+          onSuccess={() => setShowAuth(false)}
         />
       )}
     </div>
