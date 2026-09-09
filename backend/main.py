@@ -347,13 +347,14 @@ async def style_preview(
     file: UploadFile = File(...),
     style_name: str = Form(...),
     color_id: str = Form("natural"),
+    gender: str = Form("Man"),
     user = Depends(require_premium),
 ):
     try:
         contents = await file.read()
         if not validate_image_bytes(contents):
             raise http_error("INVALID_IMAGE", "Only JPEG and PNG files are accepted", 400)
-        result = await generate_preview(contents, style_name, color_id)
+        result = await generate_preview(contents, style_name, color_id, gender)
         return Response(content=result, media_type="image/jpeg")
     except HTTPException:
         raise
