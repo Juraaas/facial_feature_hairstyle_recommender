@@ -9,19 +9,20 @@ export function TraitBar({ title, value, minVal, maxVal, avgVal, minLabel, maxLa
     const outOfRange = value < minVal ? 'below' : value > maxVal ? 'above' : null
 
     let dotPct, dotColor
-    if (outOfRange === 'below') {
-        dotPct = 2;  dotColor = 'var(--text-hint)'
-    } else if (outOfRange === 'above') {
-        dotPct = 98; dotColor = 'var(--text-hint)'
-    } else {
-        dotPct = pct; dotColor = 'var(--accent)'
-    }
+    if (outOfRange === 'below') { dotPct = 2;  dotColor = 'var(--text-hint)'} 
+    else if (outOfRange === 'above') { dotPct = 98; dotColor = 'var(--text-hint)' }
+    else { dotPct = pct; dotColor = 'var(--accent)' }
 
-    const interp = outOfRange
-        ? (outOfRange === 'below' ? t('trait_below') : t('trait_above'))
-        : pct < 33 ? t('trait_low')
-        : pct > 67 ? t('trait_high')
-        : t('trait_average')
+    const isBalance = title === t('trait_thirds_balance')
+    const interp = isBalance
+        ? value < 0.1 ? t('label_balanced')
+        : value < 0.6 ? t('trait_low')
+        : t('label_imbalanced')
+        : outOfRange
+            ? (outOfRange === 'below' ? t('trait_below') : t('trait_above'))
+            : pct < 33 ? t('trait_low')
+            : pct > 67 ? t('trait_high')
+            : t('trait_average')
 
     return (
         <div style={{ marginBottom: 20 }}>
