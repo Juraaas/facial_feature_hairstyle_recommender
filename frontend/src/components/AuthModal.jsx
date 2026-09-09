@@ -86,7 +86,7 @@ export function AuthModal({ onClose, onSuccess }) {
         </h2>
         <p style={{fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, marginBottom: 24}}>
           {showForgot
-            ? (pl ? 'Wyślemy link do zresetowania hasła' : "We'll send you a reset link")
+            ? (pl ? 'Wyślemy Ci link do zresetowania hasła' : "We'll send you a reset link")
             : isRegister
               ? (pl ? 'Bezpłatne' : 'Free')
               : (pl ? 'Dostęp do historii i funkcji premium' : 'Access your history and premium features')}
