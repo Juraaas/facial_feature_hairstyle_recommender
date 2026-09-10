@@ -231,7 +231,7 @@ function App() {
                       border: `1px ${dashed ? 'dashed' : 'solid'} var(--border)`,
                       color: 'var(--text-muted)', fontWeight: 300,
                     }}>
-                      <Icon size={12} strokeWidth={1.5} color="var(--text-hint)" />
+                      <Icon size={12} strokeWidth={1.5} color="var(--accent)" />
                       <span>{label}</span>
                     </div>
                   )

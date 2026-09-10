@@ -280,7 +280,7 @@ export function Landing() {
                       borderColor: demoGender === g ? 'var(--accent)' : 'var(--border)',
                       color: demoGender === g ? 'var(--accent)' : 'var(--text-muted)',
                       background: demoGender === g ? 'var(--accent-soft)' : 'none',
-                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                      display: 'inline-flex', alignItems: 'center', gap: 5, minWidth: 120
                     }}
                   >
                     <Icon size={13} strokeWidth={1.5} />
@@ -372,7 +372,7 @@ export function Landing() {
             <button
               onClick={() => setShowContact(s => !s)}
               style={{ ...btnAccent, textDecoration: 'none', display: 'inline-flex',
-                alignItems: 'center', gap: 6 }}
+                alignItems: 'center', gap: 6, minWidth: 130 }}
             >
               <Mail size={14} strokeWidth={1.5} />
               {t('Contact us', 'Skontaktuj się')}
@@ -440,7 +440,7 @@ export function Landing() {
         </p>
         <button
           onClick={() => navigate('/analyse')}
-          style={{ ...btnAccent, fontSize: 15, padding: '13px 36px' }}
+          style={{ ...btnAccent, fontSize: 15, padding: '13px 36px', minWidth: 150 }}
         >
           {t('Analyse my face ', 'Analizuj moją twarz ')}
           <ArrowRight size={15} strokeWidth={2} />
