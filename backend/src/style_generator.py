@@ -165,11 +165,12 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
     return prompt
 
 
-async def generate_preview(img_bytes: bytes, style_name: str, color_id: str) -> bytes:
+async def generate_preview(img_bytes: bytes, style_name: str, 
+                           color_id: str, gender: str = "Man") -> bytes:
     import base64
     import httpx
 
-    prompt = build_prompt(style_name, color_id)
+    prompt = build_prompt(style_name, color_id, gender)
     img_b64 = base64.b64encode(img_bytes).decode()
     image_url = f"data:image/jpeg;base64,{img_b64}"
     
