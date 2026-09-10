@@ -73,7 +73,7 @@ function App() {
 
   async function handleAnalyse() {
     if (!file) return
-    analyse(file, i18n.language, token)
+    analyse(file, i18n.language)
   }
 
   async function handleUpgrade() {
