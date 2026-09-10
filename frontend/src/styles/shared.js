@@ -14,6 +14,8 @@ export const btnAccent = {
   display: 'inline-flex',
   alignItems: 'center',
   whiteSpace: 'nowrap',
+  minWidth: 120,
+  justifyContent: 'center',
 }
 
 export const btnOutline = {
