@@ -152,6 +152,7 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
     prompts = STYLE_PROMPTS_FEMALE if gender == "Woman" else STYLE_PROMPTS_MALE
     style = prompts.get(style_name) or STYLE_PROMPTS_MALE.get(style_name) or f"{style_name} hairstyle"
     color = COLOR_PROMPTS.get(color_id, "")
+    print(f"STYLE PREVIEW REQUEST: style={style_name}, color={color_id}, gender={gender}")
     
     prompt = f"Change the hairstyle to {style}"
     if color:
