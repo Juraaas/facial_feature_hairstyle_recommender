@@ -350,6 +350,7 @@ async def style_preview(
     gender: str = Form("Man"),
     user = Depends(require_premium),
 ):
+    print(f"STYLE PREVIEW HIT: {style_name}, {color_id}, {gender}, user={user.id if user else None}")
     try:
         contents = await file.read()
         if not validate_image_bytes(contents):

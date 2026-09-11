@@ -353,6 +353,7 @@ function App() {
                   isPremium={isPremium}
                   onUpgrade={() => {setShowPlayground(false); setShowPremium(true) }}
                   onClose={() => setShowPlayground(false)}
+                  gender={result.gender}
                 />
               )}
 

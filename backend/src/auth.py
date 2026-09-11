@@ -34,7 +34,9 @@ async def require_auth(authorization: str = Header(None)):
     return user
 
 async def require_premium(authorization: str = Header(None)):
+    print(f"require_premium: authorization={'SET' if authorization else 'MISSING'}")
     user = await require_auth(authorization)
+    print(f"require_premium: user={user.id}, checking plan...")
     sb = get_supabase()
     profile = sb.table("profiles")\
         .select("plan")\

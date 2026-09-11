@@ -12,7 +12,7 @@ const HAIR_COLORS = [
   { id: 'auburn',   label_pl: 'Rudy',           label_en: 'Auburn',       prompt: 'auburn red hair color' },
 ]
 
-export function StylePlayground({ styles, originalFile, onClose, isPremium, onUpgrade }) {
+export function StylePlayground({ styles, originalFile, onClose, isPremium, onUpgrade, gender }) {
   const { i18n } = useTranslation()
   const pl = i18n.language === 'pl'
 
