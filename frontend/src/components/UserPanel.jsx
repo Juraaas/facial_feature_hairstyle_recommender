@@ -26,6 +26,9 @@ const TRAIT_NAMES_PL = {
   forehead: 'Czoło',
   face_length: 'Długość twarzy',
   facial_thirds: 'Tercje twarzy',
+  face_shape_type: 'Struktura twarzy',
+  thirds_balance:  'Balans proporcji',
+  dominant_third:  'Dominująca część',
 }
 
 const TRAIT_VALUES_PL = {
@@ -49,6 +52,14 @@ const TRAIT_VALUES_PL = {
   receding: 'cofnięta',
   uneven: 'nierówna',
   normal: 'normalna',
+  triangle: 'kości policzkowe dominują',
+  square: 'szczęka dominuje',
+  oval: 'proporcjonalna',
+  imbalanced: 'niezbalansowana',
+  balanced: 'zbalansowana',
+  upper: 'górna tercja',
+  middle: 'środkowa tercja',
+  lower: 'dolna tercja',
 }
 
 export function UserPanel({ user, onClose, isPremium, onUpgrade }) {
@@ -102,43 +113,43 @@ export function UserPanel({ user, onClose, isPremium, onUpgrade }) {
 
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        zIndex: 201, width: 'calc(100% - 32px)', maxWidth: 720,
-        maxHeight: '85vh', background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
+        zIndex: 201, width: 'calc(100% - 32px)', maxWidth: 680, minHeight: 400,
+        maxHeight: '80vh', background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
         border: '1px solid var(--border)', boxShadow: '0 24px 64px rgba(0,0,0,.25)',
         overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'modalIn .2s ease',
       }}>
 
         {/* header */}
         <div style={{
-          padding: '20px 24px', borderBottom: '1px solid var(--border)',display: 'flex', 
-          justifyContent: 'space-between', alignItems: 'center', flexShrink: 0,
+          padding: '20px 24px', borderBottom: '1px solid var(--border)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          textAlign: 'center', position: 'relative', flexShrink: 0,
         }}>
-          <div>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18,
-              fontWeight: 500, color: 'var(--text)' }}>
-              {pl ? 'Twoje konto' : 'Your account'}
-            </h2>
-            <p style={{ fontSize: 11, color: isPremium ? 'var(--accent)' : 'var(--text-hint)',
-              fontFamily: 'var(--font-mono)', marginTop: 2 }}>
-              {user.email} · {isPremium ? '✦ Premium' : '○ Free'}
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            {!isPremium && (
-              <button onClick={onUpgrade} style={{
-                ...btnAccent, fontSize: 12, padding: '6px 12px', minWidth: 'auto',
-              }}>
-                <Sparkles size={12} strokeWidth={1.5} style={{ marginRight: 5 }} />
-                {pl ? 'Kup Premium' : 'Upgrade'}
-              </button>
-            )}
-            <button onClick={onClose} style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: 'var(--text-hint)', display: 'flex',
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18,
+            fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>
+            {pl ? 'Twoje konto' : 'Your account'}
+          </h2>
+          <p style={{ fontSize: 11, color: isPremium ? 'var(--accent)' : 'var(--text-hint)',
+            fontFamily: 'var(--font-mono)' }}>
+            {user.email} · {isPremium ? '✦ Premium' : '○ Free'}
+          </p>
+          <button onClick={onClose} style={{
+            position: 'absolute', top: 16, right: 16,
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: 'var(--text-hint)', display: 'flex',
+          }}>
+            <X size={18} strokeWidth={1.5} />
+          </button>
+          {!isPremium && (
+            <button onClick={onUpgrade} style={{
+              ...btnAccent, fontSize: 11, padding: '5px 12px',
+              minWidth: 'auto', marginTop: 10,
+              display: 'inline-flex', alignItems: 'center', gap: 5,
             }}>
-              <X size={18} strokeWidth={1.5} />
+              <Sparkles size={11} strokeWidth={1.5} />
+              {pl ? 'Kup Premium' : 'Upgrade'}
             </button>
-          </div>
+          )}
         </div>
 
         {/* body */}
