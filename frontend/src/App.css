@@ -272,6 +272,9 @@ body {
   transition: transform .35s ease;
 }
 
+.nav-desktop-only { display: inline-flex; }
+.nav-mobile-only  { display: flex; }
+
 /* ─── responsive ─────────────────────────────────────────── */
 @media (max-width: 720px) {
   .styles-grid { grid-template-columns: 1fr; }
@@ -311,4 +314,12 @@ body {
   div[style*="gridTemplateColumns: '1fr 1fr'"] {
     grid-template-columns: 1fr !important;
   }
+}
+
+@media (max-width: 540px) {
+  .nav-desktop-only { display: none !important; }
+}
+
+@media (min-width: 541px) {
+  .nav-mobile-only { display: none !important; }
 }

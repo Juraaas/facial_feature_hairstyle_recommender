@@ -45,15 +45,17 @@ export function NavBar({
       action: () => { onUpgrade?.(); setShowUserMenu(false) },
       accent: true,
     },
+    {
+      Icon: Languages,
+      label: pl ? 'English' : 'Polski',
+      action: () => { toggleLang(); setShowUserMenu(false) },
+      mobileOnly: true,
+    },
     variant === 'app' && {
       Icon: Camera,
       label: t('Photo tips', 'Wskazówki zdjęciowe'),
       action: () => { onShowTutorial?.(); setShowUserMenu(false) },
-    },
-    {
-      Icon: Languages,
-      label: pl ? 'English version' : 'Wersja polska',
-      action: () => { toggleLang(); setShowUserMenu(false) },
+      mobileOnly: true,
     },
     {
       Icon: LogOut,
@@ -68,11 +70,13 @@ export function NavBar({
       Icon: Languages,
       label: pl ? 'English' : 'Polski',
       action: () => { toggleLang(); setShowUserMenu(false) },
+      mobileOnly: true,
     },
     variant === 'app' && {
       Icon: Camera,
       label: t('Photo tips', 'Wskazówki zdjęciowe'),
       action: () => { onShowTutorial?.(); setShowUserMenu(false) },
+      mobileOnly: true,
     },
     {
       Icon: User,
@@ -116,14 +120,25 @@ export function NavBar({
             </span>
           </button>
 
-          {/* lang button - visible on desktop, hidden on mobile (in menu) */}
+          {/* lang button */}
           <button
             onClick={toggleLang}
-            className="nav-lang-btn"
+            className="nav-desktop-only"
             style={btnOutline}
           >
             {pl ? 'EN' : 'PL'}
           </button>
+
+          {variant === 'app' && (
+            <button
+              onClick={() => { onShowTutorial?.() }}
+              className="nav-desktop-only"
+              style={btnOutline}
+              title={pl ? 'Wskazówki zdjęciowe' : 'Photo tips'}
+            >
+              <Camera size={13} strokeWidth={1.5} />
+            </button>
+          )}
 
           {/* separator */}
           <div style={{ width: 1, height: 16, background: 'var(--border)' }} />
@@ -209,6 +224,7 @@ export function NavBar({
                       <button
                         key={item.label}
                         onClick={item.action}
+                        className={item.mobileOnly ? 'nav-mobile-only' : ''}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 10,
                           width: '100%', padding: '9px 14px', background: 'none', border: 'none',

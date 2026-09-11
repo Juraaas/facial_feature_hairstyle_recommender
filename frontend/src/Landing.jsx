@@ -280,7 +280,7 @@ export function Landing() {
                       borderColor: demoGender === g ? 'var(--accent)' : 'var(--border)',
                       color: demoGender === g ? 'var(--accent)' : 'var(--text-muted)',
                       background: demoGender === g ? 'var(--accent-soft)' : 'none',
-                      display: 'inline-flex', alignItems: 'center', gap: 5, minWidth: 120
+                      display: 'inline-flex', alignItems: 'center', gap: 5
                     }}
                   >
                     <Icon size={13} strokeWidth={1.5} />
@@ -440,7 +440,7 @@ export function Landing() {
         </p>
         <button
           onClick={() => navigate('/analyse')}
-          style={{ ...btnAccent, fontSize: 15, padding: '13px 36px', minWidth: 150 }}
+          style={{ ...btnAccent, fontSize: 15, padding: '13px 36px' }}
         >
           {t('Analyse my face ', 'Analizuj moją twarz ')}
           <ArrowRight size={15} strokeWidth={2} />
