@@ -420,46 +420,38 @@ def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
             "Most hairstyles should work well with your proportions."
         ]
 
-    gender_pl = "klientki" if gender == "Woman" else "klienta"
-    gender_en = "female client" if gender == "Woman" else "male client"
+    gender_pl = "Kobieta" if gender == "Woman" else "Mężczyzna"
+    gender_en = "Female" if gender == "Woman" else "Male"
 
     if lang == "pl":
         system_msg = (
-            f"Jesteś doświadczonym fryzjerem. Piszesz personalizowaną analizę twarzy {gender_pl}.\n"
-            "Zwracasz się bezpośrednio do klienta używając form: \"Twoja twarz\", \"dla Ciebie\", \"u Ciebie\".\n"
+            f"Jesteś doświadczonym fryzjerem. Piszesz krótką, praktyczną analizę twarzy dla klienta.\n"
+            "Zwracaj się bezpośrednio: 'Twoja twarz', 'dla Ciebie', 'u Ciebie'.\n"
             "Nigdy nie używaj: \"jego\", \"jej\", \"klient\", \"osoba\".\n"
-            "Piszesz naturalnie i ciepło — jak do kogoś kto siedzi przed Tobą w fotelu.\n"
-            "Odpowiadasz WYŁĄCZNIE w formacie JSON: {\"sentences\": [\"...\", \"...\", \"...\"]}"
+            "Każde zdanie musi dawać konkretną wskazówkę stylistyczną - nie opisuj cech, wyjaśniaj co zrobić.\n"
+            "Odpowiadasz TYLKO w JSON: {\"sentences\": [\"...\", \"...\", \"...\"]}"
         )
         user_msg = (
-            "Oto wykryte cechy twarzy wraz z ich wpływem na dobór fryzury:\n\n"
+            f"Klient ({gender_pl}). Cechy twarzy i ich wpływ na dobór fryzury:\n\n"
             + "\n".join(trait_summary)
-            + "\n\n"
-            "Na podstawie tych cech napisz 3 zdania które:\n"
-            "1. opisują najważniejsze cechy twarzy klienta i co z nich wynika\n"
-            "2. wyjaśniają dlaczego konkretne kierunki fryzur będą korzystne\n"
-            "3. brzmią naturalnie i dają klientowi realną wartość\n\n"
-            "Każde zdanie maksymalnie 20 słów. Nie wymyślaj cech których nie ma w analizie.\n\n"
-            "Odpowiedź: {\"sentences\": [\"pierwsze zdanie.\", \"drugie zdanie.\", \"trzecie zdanie.\"]}"
+            + "\n\nNapisz 3 zdania które mówią klientowi CO konkretnie powinien wybrać i DLACZEGO. "
+            "Unikaj ogólników. Każde zdanie = jedna konkretna rada."
+            "\n{\"sentences\": [\"rada 1\", \"rada 2\", \"rada 3\"]}"
         )
     else:
         system_msg = (
-            f"You are an experienced hairstylist writing a personalised facial analysis for a {gender_en}.\n"
+            f"You are an experienced hairstylist writing a short, practical facial analysis for a client.\n"
             "Address the client directly using: \"your face\", \"for you\", \"your jawline\".\n"
             "Never use: \"his\", \"her\", \"the client\", \"this person\".\n"
-            "Write warmly and naturally — as if the client is sitting in front of you.\n"
+            "Each sentence must provide a specific stylistic tip - don't describe characteristics, explain what to do.\n"
             "Reply ONLY in JSON format: {\"sentences\": [\"...\", \"...\", \"...\"]}"
         )
         user_msg = (
-            "Detected facial features and their influence on hairstyle choice:\n\n"
+            f"({gender_en}) client. Facial features and their impact on choosing a hairstyle:\n\n"
             + "\n".join(trait_summary)
-            + "\n\n"
-            "Based on these features, write 3 sentences that:\n"
-            "1. describe the most important facial characteristics and what they mean\n"
-            "2. explain why specific hairstyle directions will be beneficial\n"
-            "3. sound natural and give the client real, actionable insight\n\n"
-            "Max 20 words per sentence. Do not invent features not present in the analysis.\n\n"
-            "Response: {\"sentences\": [\"first sentence.\", \"second sentence.\", \"third sentence.\"]}"
+            + "\n\n Write three sentences that tell the customer EXACTLY what they should choose and WHY. "
+            "Avoid generalisations. Each sentence = one specific piece of advice."
+            "\n{\"sentences\": [\"advice 1\", \"advice 2\", \"advice 3\"]}"
         )
 
     try:
@@ -519,16 +511,16 @@ def _prepare_trait_summary(influences, traits, lang="pl"):
     skip_values = {None, "normal", "balanced", "slight_imbalance"}
     descriptions = STYLE_DESCRIPTIONS_PL if lang == "pl" else STYLE_DESCRIPTIONS
     explanations = TRAIT_EXPLANATIONS_PL  if lang == "pl" else TRAIT_EXPLANATIONS
-    favours_word = "sprzyja" if lang == "pl" else "favours"
-    against_word = "utrudnia" if lang == "pl" else "works against"
+    favours_word = "korzystna jest" if lang == "pl" else "benefits from"
+    against_word = "należy unikać" if lang == "pl" else "should avoid"
 
     trait_summary = []
-    priority_order = ["hairline", "hair_type"] + [
+    priority_order = ["hairline", "hair_type", "face_shape_type"] + [
         k for k in influences.keys()
-        if k not in ("hairline", "hair_type")
+        if k not in ("hairline", "hair_type", "face_shape_type")
     ]
 
-    for key in priority_order[:6]:
+    for key in priority_order[:5]:
         if key not in influences:
             continue
         info = influences[key]
@@ -548,11 +540,10 @@ def _prepare_trait_summary(influences, traits, lang="pl"):
             )
 
         trait_label = explanations.get(key, {}).get(value) or f"{key}: {value}"
-
-        trait_summary.append(
-            f"- {trait_label}"
-            + (f" ({', '.join(hints)})" if hints else "")
-        )
+        line = f"- {trait_label}"
+        if hints:
+            line += f" → {', '.join(hints)}"
+        trait_summary.append(line)
 
     return trait_summary
 
