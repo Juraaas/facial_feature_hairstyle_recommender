@@ -181,61 +181,65 @@ function App() {
 
           {result && (
             <>
-              <div className="detection-bar">
-                <span className="detection-gender">
-                  {result.gender === 'Woman' ? t('detected_woman'): t('detected_man')}
-                </span>
-                <div className="confidence-track">
-                  <div className="confidence-fill" style={{
-                    width: `${result.quality.score * 100}%`,
-                    background: result.quality.score > 0.7 ? '#2d8f4e'
-                              : result.quality.score > 0.4 ? '#C8975A' : '#c0392b'
-                  }} />
+              {/* unified detection + hair bar */}
+              <div style={{
+                background: 'var(--surface)', border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-md)', marginBottom: 20, overflow: 'hidden',
+              }}>
+                {/* gender + quality */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12, 
+                  padding: '8px 14px', borderBottom: '1px solid var(--border)',
+                }}> 
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', whiteSpace: 'nowrap' }}>
+                    {result.gender === 'Woman' ? t('detected_woman') : t('detected_man')}
+                  </span>
+                  <div className="confidence-track" style={{ flex: 1 }}>
+                    <div className="confidence-fill" style={{
+                      width: `${result.quality.score * 100}%`,
+                      background: result.quality.score > 0.7 ? '#2d8f4e'
+                                : result.quality.score > 0.4 ? '#C8975A' : '#c0392b',
+                    }} />
+                  </div>
+                  <span className="confidence-label">
+                    {Math.round(result.quality.score * 100)}%
+                  </span>
                 </div>
-                <span className="confidence-label">
-                  {Math.round(result.quality.score * 100)}%
-                </span>
-              </div>
 
-              {result.quality.warnings?.map((w, i) => (
-                <div key={i} className="warning-box" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <AlertTriangle size={14} color="#7A6010" strokeWidth={1.5} />
-                  {w}
+                {/* hair type + hairline */}
+                <div style={{ display: 'flex', padding: '8px 14px', gap: 0 }}>
+                  {[
+                    {
+                      Icon: Waves,
+                      label: result.traits?.hair_type
+                        ? `${t(`hair_type_${result.traits.hair_type}`)} ${t('hair_type_label')}`
+                        : t('hair_type_not_detected'),
+                      dashed: !result.traits?.hair_type,
+                    },
+                    {
+                      Icon: ScanLine,
+                      label: (result.traits?.hairline && result.traits.hairline !== 'normal')
+                        ? t(`hairline_${result.traits.hairline}`)
+                        : t('hairline_normal'),
+                      dashed: false,
+                    },
+                  ].map(({ Icon, label, dashed }, idx) => {
+                    const ItemIcon = Icon
+                    return (
+                      <div key={label} style={{
+                        display: 'flex', alignItems: 'center', gap: 6, flex: 1,
+                        padding: '2px 8px', borderLeft: idx > 0 ? '1px solid var(--border)' : 'none',
+                      }}>
+                        <ItemIcon size={12} strokeWidth={1.5} color="var(--text-hint)" />
+                        <span style={{
+                          fontSize: 11, color: dashed ? 'var(--text-hint)' : 'var(--text-muted)',
+                          fontWeight: 300, fontStyle: dashed ? 'italic' : 'normal',
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow:'ellipsis',
+                        }}>{label}</span>
+                      </div>
+                    )
+                  })}
                 </div>
-              ))}
-
-              {/* hair trait badges */}
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
-                {[
-                  {
-                    icon:  Waves,
-                    label: result.traits?.hair_type
-                      ? `${t(`hair_type_${result.traits.hair_type}`)} ${t('hair_type_label')}`
-                      : t('hair_type_not_detected'),
-                    dashed: !result.traits?.hair_type,
-                  },
-                  {
-                    icon:  ScanLine,
-                    label: (result.traits?.hairline && result.traits.hairline !== 'normal')
-                      ? t(`hairline_${result.traits.hairline}`)
-                      : t('hairline_normal'),
-                    dashed: false,
-                  },
-                ].map(({ icon, label, dashed }) => {
-                  const Icon = icon
-                  return (
-                    <div key={label} style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 6,
-                      fontSize: 11, padding: '4px 12px', borderRadius: 20,
-                      background: 'var(--surface)',
-                      border: `1px ${dashed ? 'dashed' : 'solid'} var(--border)`,
-                      color: 'var(--text-muted)', fontWeight: 300,
-                    }}>
-                      <Icon size={12} strokeWidth={1.5} color="var(--accent)" />
-                      <span>{label}</span>
-                    </div>
-                  )
-                })}
               </div>
               <PremiumGate isPremium={isPremium} onUnlock={() => setShowPremium(true)}>
                 <FaceAnalysis analysis={analysis} />
