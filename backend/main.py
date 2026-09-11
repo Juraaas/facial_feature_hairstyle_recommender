@@ -378,3 +378,17 @@ async def get_history(user = Depends(require_auth)):
     except Exception as e:
         print(f"History error: {e}")
         return {"analyses": []}
+
+@app.delete("/history/{analysis_id}")
+async def delete_analysis(analysis_id: str, user = Depends(require_auth)):
+    try:
+        sb = get_supabase()
+        sb.table("analyses")\
+          .delete()\
+          .eq("id", analysis_id)\
+          .eq("user_id", str(user.id))\
+          .execute()
+        return {"ok": True}
+    except Exception as e:
+        print(f"Delete error: {e}")
+        raise http_error(INTERNAL_ERROR, "Delete failed", 500)
