@@ -23,7 +23,6 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
   const [error, setError] = useState(null)
 
   async function handleGenerate() {
-    console.log('handleGenerate called, isPremium:', isPremium)
     if (!isPremium) { onUpgrade(); return }
     if (!originalFile) return
 
