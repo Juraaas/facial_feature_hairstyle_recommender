@@ -11,6 +11,7 @@ export function StylesSection({ styles, features, gender, isPremium, onPremiumCl
     const totalPages = Math.ceil(styles.length / perPage)
     const start = page * perPage
     const visible = styles.slice(start , start + perPage)
+    const pl = i18n.language === 'pl'
 
     useEffect(() => { setPage(0) }, [styles, i18n.language])
 
