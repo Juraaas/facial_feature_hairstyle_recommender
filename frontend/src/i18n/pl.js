@@ -39,8 +39,8 @@ export default {
   btn_upload_new: "Wrzuć nowe",
   btn_loading: "Analizowanie zdjęcia...",
 
-  detected_woman: "👩 Wykryto kobietę",
-  detected_man: "👨 Wykryto mężczyznę",
+  detected_woman: "Wykryto kobietę",
+  detected_man: "Wykryto mężczyznę",
   confidence: "Pewność detekcji",
 
   hair_type_label: "włosy",
@@ -63,13 +63,13 @@ export default {
 
   best_match: "Najlepsze dopasowanie",
   why_it_works: "Dlaczego ta fryzura do Ciebie pasuje",
-  vote_up_thanks: "👍 Dziękujemy za opinię!",
-  vote_down_noted: "👎 Zanotowano",
+  vote_up_thanks: "Dziękujemy za opinię!",
+  vote_down_noted: "Poprawimy się!",
 
   feedback_submit: "Wyślij",
   feedback_submitting: "Wysyłanie...",
   feedback_comment_placeholder: "Zostaw nam komentarz!",
-  feedback_saved: "✓ Dziękujemy za opinię!",
+  feedback_saved: "Dziękujemy za opinię!",
 
   error_no_face: "Nie wykryto twarzy",
   error_no_face_hint: "Upewnij się, że Twoja twarz jest wyraźnie widoczna i dobrze oświetlona",

@@ -240,7 +240,7 @@ body {
 }
 .confidence-label {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   white-space: nowrap;
   color: var(--text-muted);

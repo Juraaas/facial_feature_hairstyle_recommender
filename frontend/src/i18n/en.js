@@ -38,8 +38,8 @@ export default {
   btn_upload_new: "Upload new photo",
   btn_loading: "Analysing photo...",
 
-  detected_woman: "👩 Woman detected",
-  detected_man: "👨 Man detected",
+  detected_woman: "Woman detected",
+  detected_man: "Man detected",
   confidence: "Detection confidence",
 
   hair_type_label: "hair",
@@ -62,13 +62,13 @@ export default {
 
   best_match: "Best match",
   why_it_works: "Why it works for you",
-  vote_up_thanks: "👍 Thanks for your feedback!",
-  vote_down_noted: "👎 Noted - showing next suggestion",
+  vote_up_thanks: "Thanks for your feedback!",
+  vote_down_noted: "Noted - we'll try next time!",
 
   feedback_submit: "Submit feedback",
   feedback_submitting: "Submitting...",
   feedback_comment_placeholder: "Any comments? (optional)",
-  feedback_saved: "✓ Thanks for your feedback!",
+  feedback_saved: "Thanks for your feedback!",
 
   error_no_face: "No face detected",
   error_no_face_hint: "Make sure your face is clearly visible and well-lit",

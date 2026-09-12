@@ -199,7 +199,8 @@ function App() {
                   display: 'flex', alignItems: 'center', gap: 12, 
                   padding: '8px 14px', borderBottom: '1px solid var(--border)',
                 }}> 
-                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', whiteSpace: 'nowrap' }}>
+                    <ScanFace size={14} strokeWidth={1.5} color="var(--accent)"/>
                     {result.gender === 'Woman' ? t('detected_woman') : t('detected_man')}
                   </span>
                   <div className="confidence-track" style={{ flex: 1 }}>
@@ -238,9 +239,9 @@ function App() {
                         display: 'flex', alignItems: 'center', gap: 6, flex: 1,
                         padding: '2px 8px', borderLeft: idx > 0 ? '1px solid var(--border)' : 'none',
                       }}>
-                        <ItemIcon size={12} strokeWidth={1.5} color="var(--text-hint)" />
+                        <ItemIcon size={14} strokeWidth={1.5} color="var(--accent)" />
                         <span style={{
-                          fontSize: 11, color: dashed ? 'var(--text-hint)' : 'var(--text-muted)',
+                          fontSize: 14, color: dashed ? 'var(--text-hint)' : 'var(--text-muted)',
                           fontWeight: 300, fontStyle: dashed ? 'italic' : 'normal',
                           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow:'ellipsis',
                         }}>{label}</span>
