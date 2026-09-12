@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { sendVote } from '../api/client'
 import { useTranslation } from 'react-i18next'
+import { TriangleAlert, Info, ThumbsUp, ThumbsDown } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -137,8 +138,9 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
                 fontSize: 11, padding: '6px 10px',
                 borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)',
                 borderLeft: '2px solid var(--text-hint)', color: 'var(--text-muted)',
-                fontWeight:  300, lineHeight:  1.5}}>
-                ⚠ {style.negatives[0].reason} </div>
+                fontWeight:  300, lineHeight:  1.5, gap: 6}}>
+                <TriangleAlert size={11} strokeWidth={1.5} color="var(--text-muted)"/>
+                {style.negatives[0].reason} </div>
             )}
 
             {/* missing */}
@@ -147,9 +149,10 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
                 fontSize: 11, padding: '6px 10px',
                 borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)',
                 borderLeft: '2px solid var(--text-hint)', color: 'var(--text-muted)',
-                fontWeight:  300, lineHeight:  1.5
+                fontWeight:  300, lineHeight:  1.5, gap: 6,
             }}>
-                ℹ {style.missing[0].reason}
+                <Info size={11} strokeWidth={1.5} color="var(--text-muted)"/>
+                {style.missing[0].reason}
             </div>
             )}
 
@@ -175,12 +178,16 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
                     flex: 1, padding: '7px 0', border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)', 
                     cursor: 'pointer', fontSize: 15, transition: 'border-color .15s',
-                }}>👍</button>
+                }}>
+                    <ThumbsUp size={11} strokeWidth={1.5} color="var(--accent)"/>
+                </button>
                 <button onClick={() => handleVote('down')} style={{
                     flex: 1, padding: '7px 0', border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)', 
                     cursor: 'pointer', fontSize: 15, transition: 'border-color .15s',
-                }}>👎</button>
+                }}>
+                    <ThumbsDown size={11} strokeWidth={1.5} color="var(--accent)"/>
+                </button>
                 </div>
             )}
             </div>
