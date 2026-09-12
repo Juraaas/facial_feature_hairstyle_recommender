@@ -16,7 +16,7 @@ import { StylePlayground } from './components/StylePlayground'
 import { UserPanel } from './components/UserPanel'
 import { createCheckout } from './api/client'
 import { NavBar } from './components/NavBar'
-import { X, Scissors, Sparkles, ArrowRight, AlertTriangle, Waves, ScanLine } from 'lucide-react'
+import { X, Scissors, Sparkles, ArrowRight, ScanFace, Waves, ScanLine } from 'lucide-react'
 import './App.css'
 
 function App() {
