@@ -61,6 +61,14 @@ function App() {
     })
   }, [user])
 
+  useEffect(() => {
+    const handler = (event) => {
+      alert(`Error: ${event.message}\nat ${event.filename}:${event.lineno}`)
+    }
+    window.addEventListener('error', handler)
+    return () => window.removeEventListener('error', handler)
+  }, [])
+
   function handleFile(f) {
     if (!f) return
     setFile(f); setPreview(URL.createObjectURL(f)); reset()
