@@ -127,7 +127,8 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
                     position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
                     justifyContent: 'center', fontSize: 10, color: 'var(--text-hint)',
                     }}>
-                    🔒 {pl ? 'Premium' : 'Premium only'}
+                     <LockKeyhole size={10} strokeWidth={1.5} color="var(--accent)"/>
+                     {pl ? 'Premium' : 'Premium only'}
                     </p>
                 </div>
                 )}
@@ -138,7 +139,7 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
                 fontSize: 11, padding: '6px 10px',
                 borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)',
                 borderLeft: '2px solid var(--text-hint)', color: 'var(--text-muted)',
-                fontWeight:  300, lineHeight:  1.5, gap: 6}}>
+                fontWeight:  300, lineHeight: 1.5}}>
                 <TriangleAlert size={11} strokeWidth={1.5} color="var(--text-muted)"/>
                 {style.negatives[0].reason} </div>
             )}
@@ -149,8 +150,7 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
                 fontSize: 11, padding: '6px 10px',
                 borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)',
                 borderLeft: '2px solid var(--text-hint)', color: 'var(--text-muted)',
-                fontWeight:  300, lineHeight:  1.5, gap: 6,
-            }}>
+                fontWeight:  300, lineHeight:  1.5 }}>
                 <Info size={11} strokeWidth={1.5} color="var(--text-muted)"/>
                 {style.missing[0].reason}
             </div>
@@ -179,14 +179,14 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
                     borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)', 
                     cursor: 'pointer', fontSize: 15, transition: 'border-color .15s',
                 }}>
-                    <ThumbsUp size={11} strokeWidth={1.5} color="var(--accent)"/>
+                    <ThumbsUp size={20} strokeWidth={1.5} color="var(--accent)"/>
                 </button>
                 <button onClick={() => handleVote('down')} style={{
                     flex: 1, padding: '7px 0', border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)', 
                     cursor: 'pointer', fontSize: 15, transition: 'border-color .15s',
                 }}>
-                    <ThumbsDown size={11} strokeWidth={1.5} color="var(--accent)"/>
+                    <ThumbsDown size={20} strokeWidth={1.5} color="var(--accent)"/>
                 </button>
                 </div>
             )}
