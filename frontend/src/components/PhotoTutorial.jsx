@@ -1,45 +1,48 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { User, Sun, Scissors } from 'lucide-react'
+
+const iconBox = (Icon, color = 'var(--accent)') => (
+  <div style={{
+    width: 120, height: 120, margin: '0 auto', borderRadius: 16,
+    background: 'var(--bg)', border: '2px solid var(--border)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+  }}>
+    <Icon size={52} color={color} strokeWidth={1} />
+  </div>
+)
 
 const STEPS = [
-    {
-        titleKey: "tutorial_step1_title",
-        itemsKey: "tutorial_step1_items",
-        visual: (
-            <div style={{ position: "relative", width: 120, height: 120, margin: '0 auto'}}>
-                <div style={{ 
-                    width: 120, height: 120, borderRadius: '50%', background: 'var(--bg)',
-                    border: '2px solid var(--accent-mid)', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', fontSize: 56
-                }}>🧑</div>
-                <div style={{
-                    position: 'absolute', bottom: 0, right: 0, background: '#2d8f4e',
-                    borderRadius: '50%', width: 28, height: 28, display: 'flex',
-                    alignItems: 'center', justifyContent: 'center', fontSize: 14
-                }}></div>
-            </div>
-        ),
-    },
-    {
-        titleKey: "tutorial_step2_title",
-        itemsKey: "tutorial_step2_items",
-        visual: (
-        <div style={{ width: 120, height: 120, margin: '0 auto', borderRadius: 12,
-            background: 'var(--bg)', border: '2px solid var(--accent-mid)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48
-        }}>💡</div>
-        ),
-    },
-    {
-        titleKey: "tutorial_step3_title",
-        itemsKey: "tutorial_step3_items",
-        visual: (
-        <div style={{ width: 120, height: 120, margin: '0 auto', borderRadius: 12,
-            background: 'var(--bg)', border: '2px solid var(--accent-mid)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48
-        }}>✂️</div>
-        ),
-    },
+  {
+    titleKey: "tutorial_step1_title",
+    itemsKey: "tutorial_step1_items",
+    visual: (
+      <div style={{ position: 'relative', width: 120, height: 120, margin: '0 auto' }}>
+        {iconBox(User)}
+        <div style={{
+          position: 'absolute', bottom: 0, right: 0,
+          background: '#2d8f4e', borderRadius: '50%',
+          width: 28, height: 28, display: 'flex',
+          alignItems: 'center', justifyContent: 'center',
+        }}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="#fff" strokeWidth="2"
+              strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      </div>
+    ),
+  },
+  {
+    titleKey: "tutorial_step2_title",
+    itemsKey: "tutorial_step2_items",
+    visual: iconBox(Sun),
+  },
+  {
+    titleKey: "tutorial_step3_title",
+    itemsKey: "tutorial_step3_items",
+    visual: iconBox(Scissors),
+  },
 ]
 
 export function PhotoTutorial({ onDone }) {

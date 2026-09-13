@@ -139,9 +139,13 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
                 fontSize: 11, padding: '6px 10px',
                 borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)',
                 borderLeft: '2px solid var(--text-hint)', color: 'var(--text-muted)',
-                fontWeight:  300, lineHeight: 1.5}}>
-                <TriangleAlert size={11} strokeWidth={1.5} color="var(--text-muted)"/>
-                {style.negatives[0].reason} </div>
+                fontWeight:  300, lineHeight: 1.5, 
+                display: 'flex',  alignItems: 'flex-start', gap: 6,
+            }}>
+                <TriangleAlert size={11} strokeWidth={1.5} color="var(--text-muted)"
+                style={{ flexShrink: 0, marginTop: 2 }}/>
+                {style.negatives[0].reason} 
+            </div>
             )}
 
             {/* missing */}
@@ -150,9 +154,12 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
                 fontSize: 11, padding: '6px 10px',
                 borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)',
                 borderLeft: '2px solid var(--text-hint)', color: 'var(--text-muted)',
-                fontWeight:  300, lineHeight:  1.5 }}>
-                <Info size={11} strokeWidth={1.5} color="var(--text-muted)"/>
-                {style.missing[0].reason}
+                fontWeight:  300, lineHeight:  1.5,
+                display: 'flex', alignItems: 'flex-start', gap: 6,
+            }}>
+                <Info size={11} strokeWidth={1.5} color="var(--text-muted)"
+                style={{ flexShrink: 0, marginTop: 2 }}/>
+                <span>{style.missing[0].reason}</span>
             </div>
             )}
 
