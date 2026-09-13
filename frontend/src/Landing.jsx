@@ -11,25 +11,25 @@ const DEMO_CASES_MAN = [
   {
     face: 'Long face · Narrow jaw',
     face_pl: 'Długa twarz · Wąska szczęka',
-    analysis: 'Side volume and fringe optically widen your face and shorten its length.',
-    analysis_pl: 'Objętość po bokach i grzywka optycznie poszerzają twarz i skracają ją.',
-    styles: ['French Crop', 'Textured Fringe'],
+    analysis: 'Side volume and fringe optically widen your face and shorten its length, creating a more balanced look.',
+    analysis_pl: 'Objętość po bokach i grzywka optycznie poszerzają twarz, skracając jej długość i tworząc bardziej zbalansowany wygląd.',
+    styles: ['French Crop', 'Textured Fringe', 'Wolf Cut'],
     image: `${API_URL}/images/male/french_crop.jpg`,
   },
   {
-    face: 'Wide jaw · Short face',
-    face_pl: 'Szeroka szczęka · Krótka twarz',
-    analysis: 'Height on top and tapered sides balance a broader jaw and create a more elongated silhouette.',
-    analysis_pl: 'Objętość na górze i krótkie boki równoważą szeroką szczękę i wydłużają optycznie sylwetkę.',
-    styles: ['Quiff', 'Pompadour'],
-    image: `${API_URL}/images/male/quiff.jpg`,
+    face: 'Wide jaw · Prominent chin',
+    face_pl: 'Szeroka szczęka · Wyraźna broda',
+    analysis: 'Soft texture and longer styles balance a stronger jaw and prominent chin, creating a more harmonious silhouette.',
+    analysis_pl: 'Miękka tekstura i dłuższe fryzury równoważą mocną szczękę i wyraźną brodę, dodając harmonii.',
+    styles: ['Bro Flow', 'Curtain Bangs M', 'Messy Crop'],
+    image: `${API_URL}/images/male/bro_flow.jpg`,
   },
   {
     face: 'Balanced proportions · High symmetry',
-    face_pl: 'Zbalansowane proporcje · Wysoka symetria',
+    face_pl: 'Balans proporcji · Symetria',
     analysis: 'Balanced proportions give you more freedom, so clean geometric cuts and classic styles work especially well.',
     analysis_pl: 'Zbalansowane proporcje dają większą swobodę, dlatego dobrze sprawdzają się klasyczne i geometryczne cięcia.',
-    styles: ['Classic Undercut', 'Crew Cut'],
+    styles: ['Classic Undercut', 'Comb Over', 'Modern Mullet'],
     image: `${API_URL}/images/male/classic_undercut.jpg`,
   },
 ]
@@ -38,25 +38,25 @@ const DEMO_CASES_WOMAN = [
   {
     face: 'Long face · Narrow jaw',
     face_pl: 'Długa twarz · Wąska szczęka',
-    analysis: 'A bob, layers or curtain fringe adds width and breaks up the vertical proportions.',
-    analysis_pl: 'Bob, warstwy lub grzywka dodają szerokości i przełamują pionowe proporcje twarzy.',
-    styles: ['French Bob', 'Curtain Fringe Medium'],
+    analysis: 'A bob, layers or curtain fringe adds width, breaks up the vertical proportions that creates a softer balance.',
+    analysis_pl: 'Bob, warstwy lub grzywka dodają szerokości i przełamują pionowe proporcje twarzy, tworząc łagodny balans.',
+    styles: ['French Bob', 'Curtain Fringe Medium', 'Soft Shag'],
     image: `${API_URL}/images/female/french_bob.jpg`,
   },
   {
-    face: 'Wide jaw · Strong lower face',
-    face_pl: 'Szeroka szczęka · Mocniejsza dolna część twarzy',
+    face: 'Wide jaw · Defined jawline',
+    face_pl: 'Szeroka szczęka · Mocniejsza żuchwa',
     analysis: 'Layers and length below the chin soften the jaw and create a longer, more flowing silhouette.',
     analysis_pl: 'Warstwy i długość poniżej brody łagodzą szeroką szczękę i tworzą bardziej wydłużoną, płynną sylwetkę.',
-    styles: ['Layered Medium', 'Long Bob'],
+    styles: ['Layered Medium', 'Long Bob', 'Wolf Cut'],
     image: `${API_URL}/images/female/layered_medium.jpg`,
   },
   {
     face: 'Balanced thirds · High symmetry',
-    face_pl: 'Zbalansowane proporcje · Wysoka symetria',
+    face_pl: 'Balans proporcji · Symetria',
     analysis: 'Balanced proportions give you flexibility, making soft textures, waves and structured styles easy to wear.',
-    analysis_pl: 'Zbalansowane proporcje dają większą swobodę, dlatego dobrze sprawdzają się fale, miękka tekstura i bardziej uporządkowane fryzury.',
-    styles: ['Beach Waves', 'Classic Updo',],
+    analysis_pl: 'Naturalny balans daje większą swobodę, dlatego fale, miękka tekstura i uporządkowanie sprawdzą się dobrze.',
+    styles: ['Beach Waves', 'Butterfly Cut', 'Classic Updo',],
     image: `${API_URL}/images/female/beach_waves.jpg`,
   },
 ]
@@ -195,7 +195,7 @@ export function Landing() {
                   <div style={{ display: 'flex', alignItems: 'center', 
                     justifyContent: 'center', gap: 10, marginBottom: 16 }}>
                     <span style={{
-                      fontFamily: 'var(--font-mono)', fontSize: 11,
+                      fontFamily: 'var(--font-mono)', fontSize: 20,
                       color: 'var(--accent)', letterSpacing: '.06em',
                     }}>{s.num}</span>
                     <div style={{
@@ -450,13 +450,31 @@ export function Landing() {
       {/* ── footer ── */}
       <footer style={{
         borderTop: '1px solid var(--border)', padding: '20px 40px', display: 'flex',
-        justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8}}>
+        justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12}}>
         <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: 'var(--text-muted)' }}>
           Stylizzer
         </span>
-        <span style={{ fontSize: 11, color: 'var(--text-hint)', fontFamily: 'var(--font-mono)' }}>
-          © 2026 Stylizzer · Privacy · Terms
-        </span>
+        {/* links */}
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+          {[
+            { label: pl ? 'Polityka Prywatności' : 'Privacy Policy', href: '/privacy' },
+            { label: pl ? 'Regulamin' : 'Terms of Service', href: '/terms' },
+            { label: pl ? 'Kontakt' : 'Contact', href: '' },
+          ].map(link => (
+            <a
+              key={link.href}
+              href={link.href}
+              style={{
+                fontSize: 11, color: 'var(--text-hint)', textDecoration: 'none',
+                fontFamily: 'var(--font-mono)', transition: 'color .15s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--text-muted)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-hint)'}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
       </footer>
     </div>
   )
