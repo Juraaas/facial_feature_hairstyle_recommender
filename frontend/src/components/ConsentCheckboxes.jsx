@@ -30,7 +30,8 @@ export function ConsentCheckboxes({ onChange }) {
         {pl ? (
           <>
             Wyrażam zgodę na jednorazowe przetwarzanie mojego zdjęcia twarzy
-            w celu analizy geometrycznej. Zdjęcie nie jest przechowywane po zakończeniu analizy.{' '}
+            w celu analizy geometrycznej. Zdjęcie nie jest przechowywane po zakończeniu analizy.
+            <br />
             <a href="/privacy" target="_blank" rel="noopener noreferrer"
               style={{ color: 'var(--accent)', textDecoration: 'none' }}
               onClick={e => e.stopPropagation()}>
@@ -40,7 +41,8 @@ export function ConsentCheckboxes({ onChange }) {
         ) : (
           <>
             I consent to one-time processing of my facial photo for geometric analysis.
-            The photo is not stored after the analysis is complete.{' '}
+            The photo is not stored after the analysis is complete.
+            <br />
             <a href="/privacy" target="_blank" rel="noopener noreferrer"
               style={{ color: 'var(--accent)', textDecoration: 'none' }}
               onClick={e => e.stopPropagation()}>

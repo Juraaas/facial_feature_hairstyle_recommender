@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { User, Sun, Scissors } from 'lucide-react'
+import { Baby, Sun, Glasses } from 'lucide-react'
 
 const iconBox = (Icon, color = 'var(--accent)') => (
   <div style={{
@@ -18,7 +18,7 @@ const STEPS = [
     itemsKey: "tutorial_step1_items",
     visual: (
       <div style={{ position: 'relative', width: 120, height: 120, margin: '0 auto' }}>
-        {iconBox(User)}
+        {iconBox(Baby)}
         <div style={{
           position: 'absolute', bottom: 0, right: 0,
           background: '#2d8f4e', borderRadius: '50%',
@@ -41,7 +41,7 @@ const STEPS = [
   {
     titleKey: "tutorial_step3_title",
     itemsKey: "tutorial_step3_items",
-    visual: iconBox(Scissors),
+    visual: iconBox(Glasses),
   },
 ]
 
