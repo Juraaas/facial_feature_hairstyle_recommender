@@ -16,6 +16,7 @@ import { StylePlayground } from './components/StylePlayground'
 import { UserPanel } from './components/UserPanel'
 import { createCheckout } from './api/client'
 import { NavBar } from './components/NavBar'
+import { ConsentCheckboxes } from './components/ConsentCheckboxes'
 import { X, Scissors, Sparkles, ArrowRight, ScanFace, Waves, ScanLine } from 'lucide-react'
 import './App.css'
 
@@ -32,6 +33,7 @@ function App() {
   const [showPlayground, setShowPlayground] = useState(false)
   const [showPanel, setShowPanel] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
+  const [consent, setConsent] = useState(false)
 
   const { t, i18n } = useTranslation()
   const pl = i18n.language === 'pl'
@@ -165,9 +167,17 @@ function App() {
                 onChange={e => handleFile(e.target.files[0])}
                 style={{ display: 'none' }} />
               {file && !loading && !result && (
-                <button className="analyse-btn" onClick={handleAnalyse}>
-                  {t('btn_analyse')}
-                </button>
+                <>
+                  <ConsentCheckboxes onChange={setConsent} />
+                  <button
+                    className="analyse-btn"
+                    onClick={handleAnalyse}
+                    disabled={!consent}
+                    style={{ opacity: consent ? 1 : 0.45 }}
+                  >
+                    {t('btn_analyse')}
+                  </button>
+                </>
               )}
               {result && (
                 <button className="analyse-btn secondary"
@@ -199,7 +209,8 @@ function App() {
                   display: 'flex', alignItems: 'center', gap: 12, 
                   padding: '8px 14px', borderBottom: '1px solid var(--border)',
                 }}> 
-                  <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', 
+                    whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 5, }}>
                     <ScanFace size={14} strokeWidth={1.5} color="var(--accent)"/>
                     {result.gender === 'Woman' ? t('detected_woman') : t('detected_man')}
                   </span>
