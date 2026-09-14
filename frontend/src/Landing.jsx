@@ -21,11 +21,11 @@ const DEMO_CASES_MAN = [
     face_pl: 'Szeroka szczęka · Wyraźna broda',
     analysis: 'Soft texture and longer styles balance a stronger jaw and prominent chin, creating a more harmonious silhouette.',
     analysis_pl: 'Miękka tekstura i dłuższe fryzury równoważą mocną szczękę i wyraźną brodę, dodając harmonii.',
-    styles: ['Bro Flow', 'Curtain Bangs M', 'Messy Crop'],
+    styles: ['Bro Flow', 'Curtain Bangs', 'Messy Crop'],
     image: `${API_URL}/images/male/bro_flow.jpg`,
   },
   {
-    face: 'Balanced proportions · High symmetry',
+    face: 'Balanced thirds · High symmetry',
     face_pl: 'Balans proporcji · Symetria',
     analysis: 'Balanced proportions give you more freedom, so clean geometric cuts and classic styles work especially well.',
     analysis_pl: 'Zbalansowane proporcje dają większą swobodę, dlatego dobrze sprawdzają się klasyczne i geometryczne cięcia.',
@@ -195,7 +195,7 @@ export function Landing() {
                   <div style={{ display: 'flex', alignItems: 'center', 
                     justifyContent: 'center', gap: 10, marginBottom: 16 }}>
                     <span style={{
-                      fontFamily: 'var(--font-mono)', fontSize: 20,
+                      fontFamily: 'var(--font-mono)', fontSize: 16,
                       color: 'var(--accent)', letterSpacing: '.06em',
                     }}>{s.num}</span>
                     <div style={{
@@ -483,7 +483,7 @@ export function Landing() {
 function SectionLabel({ text }) {
   return (
     <div style={{
-      fontSize: 10,
+      fontSize: 12,
       fontFamily: 'var(--font-mono)',
       letterSpacing: '.1em',
       textTransform: 'uppercase',
