@@ -457,7 +457,7 @@ def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
     try:
         client = Groq(api_key=api_key)
         response = client.chat.completions.create(
-            model = "qwen/qwen3.6-27b",
+            model = "qwen/qwen3.8-27b",
             max_tokens = 400,
             temperature = 0.7,
             top_p = 0.80,
