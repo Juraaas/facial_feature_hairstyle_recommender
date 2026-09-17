@@ -275,6 +275,45 @@ function App() {
                 onPremiumClick={() => setShowPremium(true)}
               />
 
+              {result.fade_recommendation && result.gender === 'Man' && (
+                <section style={{ marginBottom: 32 }}>
+                  <h2 className="section-title">
+                    {pl ? 'Rekomendowany fade' : 'Recommended fade'}
+                  </h2>
+                  <div style={{
+                    background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
+                    border: '1px solid var(--border)', padding: '16px 20px',
+                    display: 'flex', alignItems: 'center', gap: 16,
+                  }}>
+                    {/* badge */}
+                    <div style={{
+                      background: 'var(--accent-soft)', border: '1.5px solid var(--accent)',
+                      borderRadius: 'var(--radius-md)', padding: '10px 16px',
+                      textAlign: 'center', flexShrink: 0, minWidth: 80,
+                    }}>
+                      <p style={{
+                        fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--accent)',
+                        letterSpacing: '.06em', textTransform: 'uppercase', marginBottom: 4,
+                      }}>
+                        {pl ? 'poziom' : 'level'}
+                      </p>
+                      <p style={{
+                        fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 500, color: 'var(--accent)',
+                      }}>
+                        {result.fade_recommendation.level.toUpperCase()}
+                      </p>
+                    </div>
+                    <p style={{
+                      fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6,
+                    }}>
+                      {pl
+                        ? result.fade_recommendation.reason_pl
+                        : result.fade_recommendation.reason_en}
+                    </p>
+                  </div>
+                </section>
+              )}
+
               {/* try-on */}
               <section style={{ marginBottom: 32 }}>
                 <div style={{ marginBottom: 16 }}>

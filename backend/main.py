@@ -218,6 +218,7 @@ async def analyse(request: Request,
                 for feat in features.keys()
                 if feat in selected_norms.columns
             },
+            "fade_recommendation": recs.get("fade_recommendation"),
         }
 
         if debug:

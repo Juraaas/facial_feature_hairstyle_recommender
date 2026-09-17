@@ -1,6 +1,7 @@
 import json
 import os
 from groq import Groq
+from src.fade_recommender import recommend_fade_from_front
 
 STYLE_DESCRIPTIONS = {
     "volume_top": "height on top",
@@ -587,6 +588,7 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
                              hairstyles_path="data/hairstyles.json", lang="pl"):
     styles = load_hairstyles(hairstyles_path)
     influences = compute_traits_influences(traits, gender)
+    fade_rec = recommend_fade_from_front(traits, gender)
     print(f"DEBUG influences: {list(influences.keys())}")
     results_pl = []
     results_en = []
@@ -641,4 +643,5 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
         },
 
         "trait_influences": influences,
+        "fade_recommendation": fade_rec,
     }
