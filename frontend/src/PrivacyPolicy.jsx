@@ -46,7 +46,6 @@ export function PrivacyPolicy() {
   )
 }
 
-/* ── shared typography helpers ── */
 const H1 = ({ children }) => (
   <h1 style={{
     fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 500,
@@ -67,7 +66,7 @@ const P = ({ children }) => (
 )
 const UL = ({ children }) => (
   <ul style={{
-    paddingLeft: 20, marginBottom: 12,
+    paddingLeft: 20, marginBottom: 12, textAlign: 'left',
     fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.75, fontWeight: 300,
   }}>{children}</ul>
 )

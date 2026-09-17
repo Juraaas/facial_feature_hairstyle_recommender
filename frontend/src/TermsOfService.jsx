@@ -64,8 +64,8 @@ const P = ({ children }) => (
 )
 const UL = ({ children }) => (
   <ul style={{
-    paddingLeft: 20, marginBottom: 12,
-    fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.75, fontWeight: 300,
+    paddingLeft: 20, marginBottom: 12, textAlign: 'left',
+    fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.75, fontWeight: 300, 
   }}>{children}</ul>
 )
 const LI = ({ children }) => <li style={{ marginBottom: 6 }}>{children}</li>
@@ -103,7 +103,9 @@ function TermsPL() {
       </UL>
       <P>
         Serwis jest dostępny w wersji darmowej (ograniczone funkcje) oraz Premium (pełny dostęp).
-        Zakup planu Premium jest jednorazowy i daje bezterminowy dostęp do funkcji premium.
+        Plan Premium jest dostępny w modelu czasowego dostępu z limitami użycia.
+        Aktualny plan obejmuje X analiz twarzy i Y podglądów fryzur miesięcznie.
+        Szczegóły aktualnego planu dostępne są na stronie głównej.
       </P>
 
       <H2>3. Wymagania i ograniczenia wiekowe</H2>
@@ -255,8 +257,9 @@ function TermsEN() {
       </UL>
       <P>
         The Service is available in a free tier (limited features) and a Premium
-        tier (full access). The Premium plan is a one-time purchase granting
-        permanent access to all premium features.
+        tier (full access). The Premium Plan is available on a time-limited basis with usage limits.
+        Your current plan includes X facial analyses and Y hairstyle previews per month.
+        Details of your current plan are available on the homepage.
       </P>
 
       <H2>3. Age requirement</H2>
