@@ -38,7 +38,7 @@ export function TermsOfService() {
         </span>
       </nav>
 
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 24px 80px' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 24px 80px', textAlign: 'left' }}>
         {pl ? <TermsPL /> : <TermsEN />}
       </div>
     </div>

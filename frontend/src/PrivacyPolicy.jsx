@@ -39,7 +39,7 @@ export function PrivacyPolicy() {
       </nav>
 
       {/* content */}
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 24px 80px' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 24px 80px', textAlign: 'left' }}>
         {pl ? <PolicyPL /> : <PolicyEN />}
       </div>
     </div>
@@ -109,7 +109,6 @@ const Divider = () => (
   <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '32px 0' }} />
 )
 
-/* ── POLISH VERSION ── */
 function PolicyPL() {
   return (
     <>
@@ -225,7 +224,6 @@ function PolicyPL() {
   )
 }
 
-/* ── ENGLISH VERSION ── */
 function PolicyEN() {
   return (
     <>
