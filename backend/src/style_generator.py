@@ -3,9 +3,9 @@ import fal_client
 
 STYLE_PROMPTS_MALE = {
     "French Crop": (
-        "a French Crop with short faded sides and back, "
-        "a clearly longer textured top styled forward, "
-        "and a short soft fringe resting naturally on the forehead"
+        "a French Crop: faded sides, textured top clearly longer than the sides, "
+        "and a fringe resting naturally on the forehead. "
+        "The fringe touching the forehead is essential."
     ),
     "Messy Crop": (
         "a messy crop with short disconnected sides and back, "
@@ -37,9 +37,9 @@ STYLE_PROMPTS_MALE = {
         "and short tapered sides with no visible fringe"
     ),
     "Textured Fringe": (
-        "a textured fringe with short-to-medium layered hair on top, "
-        "a clearly visible choppy irregular fringe across the forehead, "
-        "and deliberately separated textured strands with natural movement"
+        "a Textured Fringe: choppy irregular fringe cut across the forehead "
+        "with deliberately jagged uneven ends, layered textured top with natural movement. "
+        "The choppy irregular fringe across the forehead is essential."
     ),
     "Comb Over": (
         "a classic comb over with medium-length hair on top, "
@@ -52,9 +52,10 @@ STYLE_PROMPTS_MALE = {
         "with medium-length sides and a relaxed, natural finish"
     ),
     "Wolf Cut": (
-        "a men's Wolf Cut with heavy shaggy layers, "
-        "a textured curtain fringe framing the forehead, "
-        "noticeable crown volume, and longer wispy layered lengths at the back"
+        "a men's Wolf Cut: heavy shaggy layers throughout, "
+        "a curtain fringe falling on both sides of the forehead, "
+        "strong volume at the crown, and longer wispy ends at the back. "
+        "The curtain fringe and shaggy crown volume are essential."
     ),
     "Modern Mullet": (
         "a modern mullet with short textured hair on top and at the sides, "
@@ -62,9 +63,10 @@ STYLE_PROMPTS_MALE = {
         "and distinctly longer layered hair extending down the back of the neck"
     ),
     "Curtain Bangs": (
-        "men's curtain bangs with a clear center part, "
-        "the fringe splitting into two sections and falling softly on both sides "
-        "of the forehead, with medium-length hair and natural face-framing movement"
+        "men's curtain bangs: a clear centre part with the fringe split into "
+        "two sections falling softly on each side of the forehead, "
+        "medium-length hair with natural face-framing movement. "
+        "The centre-parted face-framing fringe is essential."
     ),
 }
 STYLE_PROMPTS_FEMALE = {
@@ -133,7 +135,7 @@ STYLE_PROMPTS_FEMALE = {
 }
 
 COLOR_PROMPTS = {
-    "natural": "",
+    "natural": None,
     "blonde": "dark blonde, bright and even",
     "dark": "rich dark brown, deep and natural",
     "black": "jet black, very dark and glossy",
@@ -143,7 +145,7 @@ COLOR_PROMPTS = {
 def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
     prompts = STYLE_PROMPTS_FEMALE if gender == "Woman" else STYLE_PROMPTS_MALE
     style = prompts.get(style_name) or STYLE_PROMPTS_MALE.get(style_name) or f"{style_name} hairstyle"
-    color = COLOR_PROMPTS.get(color_id, "")
+    color = COLOR_PROMPTS.get(color_id)
     
     prompt = (
         f"Edit only the hair of the person in the input image. "
@@ -152,6 +154,8 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
 
     if color:
         prompt += f"Also change the hair color to {color}. "
+    else:
+        prompt += "Keep the exact same hair color as in the original photo. "
     
     prompt += (
         "Preserve the exact identity and facial appearance of the person. "
