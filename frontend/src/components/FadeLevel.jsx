@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Scissors } from 'lucide-react'
+import { RulerDimensionLine } from 'lucide-react'
 
 const FADE_PL = {
   low: 'Niski',
@@ -35,7 +35,7 @@ export function FadeLevel({ recommendation }) {
       <h2 className="section-title" style={{
         display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16,
       }}>
-        <Scissors size={18} color="var(--accent)" strokeWidth={1.5} />
+        <RulerDimensionLine size={18} color="var(--accent)" strokeWidth={1.5} />
         {pl ? 'Rekomendowany fade' : 'Recommended fade'}
       </h2>
 

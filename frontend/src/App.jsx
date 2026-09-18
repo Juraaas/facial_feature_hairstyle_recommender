@@ -18,7 +18,7 @@ import { createCheckout } from './api/client'
 import { NavBar } from './components/NavBar'
 import { ConsentCheckboxes } from './components/ConsentCheckboxes'
 import { FadeLevel } from './components/FadeLevel'
-import { X, Scissors, Sparkles, ArrowRight, ScanFace, Waves, ScanLine } from 'lucide-react'
+import { X, Scissors, Sparkles, ArrowRight, ScanFace, Waves, ScanLine, Brush } from 'lucide-react'
 import './App.css'
 
 function App() {
@@ -285,7 +285,7 @@ function App() {
                 <div style={{ marginBottom: 16 }}>
                   <div>
                     <h2 className="section-title" style={{ marginBottom: 4 }}>
-                      <Scissors size={18} color="var(--accent)" strokeWidth={1.5} />
+                      <Brush size={18} color="var(--accent)" strokeWidth={1.5} />
                       {pl ? 'Przymierzalnia' : 'Style Playground'}
                     </h2>
                     <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300 }}>
