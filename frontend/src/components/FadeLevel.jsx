@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { RulerDimensionLine } from 'lucide-react'
+import './App.css'
 
 const FADE_PL = {
   low: 'Niski',
