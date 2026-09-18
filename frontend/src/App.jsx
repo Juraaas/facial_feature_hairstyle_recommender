@@ -17,6 +17,7 @@ import { UserPanel } from './components/UserPanel'
 import { createCheckout } from './api/client'
 import { NavBar } from './components/NavBar'
 import { ConsentCheckboxes } from './components/ConsentCheckboxes'
+import { FadeLevel } from './components/FadeLevel'
 import { X, Scissors, Sparkles, ArrowRight, ScanFace, Waves, ScanLine } from 'lucide-react'
 import './App.css'
 
@@ -276,97 +277,7 @@ function App() {
               />
 
               {result.fade_recommendation && result.gender === 'Man' && (
-                <section style={{ marginBottom: 32 }}>
-                  <h2 className="section-title" style={{
-                    display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16,
-                  }}>
-                    <Scissors size={18} color="var(--accent)" strokeWidth={1.5} />
-                    {pl ? 'Rekomendowany fade' : 'Recommended fade'}
-                  </h2>
-
-                  <div style={{
-                    background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
-                    border: '1px solid var(--border)', padding: '20px', display: 'flex',
-                    gap: 20, alignItems: 'flex-start', flexWrap: 'wrap',
-                  }}>
-                    {/* badge with level */}
-                    <div style={{
-                      background: 'var(--accent-soft)', border: '1.5px solid var(--accent)',
-                      borderRadius: 'var(--radius-md)', padding: '14px 18px',
-                      textAlign: 'center', flexShrink: 0, minWidth: 90,
-                    }}>
-                      <p style={{
-                        fontFamily: 'var(--font-mono)', fontSize: 9,
-                        color: 'var(--accent)', letterSpacing: '.1em',
-                        textTransform: 'uppercase', marginBottom: 6,
-                      }}>
-                        {pl ? 'poziom' : 'level'}
-                      </p>
-                      <p style={{
-                        fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 500,
-                        color: 'var(--accent)', lineHeight: 1.2,
-                      }}>
-                        {result.fade_recommendation.level.charAt(0).toUpperCase() +
-                        result.fade_recommendation.level.slice(1)}
-                      </p>
-                      {pl && (
-                        <p style={{
-                          fontSize:   10, color: 'var(--accent)',
-                          fontFamily: 'var(--font-mono)', marginTop: 3, opacity: 0.75,
-                        }}>
-                          {{
-                            low: 'niski',
-                            mid: 'średni',
-                            high: 'wysoki',
-                            skin: 'skin',
-                          }[result.fade_recommendation.level]}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* desc */}
-                    <div style={{ flex: 1, minWidth: 200 }}>
-                      <p style={{
-                        fontSize: 13, color: 'var(--text)',
-                        fontWeight: 400, marginBottom: 6, lineHeight: 1.5,
-                      }}>
-                        {pl
-                          ? result.fade_recommendation.reason_pl
-                          : result.fade_recommendation.reason_en}
-                      </p>
-                      {/* level gradient */}
-                      <div style={{
-                        display: 'flex', gap: 4, marginTop: 10, alignItems: 'center',
-                      }}>
-                        {['low', 'mid', 'high', 'skin'].map(lvl => (
-                          <div key={lvl} style={{
-                            flex: 1, height: 4, borderRadius: 2,
-                            background:   lvl === result.fade_recommendation.level
-                              ? 'var(--accent)'
-                              : 'var(--border)',
-                            transition: 'background .2s',
-                          }} />
-                        ))}
-                        <span style={{
-                          fontSize: 9, fontFamily: 'var(--font-mono)', color: 'var(--text-hint)',
-                          marginLeft: 4, whiteSpace: 'nowrap',
-                        }}>
-                          {result.fade_recommendation.level.toUpperCase()}
-                        </span>
-                      </div>
-                      <div style={{
-                        display: 'flex', justifyContent: 'space-between', marginTop: 4,
-                      }}>
-                        <span style={{ fontSize: 9, color: 'var(--text-hint)', fontFamily: 'var(--font-mono)' }}>
-                          LOW
-                        </span>
-                        <span style={{ fontSize: 9, color: 'var(--text-hint)', fontFamily: 'var(--font-mono)' }}>
-                          SKIN
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </section>
+                <FadeLevel recommendation={result.fade_recommendation} />
               )}
 
               {/* try-on */}
