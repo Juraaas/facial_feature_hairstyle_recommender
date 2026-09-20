@@ -114,3 +114,9 @@ def _preprocess(crop_bgr):
     inp = crop_bgr[:, :, ::-1].astype(np.float32) / 255.0
     inp = (inp - np.array([0.485, 0.456, 0.406])) / np.array([0.229, 0.224, 0.225])
     return inp.transpose(2, 0, 1)[None].astype(np.float32)
+
+def estimate_hair_length(coverage: float) -> str:
+    if coverage < 0.04: return "very_short"
+    elif coverage < 0.08: return "short"
+    elif coverage < 0.14: return "medium"
+    else: return "long"
