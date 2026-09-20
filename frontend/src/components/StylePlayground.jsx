@@ -12,7 +12,7 @@ const HAIR_COLORS = [
   { id: 'auburn',   label_pl: 'Rudy',           label_en: 'Auburn',       prompt: 'auburn red hair color' },
 ]
 
-export function StylePlayground({ styles, originalFile, onClose, isPremium, onUpgrade, gender }) {
+export function StylePlayground({ styles, originalFile, onClose, isPremium, onUpgrade, gender, result }) {
   const { i18n } = useTranslation()
   const pl = i18n.language === 'pl'
 
@@ -21,6 +21,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
   const [generating, setGenerating] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
+  const [transformation, setTransformation] = useState(null)
 
   async function handleGenerate() {
     if (!isPremium) { onUpgrade(); return }
@@ -29,6 +30,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
     setGenerating(true)
     setError(null)
     setResult(null)
+    setTransformation(null)
 
     try {
       const { data } = await supabase.auth.getSession()
@@ -39,6 +41,8 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
       form.append('style_name', selectedStyle)
       form.append('color_id', selectedColor)
       form.append('gender', gender)
+      form.append('hair_type', result?.traits?.hair_type ?? '')
+      form.append('hair_coverage', result?.quality?.hair_coverage ?? '0.05')
 
       const res = await fetch(`${BASE}/style-preview`, {
         method: 'POST', 
@@ -47,7 +51,10 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
       })
 
       if (!res.ok) throw new Error('Generation failed')
-      const blob = await res.blob()
+      const json = await res.json()
+      const imgSrc = `data:image/jpeg;base64,${json.image_b64}`
+      setResult(imgSrc)
+      setTransformation(json.transformation ?? null)
       setResult(URL.createObjectURL(blob))
     } catch (e) {
       setError(pl ? 'Generowanie nie powiodło się. Spróbuj ponownie.' : 'Generation failed. Please try again.')
@@ -283,6 +290,66 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                   >
                     {pl ? '↓ Pobierz' : '↓ Download'}
                   </a>
+
+                  {transformation && (
+                    <div style={{
+                      marginTop: 10, padding: '12px 14px', background: 'var(--surface-2)',
+                      borderRadius: 'var(--radius-md)', border: '1px solid var(--border)',
+                    }}>
+                      <p style={{
+                        fontSize: 9, fontWeight: 600, letterSpacing: '.08em',
+                        textTransform: 'uppercase', color: 'var(--text-hint)',
+                        marginBottom: 8, fontFamily: 'var(--font-body)',
+                      }}>
+                        {pl ? 'Szacowana transformacja' : 'Estimated transformation'}
+                      </p>
+
+                      <div style={{ display: 'flex', gap: 16, marginBottom: 8 }}>
+                        {[
+                          { val: transformation.visits,  label_pl: 'wizyty',   label_en: 'visits' },
+                          { val: transformation.months,  label_pl: 'miesięcy', label_en: 'months' },
+                        ].map(item => (
+                          <div key={item.label_en} style={{ textAlign: 'center' }}>
+                            <p style={{
+                              fontFamily: 'var(--font-mono)', fontSize: 20,
+                              fontWeight: 600, color: 'var(--accent)',
+                            }}>
+                              {item.val}
+                            </p>
+                            <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                              {pl ? item.label_pl : item.label_en}
+                            </p>
+                          </div>
+                        ))}
+                        <div style={{ textAlign: 'center' }}>
+                          <p style={{
+                            fontSize: 11, fontWeight: 500,
+                            color: {
+                              easy: '#2d8f4e',
+                              moderate: '#C8975A',
+                              challenging: '#c0392b',
+                            }[transformation.difficulty] ?? 'var(--text)',
+                            textTransform: 'capitalize',
+                          }}>
+                            {{ easy: pl ? 'łatwa' : 'easy',
+                              moderate: pl ? 'umiarkowana' : 'moderate',
+                              challenging: pl ? 'wymagająca' : 'challenging',
+                            }[transformation.difficulty]}
+                          </p>
+                          <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                            {pl ? 'trudność' : 'difficulty'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <p style={{
+                        fontSize: 11, color: 'var(--text-muted)', fontWeight: 300,
+                        lineHeight: 1.5, borderTop: '1px solid var(--border)', paddingTop: 8,
+                      }}>
+                        {pl ? transformation.note_pl : transformation.note_en}
+                      </p>
+                    </div>
+                  )}
                   <button onClick={() => setResult(null)} style={{
                     flex: 1, padding: '9px',
                     border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)',
