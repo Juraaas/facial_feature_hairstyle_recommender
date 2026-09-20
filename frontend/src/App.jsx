@@ -18,6 +18,7 @@ import { createCheckout } from './api/client'
 import { NavBar } from './components/NavBar'
 import { ConsentCheckboxes } from './components/ConsentCheckboxes'
 import { FadeLevel } from './components/FadeLevel'
+import { HairColorSuggestions } from './components/HairColorSuggestions'
 import { X, Scissors, Sparkles, ArrowRight, ScanFace, Waves, ScanLine, Brush } from 'lucide-react'
 import './App.css'
 
@@ -266,6 +267,8 @@ function App() {
                 <FaceAnalysis analysis={analysis} />
               </PremiumGate>
 
+              <HairColorSuggestions recommendation={result.color_recommendation} />
+
               <FaceProportions features={result.features} norms={result.norms} />
 
               <StylesSection
@@ -380,6 +383,7 @@ function App() {
                   styles={styles}
                   originalFile={file}
                   isPremium={isPremium}
+                  result={result}
                   onUpgrade={() => {setShowPlayground(false); setShowPremium(true) }}
                   onClose={() => setShowPlayground(false)}
                   gender={result.gender}
