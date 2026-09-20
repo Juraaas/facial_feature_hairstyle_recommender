@@ -24,6 +24,8 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi.responses import JSONResponse
 from src.payments import router as payments_router
+from src.transformation_estimator import estimate_transformation
+from src.color_recommender import analyze_skin_tone
 from starlette.middleware.base import BaseHTTPMiddleware
 
 
@@ -57,13 +59,13 @@ def get_norms():
 
         male_path = hf_hub_download(
             repo_id=HF_NORMS_REPO,
-            filename="male_norms_v2.csv",
+            filename="male_norms_v3.csv",
             repo_type="dataset",
             token=token,
         )
         female_path = hf_hub_download(
             repo_id=HF_NORMS_REPO,
-            filename="female_norms_v2.csv",
+            filename="female_norms_v3.csv",
             repo_type="dataset",
             token=token,
         )
@@ -190,7 +192,7 @@ async def analyse(request: Request,
         gender = get_gender(img)
         
         result = run_pipeline(img, detector, gender=gender, lang=lang)
-        landmarks, features, traits, scores, recs, quality = result
+        landmarks, features, traits, scores, recs, quality, hair_mask = result
 
         if landmarks is None:
             code = getattr(quality, "blocking_code", None) or NO_FACE_DETECTED
@@ -198,6 +200,12 @@ async def analyse(request: Request,
             raise http_error(code, message)
         
         selected_norms = female_norms if gender == "Woman" else norms
+
+        color_rec = None
+        try:
+            color_rec = analyze_skin_tone(img, hair_mask)
+        except Exception as e:
+            print(f"Color recommendation error: {e}")
         
         response = {
             "gender": gender,
@@ -219,6 +227,7 @@ async def analyse(request: Request,
                 if feat in selected_norms.columns
             },
             "fade_recommendation": recs.get("fade_recommendation"),
+            "color_recommendation": color_rec,
         }
 
         if debug:
@@ -349,17 +358,35 @@ async def style_preview(
     style_name: str = Form(...),
     color_id: str = Form("natural"),
     gender: str = Form("Man"),
+    hair_type: str = Form(None),
+    hair_coverage: float = Form(0.05),
+    lang: str = Form("pl"),
     user = Depends(require_premium),
 ):
-    print(f"STYLE PREVIEW HIT: {style_name}, {color_id}, {gender}, user={user.id if user else None}")
     try:
         contents = await file.read()
         if not validate_image_bytes(contents):
             raise http_error("INVALID_IMAGE", "Only JPEG and PNG files are accepted", 400)
-        result = await generate_preview(contents, style_name, color_id, gender)
-        return Response(content=result, media_type="image/jpeg")
-    except HTTPException:
-        raise
+        preview_bytes = await generate_preview(contents, style_name, color_id, gender)
+
+        from src.hair_classifier import estimate_hair_length
+        import base64
+
+        current_length = estimate_hair_length(hair_coverage)
+        transformation = estimate_transformation(
+            current_length = current_length,
+            current_hair_type = hair_type or "straight",
+            target_style = style_name,
+            color_change = color_id,
+            gender = gender,
+            lang = lang,
+        )
+
+        return {
+            "image_b64": base64.b64encode(preview_bytes).decode(),
+            "transformation": transformation,
+        }
+        
     except Exception:
         import traceback
         print(traceback.format_exc())
