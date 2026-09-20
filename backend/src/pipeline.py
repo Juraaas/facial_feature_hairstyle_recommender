@@ -67,4 +67,4 @@ def run_pipeline(img, detector, gender=None, lang="pl"):
         recs = generate_recommendations(scores, traits, gender="Man",
                                         hairstyles_path="data/hairstyles.json", lang=lang)
 
-    return landmarks, features, traits, scores, recs, quality
+    return landmarks, features, traits, scores, recs, quality, hair_mask
