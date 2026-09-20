@@ -178,12 +178,8 @@ async def generate_preview(img_bytes: bytes, style_name: str,
     image_url = f"data:image/jpeg;base64,{img_b64}"
     
     handler = fal_client.submit(
-        "fal-ai/flux-pro/kontext",
-        arguments={
-            "image_url": image_url,
-            "prompt": prompt,
-            "safety_tolerance": "5",
-        }
+        "fal-ai/qwen-image-edit-2511",
+        arguments={"image_url": image_url, "prompt": prompt}
     )
 
     result = handler.get()
