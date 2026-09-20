@@ -57,11 +57,10 @@ Return ONLY valid JSON:
     try:
         client = Groq(api_key=api_key)
         response = client.chat.completions.create(
-            model = "llama-3.3-70b-versatile",
+            model = "qwen/qwen3.8-27b",
             messages = [{"role": "user", "content": prompt}],
             max_tokens = 200,
             temperature = 0.3,
-            response_format = {"type": "json_object"},
         )
         data = json.loads(response.choices[0].message.content)
 

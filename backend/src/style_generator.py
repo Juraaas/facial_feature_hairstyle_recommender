@@ -179,7 +179,11 @@ async def generate_preview(img_bytes: bytes, style_name: str,
     
     handler = fal_client.submit(
         "fal-ai/qwen-image-edit-2511",
-        arguments={"image_url": image_url, "prompt": prompt}
+        arguments={
+            "image_urls": [image_url],
+            "prompt": prompt,
+        }
+
     )
 
     result = handler.get()
