@@ -66,101 +66,77 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
 
   return (
     <>
-      <div onClick={onClose} style={{
-        position: 'fixed', inset: 0, background: 'rgba(0,0,0,.6)',
-        backdropFilter: 'blur(4px)', zIndex: 200,
-      }} />
-
       <div style={{
-        position: 'fixed', top: '50%', left: '50%',transform: 'translate(-50%, -50%)',
-        zIndex: 201, width: '100%', maxWidth: 760, maxHeight: '90vh',
-        background: 'var(--surface)', borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--border)', boxShadow: '0 32px 80px rgba(0,0,0,.3)',
-        overflow: 'hidden', display:'flex',
-        flexDirection: 'column', animation: 'modalIn .2s ease',
+        position: 'fixed', inset: 0, zIndex: 201,
+        background: 'var(--surface)', overflow: 'hidden',
+        display: 'flex', flexDirection: 'column', animation: 'fadeIn .2s ease',
       }}>
-
         {/* header */}
         <div style={{
-          padding: '18px 24px', borderBottom: '1px solid var(--border)', flexShrink: 0,
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '16px 24px', borderBottom: '1px solid var(--border)',
+          display: 'flex', justifyContent: 'space-between',
+          alignItems: 'center', flexShrink: 0, background: 'var(--surface)',
         }}>
-          <div>
-            <h2 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 18, fontWeight: 500, color: 'var(--text)',
-            }}>
-              ✨ {pl ? 'Przymierzalnia' : 'Style Playground'}
-            </h2>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300, marginTop: 2 }}>
-              {pl ? 'Podgląd fryzury na Twoim zdjęciu' : 'Preview hairstyles on your photo'}
-            </p>
-          </div>
+          <h2 style={{
+            fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 500, color: 'var(--text)',
+          }}>
+            ✨ {pl ? 'Przymierzalnia' : 'Style Playground'}
+          </h2>
           <button onClick={onClose} style={{
-            background: 'none', border: 'none',
-            cursor: 'pointer', fontSize: 20, color: 'var(--text-hint)',
-          }}>✕</button>
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: 'var(--text-hint)', display: 'flex',
+          }}>
+            <X size={20} strokeWidth={1.5} />
+          </button>
         </div>
 
-        {/* body */}
-        <div style={{
-          display: 'grid', gridTemplateColumns: result ? '1fr 1fr' : '280px 1fr',
-          flex: 1, overflow: 'hidden', minHeight: 0,
+        {/* body two cols */}
+        <div className="playground-grid" style={{
+          display: 'grid', gridTemplateColumns: '300px 1fr', flex: 1, 
+          overflow: 'hidden', minHeight: 0,
         }}>
 
-          {/* left panel - controls */}
+          {/* left panel controls */}
           <div style={{
-            padding: '20px', borderRight: '1px solid var(--border)', overflowY: 'auto',
+            borderRight: '1px solid var(--border)', overflowY: 'auto', padding: '20px',
             display: 'flex', flexDirection: 'column', gap: 20,
           }}>
-
             {/* style */}
             <div>
-              <label style={{
-                fontSize: 10, fontWeight: 600, letterSpacing: '.08em',
-                textTransform: 'uppercase', color: 'var(--text-hint)',
-                display: 'block', marginBottom: 8, fontFamily: 'var(--font-body)',
-              }}>
-                {pl ? 'Fryzura' : 'Hairstyle'}
-              </label>
+              <label style={labelStyle}>{pl ? 'Fryzura' : 'Hairstyle'}</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {styles.slice(0, 8).map(s => (
-                  <button key={s.name} onClick={() => { setSelectedStyle(s.name); setResult(null) }}
+                  <button key={s.name}
+                    onClick={() => { setSelectedStyle(s.name); setResult(null); setTransformation(null) }}
                     style={{
-                      padding: '8px 12px', borderRadius: 'var(--radius-sm)',
+                      padding: '8px 12px', borderRadius: 'var(--radius-sm)', textAlign: 'left',
                       border: `1px solid ${selectedStyle === s.name ? 'var(--accent)' : 'var(--border)'}`,
                       background: selectedStyle === s.name ? 'var(--accent-soft)' : 'none',
                       color: selectedStyle === s.name ? 'var(--accent)' : 'var(--text)',
-                      fontSize: 12, textAlign: 'left', cursor: 'pointer',
-                      fontFamily: 'var(--font-body)', transition: 'all .15s',
+                      fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)',
                       display: 'flex', justifyContent: 'space-between',
                     }}
                   >
                     <span>{s.name}</span>
-                    {selectedStyle === s.name && <span>✓</span>}
+                    {selectedStyle === s.name && <span style={{ fontSize: 10 }}>✓</span>}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* hair color */}
+            {/* color */}
             <div>
-              <label style={{
-                fontSize: 10, fontWeight: 600, letterSpacing: '.08em',
-                textTransform: 'uppercase', color: 'var(--text-hint)',
-                display: 'block', marginBottom: 8, fontFamily: 'var(--font-body)',
-              }}>
-                {pl ? 'Kolor włosów' : 'Hair color'}
-              </label>
+              <label style={labelStyle}>{pl ? 'Kolor włosów' : 'Hair color'}</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 {HAIR_COLORS.map(c => (
-                  <button key={c.id} onClick={() => { setSelectedColor(c.id); setResult(null) }}
+                  <button key={c.id}
+                    onClick={() => { setSelectedColor(c.id); setResult(null) }}
                     style={{
-                      padding: '5px 10px', borderRadius: 20,
+                      padding: '5px 10px', borderRadius: 20, fontSize: 11,
                       border: `1px solid ${selectedColor === c.id ? 'var(--accent)' : 'var(--border)'}`,
                       background: selectedColor === c.id ? 'var(--accent-soft)' : 'none',
                       color: selectedColor === c.id ? 'var(--accent)' : 'var(--text-muted)',
-                      fontSize: 11, cursor: 'pointer', fontFamily: 'var(--font-body)',
+                      cursor: 'pointer', fontFamily: 'var(--font-body)',
                     }}
                   >
                     {pl ? c.label_pl : c.label_en}
@@ -171,198 +147,179 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
 
             {/* generate */}
             <button onClick={handleGenerate} disabled={generating} style={{
-              background: 'var(--accent)', color: '#fff',
-              border: 'none', borderRadius: 'var(--radius-md)',
-              padding: '12px', fontSize: 13, fontWeight: 500,
-              cursor: generating ? 'wait' : 'pointer',
+              background: 'var(--accent)', color: '#fff', border: 'none',
+              borderRadius: 'var(--radius-md)', padding: '13px',
+              fontSize: 14, fontWeight: 500, cursor: generating ? 'wait' : 'pointer',
               fontFamily: 'var(--font-body)',
-              display: 'flex', alignItems: 'center',
-              justifyContent: 'center', gap: 8,
-              opacity: generating ? 0.7 : 1,
-              marginTop: 'auto',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              opacity: generating ? 0.7 : 1, marginTop: 'auto',
             }}>
               {generating ? (
                 <>
                   <div style={{
                     width: 14, height: 14, borderRadius: '50%',
                     border: '2px solid rgba(255,255,255,.3)',
-                    borderTopColor: '#fff',
-                    animation: 'spin .7s linear infinite',
+                    borderTopColor: '#fff', animation: 'spin .7s linear infinite',
                   }} />
-                  {pl ? 'Generowanie' : 'Generating'}
+                  {pl ? 'Generowanie (~15s)' : 'Generating (~15s)'}
                 </>
-              ) : (
-                `✨ ${pl ? 'Generuj podgląd' : 'Generate preview'}`
-              )}
+              ) : `✨ ${pl ? 'Generuj podgląd' : 'Generate preview'}`}
             </button>
 
             {error && (
               <p style={{
                 fontSize: 12, color: '#c0392b', padding: '8px 10px',
                 background: '#fef4f2', borderRadius: 'var(--radius-sm)',
-                border: '1px solid #f5c6bc',
               }}>{error}</p>
             )}
           </div>
 
-          {/* right panel - before/after */}
+          {/* right panel before/after + transformation */}
           <div style={{
-            padding: '20px', display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', gap: 16,
-            overflowY: 'auto', background: 'var(--surface-2)',
+            overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', 
+            alignItems: 'center', gap: 20, background: 'var(--surface-2)',
           }}>
             {!result && !generating && (
-              <div style={{ textAlign: 'center', color: 'var(--text-hint)' }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>✂️</div>
-                <p style={{ fontSize: 13, fontWeight: 300 }}>
-                  {pl
-                    ? 'Wybierz fryzurę i kolor, następnie kliknij Generuj'
-                    : 'Select a style and color, then click Generate'}
+              <div style={{ textAlign: 'center', color: 'var(--text-hint)', marginTop: 60 }}>
+                <Scissors size={48} color="var(--border)" strokeWidth={1} style={{ marginBottom: 16 }} />
+                <p style={{ fontSize: 14, fontWeight: 300 }}>
+                  {pl ? 'Wybierz fryzurę i kolor, kliknij Generuj'
+                      : 'Select a style and color, then click Generate'}
                 </p>
               </div>
             )}
 
             {generating && (
-              <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+              <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: 60 }}>
                 <div style={{
-                  width: 40, height: 40, borderRadius: '50%',
+                  width: 48, height: 48, borderRadius: '50%',
                   border: '3px solid var(--border)', borderTopColor: 'var(--accent)',
-                  animation: 'spin .7s linear infinite', margin: '0 auto 16px',
+                  animation: 'spin .7s linear infinite', margin: '0 auto 20px',
                 }} />
-                <p style={{ fontSize: 13, fontWeight: 300 }}>
+                <p style={{ fontSize: 14, fontWeight: 300 }}>
                   {pl ? 'Generowanie podglądu...' : 'Generating preview...'}
-                </p>
-                <p style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 4 }}>
-                  {pl ? 'To zajmie około 10 sekund' : 'This takes about 10 seconds'}
                 </p>
               </div>
             )}
 
             {result && (
-              <div style={{ width: '100%', animation: 'fadeIn .3s ease' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-                  <div>
-                    <img
-                      src={URL.createObjectURL(originalFile)}
-                      alt="before"
-                      style={{
-                        width: '100%', borderRadius: 'var(--radius-md)',
-                        objectFit: 'cover', height: 280, objectPosition: 'top',
-                      }}
-                    />
-                    <p style={{
-                      fontSize: 10, color: 'var(--text-hint)', textAlign: 'center',
-                      marginTop: 6, fontFamily: 'var(--font-mono)',
-                      textTransform: 'uppercase', letterSpacing: '.06em',
-                    }}>
-                      {pl ? 'Przed' : 'Before'}
-                    </p>
-                  </div>
-                  <div>
-                    <img
-                      src={result}
-                      alt="after"
-                      style={{
-                        width: '100%', borderRadius: 'var(--radius-md)',
-                        objectFit: 'cover', height: 280, objectPosition: 'top',
-                      }}
-                    />
-                    <p style={{
-                      fontSize: 10, color: 'var(--text-hint)', textAlign: 'center',
-                      marginTop: 6, fontFamily: 'var(--font-mono)',
-                      textTransform: 'uppercase', letterSpacing: '.06em',
-                    }}>
-                      {pl ? 'Po' : 'After'} — {selectedStyle}
-                    </p>
-                  </div>
+              <div style={{ width: '100%', maxWidth: 800, animation: 'fadeIn .3s ease' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                  {[
+                    { src: URL.createObjectURL(originalFile), label: pl ? 'Przed' : 'Before' },
+                    { src: result, label: `${pl ? 'Po' : 'After'} — ${selectedStyle}` },
+                  ].map(({ src, label }) => (
+                    <div key={label}>
+                      <img src={src} alt={label} style={{
+                        width: '100%', borderRadius: 'var(--radius-lg)',
+                        objectFit: 'cover', height: 400, objectPosition: 'top',
+                        border: '1px solid var(--border)',
+                      }} />
+                      <p style={{
+                        fontSize: 10, color: 'var(--text-hint)', textAlign: 'center',
+                        marginTop: 6, fontFamily: 'var(--font-mono)',
+                        textTransform: 'uppercase', letterSpacing: '.06em',
+                      }}>
+                        {label}
+                      </p>
+                    </div>
+                  ))}
                 </div>
 
-                <div style={{ display: 'flex', gap: 8 }}>
+                {/* action buttons */}
+                <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
                   <a href={result}
                     download={`stylizzer-${selectedStyle.toLowerCase().replace(/ /g, '-')}.jpg`}
                     style={{
-                      flex: 1, textAlign: 'center', padding: '9px',
+                      flex: 1, textAlign: 'center', padding: '10px',
                       background: 'var(--accent)', color: '#fff',
-                      borderRadius: 'var(--radius-sm)', fontSize: 12,
-                      fontFamily: 'var(--font-body)', textDecoration: 'none',
-                      fontWeight: 500,
-                    }}
-                  >
+                      borderRadius: 'var(--radius-sm)', fontSize: 13,
+                      fontFamily: 'var(--font-body)', textDecoration: 'none', fontWeight: 500,
+                    }}>
                     {pl ? '↓ Pobierz' : '↓ Download'}
                   </a>
-
-                  {transformation && (
-                    <div style={{
-                      marginTop: 10, padding: '12px 14px', background: 'var(--surface-2)',
-                      borderRadius: 'var(--radius-md)', border: '1px solid var(--border)',
-                    }}>
-                      <p style={{
-                        fontSize: 9, fontWeight: 600, letterSpacing: '.08em',
-                        textTransform: 'uppercase', color: 'var(--text-hint)',
-                        marginBottom: 8, fontFamily: 'var(--font-body)',
-                      }}>
-                        {pl ? 'Szacowana transformacja' : 'Estimated transformation'}
-                      </p>
-
-                      <div style={{ display: 'flex', gap: 16, marginBottom: 8 }}>
-                        {[
-                          { val: transformation.visits,  label_pl: 'wizyty',   label_en: 'visits' },
-                          { val: transformation.months,  label_pl: 'miesięcy', label_en: 'months' },
-                        ].map(item => (
-                          <div key={item.label_en} style={{ textAlign: 'center' }}>
-                            <p style={{
-                              fontFamily: 'var(--font-mono)', fontSize: 20,
-                              fontWeight: 600, color: 'var(--accent)',
-                            }}>
-                              {item.val}
-                            </p>
-                            <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                              {pl ? item.label_pl : item.label_en}
-                            </p>
-                          </div>
-                        ))}
-                        <div style={{ textAlign: 'center' }}>
-                          <p style={{
-                            fontSize: 11, fontWeight: 500,
-                            color: {
-                              easy: '#2d8f4e',
-                              moderate: '#C8975A',
-                              challenging: '#c0392b',
-                            }[transformation.difficulty] ?? 'var(--text)',
-                            textTransform: 'capitalize',
-                          }}>
-                            {{ easy: pl ? 'łatwa' : 'easy',
-                              moderate: pl ? 'umiarkowana' : 'moderate',
-                              challenging: pl ? 'wymagająca' : 'challenging',
-                            }[transformation.difficulty]}
-                          </p>
-                          <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                            {pl ? 'trudność' : 'difficulty'}
-                          </p>
-                        </div>
-                      </div>
-
-                      <p style={{
-                        fontSize: 11, color: 'var(--text-muted)', fontWeight: 300,
-                        lineHeight: 1.5, borderTop: '1px solid var(--border)', paddingTop: 8,
-                      }}>
-                        {pl ? transformation.note_pl : transformation.note_en}
-                      </p>
-                    </div>
-                  )}
-                  <button onClick={() => setResult(null)} style={{
-                    flex: 1, padding: '9px',
+                  <button onClick={() => { setResult(null); setTransformation(null) }} style={{
+                    flex: 1, padding: '10px',
                     border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)',
                     background: 'none', color: 'var(--text-muted)',
-                    fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)',
+                    fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)',
                   }}>
                     {pl ? '↺ Generuj ponownie' : '↺ Regenerate'}
                   </button>
                 </div>
+
+                {/* transformation estimate */}
+                {transformation && (
+                  <div style={{
+                    padding: '16px', background: 'var(--surface)',
+                    borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)',
+                  }}>
+                    <p style={{
+                      fontSize: 9, fontWeight: 600, letterSpacing: '.08em',
+                      textTransform: 'uppercase', color: 'var(--text-hint)',
+                      marginBottom: 12, fontFamily: 'var(--font-body)',
+                    }}>
+                      {pl ? 'Szacowana transformacja u fryzjera' : 'Estimated salon transformation'}
+                    </p>
+
+                    <div style={{ display: 'flex', gap: 24, marginBottom: 12 }}>
+                      {[
+                        { val: transformation.visits, label_pl: 'wizyta/y',   label_en: 'visits'  },
+                        { val: transformation.months, label_pl: 'miesięce/y', label_en: 'months'  },
+                      ].map(item => (
+                        <div key={item.label_en} style={{ textAlign: 'center' }}>
+                          <p style={{
+                            fontFamily: 'var(--font-mono)', fontSize: 28,
+                            fontWeight: 600, color: 'var(--accent)', lineHeight: 1,
+                          }}>
+                            {item.val}
+                          </p>
+                          <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
+                            {pl ? item.label_pl : item.label_en}
+                          </p>
+                        </div>
+                      ))}
+
+                      <div style={{ textAlign: 'center' }}>
+                        <p style={{
+                          fontSize: 13, fontWeight: 600,
+                          color: {
+                            easy: '#2d8f4e',
+                            moderate: '#C8975A',
+                            challenging: '#c0392b',
+                          }[transformation.difficulty],
+                          textTransform: 'capitalize', lineHeight: 1,
+                        }}>
+                          {{ easy: pl ? 'Łatwa' : 'Easy',
+                            moderate: pl ? 'Umiarkowana' : 'Moderate',
+                            challenging: pl ? 'Wymagająca' : 'Challenging',
+                          }[transformation.difficulty]}
+                        </p>
+                        <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
+                          {pl ? 'trudność' : 'difficulty'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p style={{
+                      fontSize: 12, color: 'var(--text-muted)', fontWeight: 300,
+                      lineHeight: 1.6, borderTop: '1px solid var(--border)', paddingTop: 10,
+                    }}>
+                      {pl ? transformation.note_pl : transformation.note_en}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
+
+        {/* mobile — stack columns */}
+        <style>{`
+          @media (max-width: 640px) {
+            .playground-grid { grid-template-columns: 1fr !important; }
+          }
+        `}</style>
       </div>
     </>
   )
