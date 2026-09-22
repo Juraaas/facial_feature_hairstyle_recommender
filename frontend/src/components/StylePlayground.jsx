@@ -104,7 +104,10 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
           }}>
             {/* style */}
             <div>
-              <label style={labelStyle}>{pl ? 'Fryzura' : 'Hairstyle'}</label>
+              <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em',
+                textTransform: 'uppercase', color: 'var(--text-hint)',
+                display: 'block', marginBottom: 8, fontFamily: 'var(--font-body)'}}
+                >{pl ? 'Fryzura' : 'Hairstyle'}</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {styles.slice(0, 8).map(s => (
                   <button key={s.name}
@@ -127,7 +130,10 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
 
             {/* color */}
             <div>
-              <label style={labelStyle}>{pl ? 'Kolor włosów' : 'Hair color'}</label>
+              <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em',
+                textTransform: 'uppercase', color: 'var(--text-hint)',
+                display: 'block', marginBottom: 8, fontFamily: 'var(--font-body)'}}
+                >{pl ? 'Kolor włosów' : 'Hair color'}</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 {HAIR_COLORS.map(c => (
                   <button key={c.id}
