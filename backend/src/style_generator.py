@@ -1,4 +1,4 @@
-import os
+import os, json, base64, httpx
 import fal_client
 
 STYLE_PROMPTS_MALE = {
@@ -8,129 +8,126 @@ STYLE_PROMPTS_MALE = {
         "The fringe touching the forehead is essential."
     ),
     "Messy Crop": (
-        "a messy crop with short disconnected sides and back, "
-        "a medium-length textured top with piece-y uneven texture, "
-        "and natural forward movement with a relaxed, undone finish"
+        "a Messy Crop: short disconnected sides, medium-length textured top "
+        "with piece-y uneven texture and natural forward movement, "
+        "relaxed undone finish with no fringe."
     ),
     "Buzz Cut": (
-        "a very short uniform buzz cut with the same short clipper length "
-        "across the top, sides and back, with an extremely clean minimal silhouette"
+        "a Buzz Cut: uniformly very short hair all over — top, sides and back "
+        "the same grade 1-2 clipper length. Extremely clean minimal silhouette."
     ),
     "Quiff": (
-        "a classic quiff with noticeably lifted volume at the front hairline, "
-        "the front swept upward and slightly backward, "
-        "a medium-length top and shorter tapered sides"
-    ),
-    "Crew Cut": (
-        "a classic crew cut with short tapered sides and back, "
-        "a short top that gradually becomes slightly longer toward the front, "
-        "and a clean, neat finish"
+        "a Quiff: noticeably lifted volume at the front hairline swept upward "
+        "and slightly backward, creating a clear peak. Short tapered sides. "
+        "The lifted front is essential."
     ),
     "Classic Undercut": (
-        "a classic undercut with very short disconnected sides and back, "
-        "clearly longer medium-length hair on top, "
-        "with the top combed straight back and a sharp separation from the sides"
+        "a Classic Undercut: very short disconnected sides with a sharp separation line, "
+        "medium-length hair on top combed straight back. "
+        "The hard disconnection between top and sides is essential."
     ),
     "Slick Back": (
-        "a slick back with medium-length hair swept directly backward "
-        "from the forehead, a smooth controlled top, "
-        "and short tapered sides with no visible fringe"
+        "a Slick Back: all hair swept directly backward from the forehead, "
+        "smooth and flat on top. Short tapered sides. No fringe, no volume at front."
     ),
     "Textured Fringe": (
         "a Textured Fringe: choppy irregular fringe cut across the forehead "
-        "with deliberately jagged uneven ends, layered textured top with natural movement. "
-        "The choppy irregular fringe across the forehead is essential."
+        "with deliberately jagged uneven ends. Layered textured top with natural movement. "
+        "The choppy irregular fringe is essential."
     ),
     "Comb Over": (
-        "a classic comb over with medium-length hair on top, "
-        "a clearly defined side part, hair swept horizontally across the top, "
-        "and short faded sides with a polished structured finish"
+        "a Comb Over: medium-length hair on top with a clean side part, "
+        "hair swept horizontally across. Skin fade on the sides. "
+        "The defined side part and horizontal sweep are essential."
     ),
     "Bro Flow": (
-        "a medium-to-long Bro Flow with hair grown past the ears and toward the jaw, "
-        "flowing naturally backward and outward from the crown, "
-        "with medium-length sides and a relaxed, natural finish"
+        "a Bro Flow: hair grown past the ears toward the jaw, "
+        "flowing naturally backward and outward. Medium length on sides too — "
+        "no fade, no taper. Relaxed natural finish."
     ),
     "Wolf Cut": (
-        "a men's Wolf Cut: heavy shaggy layers throughout, "
-        "a curtain fringe falling on both sides of the forehead, "
-        "strong volume at the crown, and longer wispy ends at the back. "
+        "a Wolf Cut: heavy shaggy layers throughout, curtain fringe falling "
+        "on both sides of the forehead, strong volume at the crown, "
+        "longer wispy layered ends at the back. "
         "The curtain fringe and shaggy crown volume are essential."
     ),
     "Modern Mullet": (
-        "a modern mullet with short textured hair on top and at the sides, "
-        "a short textured fringe at the front, "
-        "and distinctly longer layered hair extending down the back of the neck"
+        "a Modern Mullet: short textured hair on top and sides, "
+        "short fringe at the front, and distinctly longer layered hair "
+        "extending well down the back of the neck past the collar. "
+        "The short-front long-back contrast is essential."
     ),
     "Curtain Bangs": (
-        "men's curtain bangs: a clear centre part with the fringe split into "
-        "two sections falling softly on each side of the forehead, "
-        "medium-length hair with natural face-framing movement. "
-        "The centre-parted face-framing fringe is essential."
+        "men's Curtain Bangs: clear centre part with the fringe split "
+        "into two sections falling softly on each side of the forehead. "
+        "Medium overall length. The centre-parted face-framing fringe is essential."
     ),
 }
+
 STYLE_PROMPTS_FEMALE = {
     "French Bob": (
-        "a French Bob with a blunt jaw-length cut, "
-        "sleek smooth hair, and a straight heavy fringe across the forehead "
-        "ending above the eyebrows"
+        "a French Bob: blunt horizontal cut at exactly jaw length, "
+        "sleek smooth hair, straight heavy fringe cut straight across "
+        "the forehead above the eyebrows. "
+        "The blunt jaw-length cut with straight-across fringe is essential."
     ),
     "Beach Waves": (
-        "medium-length beach waves reaching the shoulders or collarbone, "
-        "with loose irregular waves throughout the hair, "
-        "natural texture, soft volume and an effortless finish"
+        "Beach Waves: loose irregular waves throughout medium-length hair "
+        "reaching the shoulders. Not tight curls — relaxed effortless waves "
+        "with natural texture and soft volume."
     ),
     "Layered Medium": (
-        "shoulder-length layered hair with multiple soft blended layers, "
-        "shorter face-framing layers around the front, "
-        "and feathered ends with visible movement"
+        "Layered Medium hair: shoulder-length with multiple soft blended layers, "
+        "shorter face-framing layers at the front, feathered ends with visible movement."
     ),
     "Classic Updo": (
-        "a classic formal updo with all hair gathered and pinned at the crown "
-        "or back of the head, a smooth polished surface, "
-        "and a clean structured silhouette"
+        "a Classic Updo: all hair gathered and pinned up at the crown or back, "
+        "smooth polished surface, no loose strands. "
+        "Clean structured silhouette with zero hair on face or neck."
     ),
     "Soft Bun": (
-        "a relaxed low soft bun gathered at the nape, "
-        "with slightly loose volume and a natural soft texture, "
-        "plus a few delicate face-framing strands around the sides"
+        "a Soft Bun: hair loosely gathered into a low bun at the nape, "
+        "slightly puffed and relaxed with a few soft face-framing pieces left out. "
+        "Casual and romantic, not tight or slicked."
     ),
     "Curtain Fringe Medium": (
-        "medium-length hair with a clear center-parted curtain fringe, "
-        "the fringe falling softly on both sides of the forehead "
-        "and framing the face, with subtle soft layers and natural movement"
+        "Curtain Fringe: centre-parted fringe split into two sections "
+        "falling softly on each side of the forehead and framing the face. "
+        "Medium-length hair with soft layers. "
+        "The centre-parted face-framing fringe is essential."
     ),
     "Pixie Cut": (
-        "a short pixie cut with closely tapered sides and nape, "
-        "a slightly longer textured top, "
-        "and a short feminine silhouette with no length near the jaw"
+        "a Pixie Cut: very short all over — 1-2 inches. "
+        "Closely tapered at nape and sides, slightly longer textured top. "
+        "Significantly shorter than a bob — no hair near jaw length."
     ),
     "Lob": (
-        "a long bob ending around the collarbone, "
-        "with clean blunt or lightly layered ends, "
-        "subtle natural movement and a polished medium-length silhouette"
+        "a Lob (long bob): hair ending at collarbone length, "
+        "clean blunt or lightly layered ends, subtle natural movement. "
+        "Longer than a bob, shorter than shoulder length."
     ),
     "Braided Crown": (
-        "a braided crown with two visible braids wrapping around the top "
-        "of the head like a halo, pinned into place around the crown, "
-        "with the braids clearly visible as the defining feature"
+        "a Braided Crown: two braids wrapping around the top of the head "
+        "like a halo, pinned in place. The braids are the visible focal element. "
+        "Nape and back of head exposed."
     ),
     "Wolf Cut": (
-        "a women's Wolf Cut with heavy shaggy layers, "
-        "a prominent curtain fringe framing the forehead, "
-        "noticeable volume around the crown, "
-        "and longer wispy layered lengths flowing toward the shoulders"
+        "a women's Wolf Cut: heavy curtain fringe framing the forehead, "
+        "significant shaggy layering throughout with strong crown volume, "
+        "wispy layered ends. "
+        "The curtain fringe and shaggy high-volume crown are essential."
     ),
     "Soft Shag": (
-        "a soft shag with medium-length feathered layers, "
-        "a relaxed curtain fringe framing the forehead, "
-        "soft crown volume and a natural lived-in texture"
+        "a Soft Shag: medium-length feathered layers throughout, "
+        "relaxed curtain fringe framing the forehead, soft crown volume, "
+        "natural lived-in texture. "
+        "The curtain fringe and visible feathered layering are essential."
     ),
     "Butterfly Cut": (
-        "a long butterfly cut with dramatic face-framing layers, "
-        "shorter interior layers and longer outer lengths, "
-        "with the mid-length layers visibly flipping outward "
-        "to create a soft wing-like silhouette"
+        "a Butterfly Cut: long hair with dramatic face-framing layers "
+        "that visibly flip outward at mid-length on both sides, "
+        "creating a wing-like silhouette. "
+        "The outward flip of mid-length layers is essential."
     ),
 }
 
@@ -146,7 +143,7 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
     prompts = STYLE_PROMPTS_FEMALE if gender == "Woman" else STYLE_PROMPTS_MALE
     style = prompts.get(style_name) or STYLE_PROMPTS_MALE.get(style_name) or f"{style_name} hairstyle"
     color = COLOR_PROMPTS.get(color_id)
-    
+
     prompt = (
         f"Edit only the hair of the person in the input image. "
         f"Change the hairstyle to {style}. "
@@ -156,34 +153,29 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
         prompt += f"Also change the hair color to {color}. "
     else:
         prompt += "Keep the exact same hair color as in the original photo. "
-    
+
     prompt += (
         "Preserve the exact identity and facial appearance of the person. "
         "Do not alter the face, facial proportions, eyes, eyebrows, nose, mouth, "
         "ears, skin, facial hair, expression, clothing, lighting or background."
     )
 
-    print(f"FLUX [{style_name} + {color_id} + {gender}]: {prompt}")
-    
+    print(f"SEEDREAM [{style_name} + {color_id} + {gender}]: {prompt}")
     return prompt
-
 
 async def generate_preview(img_bytes: bytes, style_name: str, 
                            color_id: str, gender: str = "Man") -> bytes:
-    import base64
-    import httpx
 
+    img_b64  = base64.b64encode(img_bytes).decode()
+    user_url = f"data:image/jpeg;base64,{img_b64}"
     prompt = build_prompt(style_name, color_id, gender)
-    img_b64 = base64.b64encode(img_bytes).decode()
-    image_url = f"data:image/jpeg;base64,{img_b64}"
     
     handler = fal_client.submit(
-        "fal-ai/qwen-image-edit-2511",
+        "fal-ai/bytedance/seedream/v4.5/edit",
         arguments={
-            "image_urls": [image_url],
+            "image_urls": user_url,
             "prompt": prompt,
         }
-
     )
 
     result = handler.get()
