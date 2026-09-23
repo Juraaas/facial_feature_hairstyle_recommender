@@ -173,7 +173,7 @@ async def generate_preview(img_bytes: bytes, style_name: str,
     handler = fal_client.submit(
         "fal-ai/bytedance/seedream/v4.5/edit",
         arguments={
-            "image_urls": user_url,
+            "image_urls": [user_url],
             "prompt": prompt,
         }
     )
