@@ -29,7 +29,7 @@ export function HairColorSuggestions({ recommendation }) {
       >
         <h2 style={{
           fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 500, color: 'var(--text)', 
-          letterSpacing: '.01em', display: 'flex', alignItems: 'center', gap: 8,
+          letterSpacing: '.01em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
         }}>
           <Palette size={18} color="var(--accent)" strokeWidth={1.5} />
           {pl ? 'Sugestie koloru włosów' : 'Hair color suggestions'}

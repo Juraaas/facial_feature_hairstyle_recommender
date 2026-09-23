@@ -23,10 +23,7 @@ export function StylesSection({ styles, features, gender, isPremium, onPremiumCl
             {/* nav-header */}
             <div style={{display: 'flex', justifyContent: 'space-between', 
                 alignItems: 'center', marginBottom: 20}}>
-                <h2 style={{
-                    fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 500,
-                    color: 'var(--text)', letterSpacing: '.01em',
-                }}>{t('section_hairstyles')}</h2>
+                <h2 className="section-title">{t('section_hairstyles')}</h2>
 
                 {/* page indicator */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

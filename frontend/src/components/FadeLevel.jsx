@@ -33,7 +33,7 @@ export function FadeLevel({ recommendation }) {
   return (
     <section style={{ marginBottom: 32 }}>
       <h2 className="section-title" style={{
-        display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 16,
       }}>
         <RulerDimensionLine size={18} color="var(--accent)" strokeWidth={1.5} />
         {pl ? 'Rekomendowany fade' : 'Recommended fade'}
