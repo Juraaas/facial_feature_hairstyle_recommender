@@ -27,7 +27,7 @@ export function HairColorSuggestions({ recommendation }) {
           cursor: 'pointer', padding: 0, marginBottom: open ? 12 : 0,
         }}
       >
-        <h2 className='section-title' style={{ gap: 8 }}>
+        <h2 className='section-title' style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Palette size={18} color="var(--accent)" strokeWidth={1.5} />
           {pl ? 'Sugestie koloru włosów' : 'Hair color suggestions'}
         </h2>

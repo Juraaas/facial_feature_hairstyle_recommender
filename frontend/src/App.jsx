@@ -287,7 +287,8 @@ function App() {
               <section style={{ marginBottom: 32 }}>
                 <div style={{ marginBottom: 16 }}>
                   <div>
-                    <h2 className="section-title" style={{ marginBottom: 4 }}>
+                    <h2 className="section-title" style={{ display: 'flex', alignItems: 'center',
+                      gap: 8, marginBottom: 4 }}>
                       <Brush size={18} color="var(--accent)" strokeWidth={1.5} />
                       {pl ? 'Przymierzalnia' : 'Style Playground'}
                     </h2>
