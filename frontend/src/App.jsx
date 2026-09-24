@@ -291,7 +291,7 @@ function App() {
                       <Brush size={18} color="var(--accent)" strokeWidth={1.5} />
                       {pl ? 'Przymierzalnia' : 'Style Playground'}
                     </h2>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300 }}>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300, textAlign: 'left' }}>
                       {pl ? 'Podgląd fryzury na Twoim zdjęciu' : 'Preview hairstyles on your photo'}
                     </p>
                   </div>
