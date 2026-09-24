@@ -32,6 +32,7 @@ STYLE_PROMPTS_MALE = {
         "a Slick Back hairstyle: medium-length hair swept backward "
         "from the forehead in a natural relaxed way — not wet-look or overly glossy. "
         "Matte or low-sheen finish. Short tapered sides. No fringe. "
+        "Do not add any facial hair or beard. "
     ),
     "Textured Fringe": (
         "a Textured Fringe: choppy irregular fringe cut across the forehead "
@@ -163,7 +164,8 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
     prompt += (
         "Preserve the exact identity and facial appearance of the person. "
         "Do not alter the face, facial proportions, eyes, eyebrows, nose, mouth, "
-        "ears, skin, facial hair, expression, clothing, lighting or background."
+        "ears, skin, expression, clothing, lighting or background. "
+        "Do not add, remove or change any facial hair or beard. "
     )
 
     print(f"SEEDREAM [{style_name} + {color_id} + {gender}]: {prompt}")
@@ -181,16 +183,12 @@ async def generate_preview(img_bytes: bytes, style_name: str,
         arguments={
             "image_urls": [user_url],
             "prompt": prompt,
+            "guidance_scale": 7.5,
         }
     )
 
     result = handler.get()
-    if "images" in result:
-        out_url = result["images"][0]["url"]
-    elif "image" in result:
-        out_url = result["image"]["url"]
-    else:
-        raise ValueError(f"Unexpected result structure: {result}")
+    out_url = result["images"][0]["url"]
 
     async with httpx.AsyncClient(timeout=60) as client:
         response = await client.get(out_url)
