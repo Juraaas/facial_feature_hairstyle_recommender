@@ -17,9 +17,11 @@ STYLE_PROMPTS_MALE = {
         "the same grade 1-2 clipper length. Extremely clean minimal silhouette."
     ),
     "Quiff": (
-        "a Quiff: noticeably lifted volume at the front hairline swept upward "
-        "and slightly backward, creating a clear peak. Short tapered sides. "
-        "The lifted front is essential."
+        "a modern natural Quiff with moderate volume at the front, "
+        "the front hair gently lifted upward and slightly backward, "
+        "with a smooth natural transition into the rest of the top "
+        "and short tapered sides. "
+        "The front should have visible lift and shape without looking overly high or stiff."
     ),
     "Classic Undercut": (
         "a Classic Undercut: very short disconnected sides with a sharp separation line, "
@@ -27,8 +29,9 @@ STYLE_PROMPTS_MALE = {
         "The hard disconnection between top and sides is essential."
     ),
     "Slick Back": (
-        "a Slick Back: all hair swept directly backward from the forehead, "
-        "smooth and flat on top. Short tapered sides. No fringe, no volume at front."
+        "a Slick Back hairstyle: medium-length hair swept backward "
+        "from the forehead in a natural relaxed way — not wet-look or overly glossy. "
+        "Matte or low-sheen finish. Short tapered sides. No fringe. "
     ),
     "Textured Fringe": (
         "a Textured Fringe: choppy irregular fringe cut across the forehead "
@@ -44,6 +47,7 @@ STYLE_PROMPTS_MALE = {
         "a Bro Flow: hair grown past the ears toward the jaw, "
         "flowing naturally backward and outward. Medium length on sides too — "
         "no fade, no taper. Relaxed natural finish."
+        "Do not add any facial hair or beard. "
     ),
     "Wolf Cut": (
         "a Wolf Cut: heavy shaggy layers throughout, curtain fringe falling "
@@ -52,16 +56,19 @@ STYLE_PROMPTS_MALE = {
         "The curtain fringe and shaggy crown volume are essential."
     ),
     "Modern Mullet": (
-        "a Modern Mullet: short textured hair on top and sides, "
-        "short fringe at the front, and distinctly longer layered hair "
-        "extending well down the back of the neck past the collar. "
-        "The short-front long-back contrast is essential."
+        "a modern short Mullet with short textured hair on top and sides, "
+        "a short textured fringe at the front, "
+        "and a clearly longer but controlled layered back reaching the lower neck. "
+        "The overall silhouette should be compact, clean and contemporary, "
+        "not long, dramatic or rock-inspired."
     ),
     "Curtain Bangs": (
-        "men's Curtain Bangs: clear centre part with the fringe split "
-        "into two sections falling softly on each side of the forehead. "
-        "Medium overall length. The centre-parted face-framing fringe is essential."
-    ),
+        "men's Curtain Bangs hairstyle: medium-length hair with a clear centre part "
+        "running from front to back. The fringe splits at the centre "
+        "and each half falls diagonally to its respective side of the forehead, "
+        "clearly framing both sides of the face. "
+        "The two-sided parted fringe is essential. "
+    )
 }
 
 STYLE_PROMPTS_FEMALE = {
@@ -124,10 +131,9 @@ STYLE_PROMPTS_FEMALE = {
         "The curtain fringe and visible feathered layering are essential."
     ),
     "Butterfly Cut": (
-        "a Butterfly Cut: long hair with dramatic face-framing layers "
-        "that visibly flip outward at mid-length on both sides, "
-        "creating a wing-like silhouette. "
-        "The outward flip of mid-length layers is essential."
+        "a Butterfly Cut hairstyle on a woman: long hair with soft face-framing layers "
+        "that gently flip or curve outward at mid-length on both sides, "
+        "creating a light airy silhouette. "
     ),
 }
 
@@ -179,7 +185,12 @@ async def generate_preview(img_bytes: bytes, style_name: str,
     )
 
     result = handler.get()
-    out_url = result["images"][0]["url"]
+    if "images" in result:
+        out_url = result["images"][0]["url"]
+    elif "image" in result:
+        out_url = result["image"]["url"]
+    else:
+        raise ValueError(f"Unexpected result structure: {result}")
 
     async with httpx.AsyncClient(timeout=60) as client:
         response = await client.get(out_url)
