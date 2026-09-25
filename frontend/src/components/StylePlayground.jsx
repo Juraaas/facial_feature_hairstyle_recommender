@@ -56,7 +56,6 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
       const imgSrc = `data:image/jpeg;base64,${json.image_b64}`
       setResult(imgSrc)
       setTransformation(json.transformation ?? null)
-      setResult(URL.createObjectURL(blob))
     } catch (e) {
       setError(pl ? 'Generowanie nie powiodło się. Spróbuj ponownie.' : 'Generation failed. Please try again.')
     } finally {
