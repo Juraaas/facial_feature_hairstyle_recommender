@@ -48,7 +48,8 @@ STYLE_PROMPTS_MALE = {
         "a Bro Flow: hair grown past the ears toward the jaw, "
         "flowing naturally backward and outward. Medium length on sides too — "
         "no fade, no taper. Relaxed natural finish."
-        "Do not add any facial hair or beard. "
+        "Do not add or change any facial hair — keep exactly what is visible in the original."
+
     ),
     "Wolf Cut": (
         "a Wolf Cut: heavy shaggy layers throughout, curtain fringe falling "
@@ -162,10 +163,12 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
         prompt += "Keep the exact same hair color as in the original photo. "
 
     prompt += (
-        "Preserve the exact identity and facial appearance of the person. "
+        "IMPORTANT: Preserve the exact identity and facial appearance of the person. "
         "Do not alter the face, facial proportions, eyes, eyebrows, nose, mouth, "
         "ears, skin, expression, clothing, lighting or background. "
         "Do not add, remove or change any facial hair or beard. "
+        "The face must be pixel-perfect identical to the input. "
+        "Only the hair on top of the head changes."
     )
 
     print(f"SEEDREAM [{style_name} + {color_id} + {gender}]: {prompt}")
