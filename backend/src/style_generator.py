@@ -32,7 +32,6 @@ STYLE_PROMPTS_MALE = {
         "a Slick Back hairstyle: medium-length hair swept backward "
         "from the forehead in a natural relaxed way — not wet-look or overly glossy. "
         "Matte or low-sheen finish. Short tapered sides. No fringe. "
-        "Do not add any facial hair or beard. "
     ),
     "Textured Fringe": (
         "a Textured Fringe: choppy irregular fringe cut across the forehead "
@@ -46,9 +45,9 @@ STYLE_PROMPTS_MALE = {
     ),
     "Bro Flow": (
         "a Bro Flow: hair grown past the ears toward the jaw, "
-        "flowing naturally backward and outward. Medium length on sides too — "
+        "flowing naturally backward and outward from the crown. Medium length on sides -"
         "no fade, no taper. Relaxed natural finish."
-        "Do not add or change any facial hair — keep exactly what is visible in the original."
+        "The hair should look effortless and natural, not styled."
 
     ),
     "Wolf Cut": (
@@ -58,27 +57,39 @@ STYLE_PROMPTS_MALE = {
         "The curtain fringe and shaggy crown volume are essential."
     ),
     "Modern Mullet": (
-        "a modern short Mullet with short textured hair on top and sides, "
-        "a short textured fringe at the front, "
+        "a Modern Mullet: the top has short textured hair styled slightly forward, "
+        "the sides are faded or tapered short, a short textured fringe at the front, "
         "and a clearly longer but controlled layered back reaching the lower neck. "
         "The overall silhouette should be compact, clean and contemporary, "
-        "not long, dramatic or rock-inspired."
     ),
     "Curtain Bangs": (
-        "men's Curtain Bangs hairstyle: medium-length hair with a clear centre part "
-        "running from front to back. The fringe splits at the centre "
-        "and each half falls diagonally to its respective side of the forehead, "
-        "clearly framing both sides of the face. "
-        "The two-sided parted fringe is essential. "
-    )
+        "men's Curtain Bangs: medium-length hair that falls naturally forward "
+        "and parts softly somewhere near the centre, "
+        "with the front sections draping loosely on each side of the forehead "
+        "in a relaxed effortless way. "
+        "The parting does not need to be perfectly centred — "
+        "it should look natural and undone rather than forced. "
+        "Soft face-framing movement on both sides is the defining feature."
+    ),
 }
 
 STYLE_PROMPTS_FEMALE = {
+    "Bob Classic": (
+        "a classic Bob: blunt cut with hair ending just below the jaw, "
+        "hanging naturally with a slight natural curve or movement at the ends. "
+        "The length should sit clearly below the jaw and above the shoulders. "
+        "Clean even ends with a natural finish — not too short, not too structured."
+    ),
     "French Bob": (
-        "a French Bob: blunt horizontal cut at exactly jaw length, "
-        "sleek smooth hair, straight heavy fringe cut straight across "
-        "the forehead above the eyebrows. "
-        "The blunt jaw-length cut with straight-across fringe is essential."
+        "a French Bob: hair cut to jaw length with a natural relaxed finish, "
+        "paired with a straight fringe cut across the forehead above the eyebrows. "
+        "The cut should look lived-in and slightly soft rather than perfectly blunt. "
+        "Jaw-length hair with a straight fringe is the defining feature."
+    ),
+    "Textured Bob": (
+        "a Textured Bob: jaw-length hair with soft layers and natural movement "
+        "throughout. Slightly undone finish with visible texture and lightness. "
+        "Not sleek or blunt — the texture and movement are essential."
     ),
     "Beach Waves": (
         "Beach Waves: loose irregular waves throughout medium-length hair "
@@ -90,9 +101,12 @@ STYLE_PROMPTS_FEMALE = {
         "shorter face-framing layers at the front, feathered ends with visible movement."
     ),
     "Classic Updo": (
-        "a Classic Updo: all hair gathered and pinned up at the crown or back, "
-        "smooth polished surface, no loose strands. "
-        "Clean structured silhouette with zero hair on face or neck."
+        "an elegant chignon or classic bun: all hair swept up and gathered "
+        "into a smooth rounded bun positioned at the back of the head "
+        "or at the nape of the neck. "
+        "The bun should be clearly visible as a round knot of hair. "
+        "Surface is smooth and polished. No loose strands falling down. "
+        "The rounded bun shape at the back is essential."
     ),
     "Soft Bun": (
         "a Soft Bun: hair loosely gathered into a low bun at the nape, "
