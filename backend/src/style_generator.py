@@ -48,7 +48,8 @@ STYLE_PROMPTS_MALE = {
         "flowing naturally backward and outward from the crown. Medium length on sides -"
         "no fade, no taper. Relaxed natural finish."
         "The hair should look effortless and natural, not styled."
-
+        "The person in the result must have a clean-shaven face or the same facial hair "
+        "as in the original photo. Do not add stubble, beard or moustache of any kind."
     ),
     "Wolf Cut": (
         "a Wolf Cut: heavy shaggy layers throughout, curtain fringe falling "
@@ -63,28 +64,31 @@ STYLE_PROMPTS_MALE = {
         "The overall silhouette should be compact, clean and contemporary, "
     ),
     "Curtain Bangs": (
-        "men's Curtain Bangs: medium-length hair that falls naturally forward "
-        "and parts softly somewhere near the centre, "
-        "with the front sections draping loosely on each side of the forehead "
-        "in a relaxed effortless way. "
-        "The parting does not need to be perfectly centred — "
-        "it should look natural and undone rather than forced. "
-        "Soft face-framing movement on both sides is the defining feature."
+        "men's Curtain Bangs: medium-length hair, with the front hair divided into two separate sections "
+        "that each fall to their respective side of the forehead, "
+        "one section falling left and one falling right, "
+        "with a visible gap or parting between them at the top of the forehead. "
+        "Each side drapes softly and naturally toward the temple. "
+        "The two-section split at the front with hair falling on both sides is essential — "
+        "this is not a fringe that falls straight across."
     ),
 }
 
 STYLE_PROMPTS_FEMALE = {
     "Bob Classic": (
-        "a classic Bob: blunt cut with hair ending just below the jaw, "
-        "hanging naturally with a slight natural curve or movement at the ends. "
-        "The length should sit clearly below the jaw and above the shoulders. "
-        "Clean even ends with a natural finish — not too short, not too structured."
+        "a classic Bob with no fringe: hair cut cleanly to just below the jaw, "
+        "with all hair swept behind the ears or falling naturally to the sides. "
+        "No fringe - the forehead is fully uncovered. "
+        "Clean blunt ends with a slight natural curve. "
+        "The exposed forehead and jaw-length blunt cut are essential."
     ),
     "French Bob": (
-        "a French Bob: hair cut to jaw length with a natural relaxed finish, "
-        "paired with a straight fringe cut across the forehead above the eyebrows. "
-        "The cut should look lived-in and slightly soft rather than perfectly blunt. "
-        "Jaw-length hair with a straight fringe is the defining feature."
+        "a French Bob: jaw-length hair with a heavy straight fringe "
+        "cut bluntly across the forehead, sitting above the eyebrows. "
+        "The hair should look slightly textured and lived-in rather than perfect. "
+        "The straight across-the-forehead fringe combined with jaw-length hair "
+        "is what makes this distinctly different from a classic bob — "
+        "the fringe is the essential defining feature."
     ),
     "Textured Bob": (
         "a Textured Bob: jaw-length hair with soft layers and natural movement "
