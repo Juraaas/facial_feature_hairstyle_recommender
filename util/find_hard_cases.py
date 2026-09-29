@@ -3,18 +3,10 @@ import cv2
 import sys
 import csv
 import time
-
 from tqdm import tqdm
-
-sys.path.insert(0, "backend")
-
 from src.hair_classifier import classify_hair
 from src.hair_segmentation import segment_face
-
-
-# ============================================================
-# CONFIG
-# ============================================================
+sys.path.insert(0, "backend")
 
 DATASET_DIR = "dataset/celeba/celeba_hq_256"
 OUTPUT_DIR = "dataset/hair_dataset"

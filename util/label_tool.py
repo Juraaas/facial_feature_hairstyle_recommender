@@ -6,7 +6,31 @@ import random
 
 HAIR_TYPES = ["straight", "wavy", "curly", "coily", "unknown"]
 HAIRLINES = ["normal", "receding", "uneven", "unknown"]
+
 CANDIDATES  = "dataset/hair_dataset/unlabeled_short_candidates.txt"
+
+HARD_CASES = "dataset/hair_dataset/hard_cases.txt"
+HARD_LABELS = "dataset/hair_dataset/hard_case_labels.csv"
+DEBUG_CSV = "dataset/hair_dataset/hair_debug.csv"
+
+def load_hard_case_predictions():
+    if not os.path.exists(DEBUG_CSV):
+        print(f"Debug CSV not found: {DEBUG_CSV}")
+        return {}
+
+    df = pd.read_csv(DEBUG_CSV)
+
+    predictions = {}
+
+    for _, row in df.iterrows():
+        predictions[row["filename"]] = {
+            "hair_type": row.get("hair_type"),
+            "hair_conf": row.get("hair_conf"),
+            "hairline": row.get("hairline"),
+            "hairline_conf": row.get("hairline_conf"),
+        }
+
+    return predictions
 
 def label_images(images_dir, output_csv, start_from=0):
     files = sorted([
@@ -89,8 +113,182 @@ def label_images(images_dir, output_csv, start_from=0):
     pd.DataFrame(records).to_csv(output_csv, index=False)
     print(f"\nDone. Saved {len(records)} labels to {output_csv}")
 
+def label_hard_cases():
+    if not os.path.exists(HARD_CASES):
+        print(f"Hard cases file not found: {HARD_CASES}")
+        return
+
+    with open(HARD_CASES, "r") as f:
+        files_todo = [line.strip() for line in f if line.strip()]
+
+    if os.path.exists(HARD_LABELS):
+        df_existing = pd.read_csv(HARD_LABELS)
+
+        labeled = set(df_existing["filename"].tolist())
+        records = df_existing.to_dict("records")
+
+        print(f"Loaded {len(labeled)} existing hard-case labels")
+    else:
+        labeled = set()
+        records = []
+
+    files_todo = [f for f in files_todo if f not in labeled]
+
+    print(f"Hard cases remaining: {len(files_todo)}")
+
+    predictions = load_hard_case_predictions()
+
+    for i, fname in enumerate(files_todo):
+
+        path = os.path.join(
+            "dataset/celeba/celeba_hq_256",
+            fname
+        )
+
+        img = cv2.imread(path)
+
+        if img is None:
+            print(f"Could not read image: {fname}")
+            continue
+
+        display = cv2.resize(img, (512, 512))
+        cv2.imshow("Hair Labeler", display)
+
+        pred = predictions.get(fname, {})
+
+        print(f"\n[{i + 1}/{len(files_todo)}] {fname}")
+
+        print(
+            f"Model hair: "
+            f"{pred.get('hair_type')} "
+            f"(conf={pred.get('hair_conf')})"
+        )
+
+        print(
+            f"Model hairline: "
+            f"{pred.get('hairline')} "
+            f"(conf={pred.get('hairline_conf')})"
+        )
+
+        print("\nHair type:")
+        print("  s = straight")
+        print("  w = wavy")
+        print("  c = curly")
+        print("  o = coily")
+        print("  u = unknown")
+        print("  q = quit and save")
+
+        hair_type = None
+
+        while hair_type is None:
+            key = cv2.waitKey(0) & 0xFF
+
+            if key == ord("s"):
+                hair_type = "straight"
+
+            elif key == ord("w"):
+                hair_type = "wavy"
+
+            elif key == ord("c"):
+                hair_type = "curly"
+
+            elif key == ord("o"):
+                hair_type = "coily"
+
+            elif key == ord("u"):
+                hair_type = "unknown"
+
+            elif key == ord("q"):
+                pd.DataFrame(records).to_csv(
+                    HARD_LABELS,
+                    index=False
+                )
+
+                cv2.destroyAllWindows()
+
+                print(
+                    f"Saved {len(records)} labels "
+                    f"to {HARD_LABELS}"
+                )
+
+                return
+
+        print(f"Your label: hair_type = {hair_type}")
+
+        print("\nHairline:")
+        print("  n = normal")
+        print("  r = receding")
+        print("  e = uneven")
+        print("  u = unknown")
+        print("  q = quit and save")
+
+        hairline = None
+
+        while hairline is None:
+            key = cv2.waitKey(0) & 0xFF
+
+            if key == ord("n"):
+                hairline = "normal"
+
+            elif key == ord("r"):
+                hairline = "receding"
+
+            elif key == ord("e"):
+                hairline = "uneven"
+
+            elif key == ord("u"):
+                hairline = "unknown"
+
+            elif key == ord("q"):
+                pd.DataFrame(records).to_csv(
+                    HARD_LABELS,
+                    index=False
+                )
+
+                cv2.destroyAllWindows()
+
+                print(
+                    f"Saved {len(records)} labels "
+                    f"to {HARD_LABELS}"
+                )
+                return
+
+        print(f"Your label: hairline = {hairline}")
+
+        records.append({
+            "filename": fname,
+            "model_hair_type": pred.get("hair_type"),
+            "model_hair_conf": pred.get("hair_conf"),
+            "model_hairline": pred.get("hairline"),
+            "model_hairline_conf": pred.get("hairline_conf"),
+            "hair_type": hair_type,
+            "hairline": hairline,
+        })
+        pd.DataFrame(records).to_csv(
+            HARD_LABELS,
+            index=False
+        )
+
+        print(f"Saved {len(records)} labels")
+    
+    cv2.destroyAllWindows()
+
+    pd.DataFrame(records).to_csv(
+        HARD_LABELS,
+        index=False
+    )
+
+    print(
+        f"\nDone. Saved {len(records)} hard-case labels "
+        f"to {HARD_LABELS}"
+    )
+
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "--short":
+
+    if len(sys.argv) > 1 and sys.argv[1] == "--hard":
+        label_hard_cases()
+
+    elif len(sys.argv) > 1 and sys.argv[1] == "--short":
         if not os.path.exists(CANDIDATES):
             print(f"Candidates file not found: {CANDIDATES}")
             print("Run: python util/find_short_hair.py")

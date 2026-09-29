@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-LABELS_CSV = "dataset/hair_dataset/labels.csv"
+LABELS_CSV = "dataset/hair_dataset/labels_with_hard.csv"
 IMAGES_DIR = "dataset/hair_dataset/images"
 TRAIN_IMAGES = "dataset/hair_dataset/train_images"
 OUTPUT_DIR = "dataset/hair_dataset/balanced"
