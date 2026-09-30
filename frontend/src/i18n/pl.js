@@ -88,7 +88,7 @@ export default {
 
   trait_face_shape: "Kształt twarzy",
   trait_jaw_width: "Szerokość szczęki",
-  trait_cheekbone: 'Face structure',
+  trait_cheekbone: 'Struktura twarzy',
   trait_eye_spacing: "Rozstaw oczu",
   trait_lip_width: "Szerokość ust",
   trait_nose_position: "Pozycja nosa",
@@ -98,7 +98,7 @@ export default {
   trait_forehead: "Czoło",
   trait_mid_face: "Środkowa część twarzy",
   trait_lower_thirds: "Dolna trzecia twarzy",
-  trait_thirds_balance: 'Facial thirds balance',
+  trait_thirds_balance: 'Balans tercji twarzy',
   label_wide_face: "Szeroka twarz",
   label_long_face: "Długa twarz",
   label_narrow_jaw: "Wąska szczęka",
