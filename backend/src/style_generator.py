@@ -2,19 +2,24 @@ import os, json, base64, httpx
 import fal_client
 
 STYLE_PROMPTS_MALE = {
-    "French Crop": (
-        "a French Crop: faded sides, textured top clearly longer than the sides, "
-        "and a fringe resting naturally on the forehead. "
-        "The fringe touching the forehead is essential."
-    ),
-    "Messy Crop": (
-        "a Messy Crop: short disconnected sides, medium-length textured top "
-        "with piece-y uneven texture and natural forward movement, "
-        "relaxed undone finish with no fringe."
-    ),
     "Buzz Cut": (
         "a Buzz Cut: uniformly very short hair all over — top, sides and back "
         "the same grade 1-2 clipper length. Extremely clean minimal silhouette."
+    ),
+    "Crew Cut": (
+        "a classic Crew Cut with short sides and a short, slightly longer top. "
+        "The top has a natural, subtle texture and gradually tapers toward the back. "
+        "Clean and masculine, with a natural finish."
+    ),
+    "Comb Over": (
+        "a Comb Over: medium-length hair on top with a clean side part, "
+        "hair swept horizontally across. Skin fade on the sides. "
+        "The defined side part and horizontal sweep are essential."
+    ),
+    "Slick Back": (
+        "a Slick Back hairstyle: medium-length hair swept backward "
+        "from the forehead in a natural relaxed way — not wet-look or overly glossy. "
+        "Matte or low-sheen finish. Short tapered sides. No fringe. "
     ),
     "Quiff": (
         "a modern natural Quiff with moderate volume at the front, "
@@ -28,28 +33,20 @@ STYLE_PROMPTS_MALE = {
         "medium-length hair on top combed straight back. "
         "The hard disconnection between top and sides is essential."
     ),
-    "Slick Back": (
-        "a Slick Back hairstyle: medium-length hair swept backward "
-        "from the forehead in a natural relaxed way — not wet-look or overly glossy. "
-        "Matte or low-sheen finish. Short tapered sides. No fringe. "
-    ),
     "Textured Fringe": (
         "a Textured Fringe: choppy irregular fringe cut across the forehead "
         "with deliberately jagged uneven ends. Layered textured top with natural movement. "
         "The choppy irregular fringe is essential."
     ),
-    "Comb Over": (
-        "a Comb Over: medium-length hair on top with a clean side part, "
-        "hair swept horizontally across. Skin fade on the sides. "
-        "The defined side part and horizontal sweep are essential."
+    "Messy Crop": (
+        "a Messy Crop: short disconnected sides, medium-length textured top "
+        "with piece-y uneven texture and natural forward movement, "
+        "relaxed undone finish with no fringe."
     ),
-    "Bro Flow": (
-        "a Bro Flow: hair grown past the ears toward the jaw, "
-        "flowing naturally backward and outward from the crown. Medium length on sides -"
-        "no fade, no taper. Relaxed natural finish."
-        "The hair should look effortless and natural, not styled."
-        "The person in the result must have a clean-shaven face or the same facial hair "
-        "as in the original photo. Do not add stubble, beard or moustache of any kind."
+    "French Crop": (
+        "a French Crop: faded sides, textured top clearly longer than the sides, "
+        "and a fringe resting naturally on the forehead. "
+        "The fringe touching the forehead is essential."
     ),
     "Wolf Cut": (
         "a Wolf Cut: heavy shaggy layers throughout, curtain fringe falling "
@@ -63,6 +60,11 @@ STYLE_PROMPTS_MALE = {
         "and a clearly longer but controlled layered back reaching the lower neck. "
         "The overall silhouette should be compact, clean and contemporary, "
     ),
+    "Layered Medium": (
+        "a medium-length layered haircut with natural layers and soft movement. "
+        "The hair has visible volume and texture, with slightly shorter layers around "
+        "the face and longer layers toward the back. Natural, relaxed finish."
+    ),
     "Curtain Bangs": (
         "men's Curtain Bangs: medium-length hair, with the front hair divided into two separate sections "
         "that each fall to their respective side of the forehead, "
@@ -72,37 +74,100 @@ STYLE_PROMPTS_MALE = {
         "The two-section split at the front with hair falling on both sides is essential — "
         "this is not a fringe that falls straight across."
     ),
+    "Bro Flow": (
+        "a Bro Flow: hair grown past the ears toward the jaw, "
+        "flowing naturally backward and outward from the crown. Medium length on sides -"
+        "no fade, no taper. Relaxed natural finish."
+        "The hair should look effortless and natural, not styled."
+        "Preserve the person's face and facial hair exactly as in the original photo. "
+        "Do not add, remove, darken or alter facial hair. "
+        "If the original face is clean-shaven, the result must remain completely clean-shaven. "
+        "No stubble, no beard, no moustache, no facial hair shadow."
+    ),
+    "Long Straight": (
+        "long straight hair reaching past the shoulders, with a clean natural shape "
+        "and subtle movement. The hair remains straight and smooth with natural volume "
+        "and realistic texture."
+    ),
 }
 
 STYLE_PROMPTS_FEMALE = {
-    "Bob Classic": (
-        "a classic Bob with no fringe: hair cut cleanly to just below the jaw, "
-        "with all hair swept behind the ears or falling naturally to the sides. "
-        "No fringe - the forehead is fully uncovered. "
-        "Clean blunt ends with a slight natural curve. "
-        "The exposed forehead and jaw-length blunt cut are essential."
-    ),
-    "French Bob": (
-        "a French Bob: jaw-length hair with a heavy straight fringe "
-        "cut bluntly across the forehead, sitting above the eyebrows. "
-        "The hair should look slightly textured and lived-in rather than perfect. "
-        "The straight across-the-forehead fringe combined with jaw-length hair "
-        "is what makes this distinctly different from a classic bob — "
-        "the fringe is the essential defining feature."
+    "Pixie Cut": (
+        "a Pixie Cut: very short all over — 1-2 inches. "
+        "Closely tapered at nape and sides, slightly longer textured top. "
+        "Significantly shorter than a bob — no hair near jaw length."
     ),
     "Textured Bob": (
         "a Textured Bob: jaw-length hair with soft layers and natural movement "
         "throughout. Slightly undone finish with visible texture and lightness. "
         "Not sleek or blunt — the texture and movement are essential."
     ),
-    "Beach Waves": (
-        "Beach Waves: loose irregular waves throughout medium-length hair "
-        "reaching the shoulders. Not tight curls — relaxed effortless waves "
-        "with natural texture and soft volume."
+    "Bob Classic": (
+        "a classic bob haircut, ending around the jawline and slightly below it, "
+        "with a smooth rounded shape and natural inward-curving ends. "
+        "No fringe or bangs, with the forehead fully visible. "
+        "Natural, soft and realistic hair texture."
+    ),
+    "French Bob": (
+        "a French bob haircut, cut around the jawline with soft, slightly tousled texture "
+        "and natural volume. Short, wispy fringe falling softly across the forehead, "
+        "with slightly uneven natural ends. Effortless, textured and lived-in, "
+        "not perfectly straight or geometric."
+    ),
+    "Wolf Cut": (
+        "a women's Wolf Cut: heavy curtain fringe framing the forehead, "
+        "significant shaggy layering throughout with strong crown volume, "
+        "wispy layered ends. "
+        "The curtain fringe and shaggy high-volume crown are essential."
+    ),
+    "Lob": (
+        "a Lob (long bob): hair ending at collarbone length, "
+        "clean blunt or lightly layered ends, subtle natural movement. "
+        "Longer than a bob, shorter than shoulder length."
+    ),
+    "Soft Shag": (
+        "a Soft Shag: medium-length feathered layers throughout, "
+        "relaxed curtain fringe framing the forehead, soft crown volume, "
+        "natural lived-in texture. "
+        "The curtain fringe and visible feathered layering are essential."
+    ),
+    "Curtain Fringe Medium": (
+        "Curtain Fringe: centre-parted fringe split into two sections "
+        "falling softly on each side of the forehead and framing the face. "
+        "Medium-length hair with soft layers. "
+        "The centre-parted face-framing fringe is essential."
     ),
     "Layered Medium": (
         "Layered Medium hair: shoulder-length with multiple soft blended layers, "
         "shorter face-framing layers at the front, feathered ends with visible movement."
+    ),
+    "Blunt Cut Medium": (
+        "a medium-length blunt cut ending around the shoulders, with a clean, even "
+        "perimeter and straight ends. Smooth, natural hair with subtle movement and volume."
+    ),
+    "Butterfly Cut": (
+        "a Butterfly Cut hairstyle on a woman: long hair with soft face-framing layers "
+        "that gently flip or curve outward at mid-length on both sides, "
+        "creating a light airy silhouette. "
+    ),
+    "Long Layers": (
+        "long layered hair with soft, flowing layers that add natural movement and volume. "
+        "The hair remains long, with subtle face-framing layers and natural texture."
+    ),
+    "Long Straight Blunt": (
+        "long straight hair reaching below the shoulders with a clean, blunt perimeter. "
+        "The ends are even and full, while the rest of the hair remains smooth and straight "
+        "with natural texture and volume."
+    ),
+    "Long with Curtain Fringe": (
+        "long hair with soft curtain fringe parted in the center and framing the face. "
+        "The fringe blends naturally into the long layers, with soft movement and natural "
+        "volume. Relaxed, effortless finish."
+    ),
+    "Beach Waves": (
+        "Beach Waves: loose irregular waves throughout medium-length hair "
+        "reaching the shoulders. Not tight curls — relaxed effortless waves "
+        "with natural texture and soft volume."
     ),
     "Classic Updo": (
         "an elegant chignon or classic bun: all hair swept up and gathered "
@@ -117,43 +182,10 @@ STYLE_PROMPTS_FEMALE = {
         "slightly puffed and relaxed with a few soft face-framing pieces left out. "
         "Casual and romantic, not tight or slicked."
     ),
-    "Curtain Fringe Medium": (
-        "Curtain Fringe: centre-parted fringe split into two sections "
-        "falling softly on each side of the forehead and framing the face. "
-        "Medium-length hair with soft layers. "
-        "The centre-parted face-framing fringe is essential."
-    ),
-    "Pixie Cut": (
-        "a Pixie Cut: very short all over — 1-2 inches. "
-        "Closely tapered at nape and sides, slightly longer textured top. "
-        "Significantly shorter than a bob — no hair near jaw length."
-    ),
-    "Lob": (
-        "a Lob (long bob): hair ending at collarbone length, "
-        "clean blunt or lightly layered ends, subtle natural movement. "
-        "Longer than a bob, shorter than shoulder length."
-    ),
     "Braided Crown": (
         "a Braided Crown: two braids wrapping around the top of the head "
         "like a halo, pinned in place. The braids are the visible focal element. "
         "Nape and back of head exposed."
-    ),
-    "Wolf Cut": (
-        "a women's Wolf Cut: heavy curtain fringe framing the forehead, "
-        "significant shaggy layering throughout with strong crown volume, "
-        "wispy layered ends. "
-        "The curtain fringe and shaggy high-volume crown are essential."
-    ),
-    "Soft Shag": (
-        "a Soft Shag: medium-length feathered layers throughout, "
-        "relaxed curtain fringe framing the forehead, soft crown volume, "
-        "natural lived-in texture. "
-        "The curtain fringe and visible feathered layering are essential."
-    ),
-    "Butterfly Cut": (
-        "a Butterfly Cut hairstyle on a woman: long hair with soft face-framing layers "
-        "that gently flip or curve outward at mid-length on both sides, "
-        "creating a light airy silhouette. "
     ),
 }
 
