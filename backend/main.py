@@ -231,6 +231,8 @@ async def analyse(request: Request,
         }
 
         if debug:
+            styles_list = recs["all_styles"].get(lang, []) if isinstance(recs["all_styles"], dict) else recs["all_styles"]
+            top_styles_list = recs["top_styles"].get(lang, []) if isinstance(recs.get("top_styles"), dict) else recs.get("top_styles", [])
             response["debug"] = {
                 "raw_scores": scores,
                 "style_ranking": [
@@ -246,7 +248,7 @@ async def analyse(request: Request,
                         "negatives": style.get("negatives", []),
                         "missing": style.get("missing", []),
                     }
-                    for i, style in enumerate(recs["all_styles"])
+                    for i, style in enumerate(styles_list)
                 ],
                 "top_styles": [
                     {
@@ -256,7 +258,7 @@ async def analyse(request: Request,
                         "contributions": style.get("contributions", []),
                         "negatives": style.get("negatives", []),
                     }
-                    for i, style in enumerate(recs.get("top_styles", []))
+                    for i, style in enumerate(top_styles_list)
                 ],
             }
         if user and landmarks is not None:
@@ -432,18 +434,17 @@ async def debug_skin_tone(file: UploadFile = File(...)):
     h, w = img.shape[:2]
     if max(h, w) > 640:
         scale = 640 / max(h, w)
-        img   = cv2.resize(img, (int(w*scale), int(h*scale)))
+        img = cv2.resize(img, (int(w*scale), int(h*scale)))
 
     hair_mask, _ = segment_face(img)
 
     from src.color_recommender import analyze_skin_tone
-    import cv2 as _cv2
 
     debug_img = img.copy()
     hh, ww = img.shape[:2]
     y1, y2 = int(hh * 0.35), int(hh * 0.80)
     x1, x2 = int(ww * 0.30), int(ww * 0.70)
-    _cv2.rectangle(debug_img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+    cv2.rectangle(debug_img, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
     skin_zone = np.zeros((hh, ww), dtype=bool)
     skin_zone[y1:y2, x1:x2] = True

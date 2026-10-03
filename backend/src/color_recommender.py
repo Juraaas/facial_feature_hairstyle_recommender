@@ -68,7 +68,7 @@ def analyze_skin_tone(img_bgr: np.ndarray, hair_mask: np.ndarray) -> dict:
 
     if warmth_score > 5:
         undertone = "warm"
-        confidence = min(1.0, warmth_score / 20)
+        confidence = min(1.0, warmth_score / 30)
         colors = WARM_COLORS
     elif warmth_score < -3:
         undertone = "cool"
