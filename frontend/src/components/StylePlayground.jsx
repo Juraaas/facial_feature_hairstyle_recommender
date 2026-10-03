@@ -100,7 +100,10 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
           <div className="playground-controls">
             {/* styl */}
             <div style={{ marginBottom: 16 }}>
-              <label style={labelStyle}>{pl ? 'Fryzura' : 'Hairstyle'}</label>
+              <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em',
+                textTransform: 'uppercase', color: 'var(--text-hint)',
+                display: 'block', marginBottom: 8, fontFamily: 'var(--font-body)'}}
+                >{pl ? 'Fryzura' : 'Hairstyle'}</label>
               <div style={{
                 display: 'flex', flexWrap: 'wrap', gap: 5,
               }}>
@@ -124,7 +127,9 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
 
             {/* color */}
             <div style={{ marginBottom: 16 }}>
-              <label style={labelStyle}>{pl ? 'Kolor' : 'Color'}</label>
+              <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em',
+                textTransform: 'uppercase', color: 'var(--text-hint)',
+                display: 'block', marginBottom: 8, fontFamily: 'var(--font-body)'}}>{pl ? 'Kolor' : 'Color'}</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 {HAIR_COLORS.map(c => (
                   <button key={c.id}
