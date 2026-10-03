@@ -7,16 +7,15 @@ import os
 import numpy as np
 from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from PIL import Image
-from sklearn.metrics import confusion_matrix, balanced_accuracy_score
+from sklearn.metrics import confusion_matrix, balanced_accuracy_score, f1_score
 
 BALANCED_DIR = "dataset/hair_dataset/balanced"
 IMAGES_DIR = f"{BALANCED_DIR}/images"
 TRAIN_IMAGES = "dataset/hair_dataset/train_images"
-
 HAIR_CLASSES = ["straight", "wavy", "curly", "coily"]
 HAIRLINE_CLASSES = ["normal", "receding", "uneven"]
 
-EPOCHS = 50
+EPOCHS = 60
 LR = 1e-4
 BATCH_SIZE = 32
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -24,12 +23,12 @@ print(f"Using device: {DEVICE}")
 
 train_transform = T.Compose([
     T.Resize((256, 256)),
-    T.RandomResizedCrop(224, scale=(0.85,1.0), ratio=(0.95,1.05)),
+    T.RandomResizedCrop(224, scale=(0.85, 1.0), ratio=(0.95, 1.05)),
     T.RandomHorizontalFlip(p=0.5),
     T.RandomRotation(8),
     T.ColorJitter(brightness=0.25, contrast=0.25, saturation=0.2, hue=0.04),
     T.RandomAutocontrast(p=0.2),
-    T.RandomAdjustSharpness(sharpness_factor=1.4,p=0.2),
+    T.RandomAdjustSharpness(sharpness_factor=1.4, p=0.2),
     T.RandomGrayscale(p=0.03),
     T.ToTensor(),
     T.Normalize([0.485, 0.456, 0.406],
@@ -43,6 +42,7 @@ val_transform = T.Compose([
                 [0.229, 0.224, 0.225]),
 ])
 
+
 class HairDataset(Dataset):
     def __init__(self, csv_path, label_col, classes, transform=None):
         self.df = pd.read_csv(csv_path)
@@ -54,24 +54,25 @@ class HairDataset(Dataset):
 
     def __len__(self):
         return len(self.df)
-    
+
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
         fname = row["filename"]
-
+        path  = None
         for folder in [IMAGES_DIR, TRAIN_IMAGES]:
-            path = os.path.join(folder, fname)
-            if os.path.exists(path):
+            p = os.path.join(folder, fname)
+            if os.path.exists(p):
+                path = p
                 break
-
+        if path is None:
+            raise FileNotFoundError(f"Image not found: {fname}")
         img = Image.open(path).convert("RGB")
         label = self.class2idx[row[self.label_col]]
-
         if self.transform:
             img = self.transform(img)
-
         return img, label
-    
+
+
 class HairClassifier(nn.Module):
     def __init__(self, num_hair=4, num_hairline=3):
         super().__init__()
@@ -84,7 +85,7 @@ class HairClassifier(nn.Module):
             nn.Linear(feat_dim, 256),
             nn.Hardswish(),
             nn.Dropout(0.3),
-            nn.Linear(256, num_hair)
+            nn.Linear(256, num_hair),
         )
         self.head_hairline = nn.Sequential(
             nn.Linear(feat_dim, 128),
@@ -98,7 +99,7 @@ class HairClassifier(nn.Module):
         x = self.avgpool(x)
         x = x.flatten(1)
         return self.head_hair(x), self.head_hairline(x)
-    
+
     def forward_hair(self, x):
         x = self.features(x)
         x = self.avgpool(x)
@@ -110,18 +111,19 @@ class HairClassifier(nn.Module):
         x = self.avgpool(x)
         x = x.flatten(1)
         return self.head_hairline(x)
-    
+
 def train_head(model, head_name, train_csv, val_csv, label_col, classes):
-    print(f"\n{'='*50}")
+    print(f"\n{'='*52}")
     print(f"Training: {head_name}")
-    print(f"{'='*50}")
+    print(f"{'='*52}")
 
     train_ds = HairDataset(train_csv, label_col, classes, train_transform)
     val_ds = HairDataset(val_csv, label_col, classes, val_transform)
 
     print(f"Train: {len(train_ds)} | Val: {len(val_ds)}")
-    print(f"Train distribution:\n{train_ds.df[label_col].value_counts()}")
-    print(f"Val distribution:\n{val_ds.df[label_col].value_counts()}")
+    print(f"Train distribution:\n{train_ds.df[label_col].value_counts().to_string()}")
+    print(f"Val distribution:\n{val_ds.df[label_col].value_counts().to_string()}")
+
 
     class_counts = train_ds.df[label_col].value_counts()
     sample_weights = train_ds.df[label_col].map(
@@ -135,10 +137,11 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
 
     train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE,
                               sampler=sampler, num_workers=0)
-    val_loader = DataLoader(val_ds,batch_size=BATCH_SIZE,
-                            shuffle=False, num_workers=0)
+    val_loader = DataLoader(val_ds, batch_size=BATCH_SIZE,
+                              shuffle=False, num_workers=0)
 
-    criterion = nn.CrossEntropyLoss(label_smoothing=0.05)
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.10)
+
     best_path = f"models/hair_{head_name}_best.pt"
     os.makedirs("models", exist_ok=True)
 
@@ -153,22 +156,22 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
 
     optimizer = torch.optim.AdamW(head_params, lr=5e-4, weight_decay=1e-3)
 
-    print(f"Phase 1: warmup {WARMUP_EPOCHS} epochs (backbone frozen)")
+    print(f"\nPhase 1: warmup {WARMUP_EPOCHS} epochs (backbone frozen)")
     for epoch in range(1, WARMUP_EPOCHS + 1):
         model.train()
         total, correct, loss_sum = 0, 0, 0.0
         for imgs, labels in train_loader:
             imgs, labels = imgs.to(DEVICE), labels.to(DEVICE)
             optimizer.zero_grad()
-            logits = model.forward_hair(imgs) if head_name == "hair_type" \
-                     else model.forward_hairline(imgs)
+            logits = (model.forward_hair(imgs) if head_name == "hair_type"
+                      else model.forward_hairline(imgs))
             loss = criterion(logits, labels)
             loss.backward()
             optimizer.step()
             loss_sum += loss.item() * len(imgs)
-            correct += (logits.argmax(1) == labels).sum().item()
-            total += len(imgs)
-        print(f"Warmup {epoch:02d}/{WARMUP_EPOCHS} | "
+            correct  += (logits.argmax(1) == labels).sum().item()
+            total    += len(imgs)
+        print(f"  Warmup {epoch:02d}/{WARMUP_EPOCHS} | "
               f"loss={loss_sum/total:.3f} | train_acc={correct/total:.3f}")
 
     for param in model.features.parameters():
@@ -176,15 +179,23 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
 
     optimizer = torch.optim.AdamW([
         {"params": model.features.parameters(), "lr": LR},
-        {"params": head_params, "lr": LR * 5},
+        {"params": head_params,                 "lr": LR * 5},
     ], weight_decay=1e-3)
 
     FINETUNE_EPOCHS = EPOCHS - WARMUP_EPOCHS
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=FINETUNE_EPOCHS, eta_min=1e-6
+
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(
+        optimizer,
+        max_lr = [LR, LR * 5],
+        epochs = FINETUNE_EPOCHS,
+        steps_per_epoch  = len(train_loader),
+        pct_start = 0.3,
+        div_factor = 10,
+        final_div_factor = 100,
     )
+
     best_acc = 0
-    patience = 20
+    patience = 25
     no_improve = 0
     bal_history = []
 
@@ -202,17 +213,16 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
             loss = criterion(logits, labels)
             loss.backward()
             optimizer.step()
+            scheduler.step()
             loss_sum += loss.item() * len(imgs)
             correct += (logits.argmax(1) == labels).sum().item()
             total += len(imgs)
 
-        train_acc = correct / total
+        train_acc  = correct / total
         train_loss = loss_sum / total
 
         model.eval()
-        all_preds  = []
-        all_labels = []
-
+        all_preds, all_labels = [], []
         with torch.no_grad():
             for imgs, labels in val_loader:
                 imgs, labels = imgs.to(DEVICE), labels.to(DEVICE)
@@ -223,27 +233,29 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
                 all_preds.extend(logits.argmax(1).cpu().numpy())
                 all_labels.extend(labels.cpu().numpy())
 
-        val_acc = sum(p == l for p, l in zip(all_preds, all_labels)) / len(all_labels)
+        val_acc     = sum(p == l for p, l in zip(all_preds, all_labels)) / len(all_labels)
         val_bal_acc = balanced_accuracy_score(all_labels, all_preds)
+
+        val_f1 = f1_score(all_labels, all_preds, average="macro", zero_division=0)
+
         bal_history.append(val_bal_acc)
         smoothed_bal = np.mean(bal_history[-3:])
-
-        scheduler.step()
 
         print(f"Epoch {epoch:02d}/{FINETUNE_EPOCHS} | "
               f"loss={train_loss:.3f} | "
               f"train_acc={train_acc:.3f} | "
               f"val_acc={val_acc:.3f} | "
-              f"val_bal_acc={val_bal_acc:.3f}")
+              f"bal={val_bal_acc:.3f} | "
+              f"F1={val_f1:.3f}")
 
         if smoothed_bal > best_acc:
             best_acc = smoothed_bal
             no_improve = 0
             torch.save(model.state_dict(), best_path)
             cm = confusion_matrix(all_labels, all_preds)
-            print(f"Confusion matrix ({classes}):")
-            print(cm)
-            print(f"✓ saved best smoothed_bal={smoothed_bal:.3f} (raw={val_bal_acc:.3f})")
+            print(f"Confusion matrix ({classes}):\n{cm}")
+            print(f"✓ saved  smoothed_bal={smoothed_bal:.3f}  "
+                  f"F1={val_f1:.3f}")
         else:
             no_improve += 1
             if no_improve >= patience:
@@ -253,7 +265,8 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
     print(f"\nBest bal_acc [{head_name}]: {best_acc:.3f}")
     model.load_state_dict(torch.load(best_path, weights_only=True))
     return model
-    
+
+
 def export_onnx(model):
     model.eval()
     dummy = torch.randn(1, 3, 224, 224).to(DEVICE)
@@ -261,44 +274,44 @@ def export_onnx(model):
 
     torch.onnx.export(
         model, dummy, out_path,
-        input_names=["input"],
-        output_names=["hair_type", "hairline"],
-        dynamic_axes={"input": {0: "batch"}},
-        opset_version=17,
+        input_names   = ["input"],
+        output_names  = ["hair_type", "hairline"],
+        dynamic_axes  = {"input": {0: "batch"}},
+        opset_version = 17,
     )
     print(f"\nExported ONNX → {out_path}")
 
     import onnxruntime as ort
     sess = ort.InferenceSession(out_path,
-                                providers=["CPUExecutionProvider"])
+                                    providers=["CPUExecutionProvider"])
     dummy_np = dummy.cpu().numpy()
-    out = sess.run(None, {"input": dummy_np})
+    out      = sess.run(None, {"input": dummy_np})
     print(f"ONNX output shapes: {[o.shape for o in out]}")
     print("ONNX verification OK")
 
 
 if __name__ == "__main__":
     model = HairClassifier(
-        num_hair=len(HAIR_CLASSES),
-        num_hairline=len(HAIRLINE_CLASSES)
+        num_hair = len(HAIR_CLASSES),
+        num_hairline = len(HAIRLINE_CLASSES),
     ).to(DEVICE)
 
     model = train_head(
         model,
         head_name = "hair_type",
         train_csv = f"{BALANCED_DIR}/train_hair.csv",
-        val_csv = f"{BALANCED_DIR}/val_hair.csv",
+        val_csv   = f"{BALANCED_DIR}/val_hair.csv",
         label_col = "hair_type",
-        classes = HAIR_CLASSES,
+        classes   = HAIR_CLASSES,
     )
 
     model = train_head(
         model,
         head_name = "hairline",
         train_csv = f"{BALANCED_DIR}/train_hairline.csv",
-        val_csv = f"{BALANCED_DIR}/val_hairline.csv",
+        val_csv   = f"{BALANCED_DIR}/val_hairline.csv",
         label_col = "hairline",
-        classes = HAIRLINE_CLASSES,
+        classes   = HAIRLINE_CLASSES,
     )
 
     export_onnx(model)
