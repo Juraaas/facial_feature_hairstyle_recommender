@@ -67,18 +67,23 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
   return (
     <>
       <div style={{
-        position: 'fixed', inset: 0, zIndex: 201,
-        background: 'var(--surface)', overflow: 'hidden',
-        display: 'flex', flexDirection: 'column', animation: 'fadeIn .2s ease',
+        position:      'fixed', inset: 0, zIndex: 201,
+        background:    'var(--surface)',
+        display:       'flex', flexDirection: 'column',
+        overflow:      'hidden',
       }}>
         {/* header */}
         <div style={{
-          padding: '16px 24px', borderBottom: '1px solid var(--border)',
-          display: 'flex', justifyContent: 'space-between',
-          alignItems: 'center', flexShrink: 0, background: 'var(--surface)',
+          padding:        '14px 20px',
+          borderBottom:   '1px solid var(--border)',
+          display:        'flex',
+          justifyContent: 'space-between',
+          alignItems:     'center',
+          flexShrink:     0,
         }}>
           <h2 style={{
-            fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 500, color: 'var(--text)',
+            fontFamily: 'var(--font-display)',
+            fontSize: 17, fontWeight: 500, color: 'var(--text)',
           }}>
             ✨ {pl ? 'Przymierzalnia' : 'Style Playground'}
           </h2>
@@ -90,27 +95,25 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
           </button>
         </div>
 
-        {/* body two cols */}
         <div className="playground-body">
 
-          {/* left panel controls */}
           <div className="playground-controls">
-            {/* style */}
+            {/* styl */}
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em',
-                textTransform: 'uppercase', color: 'var(--text-hint)',
-                display: 'block', marginBottom: 8, fontFamily: 'var(--font-body)'}}
-                >{pl ? 'Fryzura' : 'Hairstyle'}</label>
-              <div style={{ display: 'flex', flexDirection: 'wrap', gap: 5 }}>
+              <label style={labelStyle}>{pl ? 'Fryzura' : 'Hairstyle'}</label>
+              <div style={{
+                display: 'flex', flexWrap: 'wrap', gap: 5,
+              }}>
                 {styles.slice(0, 8).map(s => (
                   <button key={s.name}
                     onClick={() => { setSelectedStyle(s.name); setResult(null); setTransformation(null) }}
                     style={{
-                      padding: '5px 10px', borderRadius: 20,
-                      fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)',
-                      border: `1px solid ${selectedStyle === s.name ? 'var(--accent)' : 'var(--border)'}`,
+                      padding:   '5px 10px', borderRadius: 20,
+                      fontSize:  12, cursor: 'pointer',
+                      fontFamily: 'var(--font-body)',
+                      border:    `1px solid ${selectedStyle === s.name ? 'var(--accent)' : 'var(--border)'}`,
                       background: selectedStyle === s.name ? 'var(--accent-soft)' : 'none',
-                      color: selectedStyle === s.name ? 'var(--accent)' : 'var(--text-muted)',
+                      color:     selectedStyle === s.name ? 'var(--accent)' : 'var(--text-muted)',
                     }}
                   >
                     {s.name}
@@ -121,20 +124,17 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
 
             {/* color */}
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em',
-                textTransform: 'uppercase', color: 'var(--text-hint)',
-                display: 'block', marginBottom: 8, fontFamily: 'var(--font-body)'}}
-                >{pl ? 'Kolor włosów' : 'Hair color'}</label>
+              <label style={labelStyle}>{pl ? 'Kolor' : 'Color'}</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 {HAIR_COLORS.map(c => (
                   <button key={c.id}
                     onClick={() => { setSelectedColor(c.id); setResult(null) }}
                     style={{
-                      padding: '4px 10px', borderRadius: 20, fontSize: 11,
-                      cursor: 'pointer', fontFamily: 'var(--font-body)',
-                      border: `1px solid ${selectedColor === c.id ? 'var(--accent)' : 'var(--border)'}`,
+                      padding:   '4px 10px', borderRadius: 20, fontSize: 11,
+                      cursor:    'pointer', fontFamily: 'var(--font-body)',
+                      border:    `1px solid ${selectedColor === c.id ? 'var(--accent)' : 'var(--border)'}`,
                       background: selectedColor === c.id ? 'var(--accent-soft)' : 'none',
-                      color: selectedColor === c.id ? 'var(--accent)' : 'var(--text-muted)',
+                      color:     selectedColor === c.id ? 'var(--accent)' : 'var(--text-muted)',
                     }}
                   >
                     {pl ? c.label_pl : c.label_en}
@@ -143,14 +143,16 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
               </div>
             </div>
 
-            {/* generate */}
+            {/* generate button */}
             <button onClick={handleGenerate} disabled={generating} style={{
-              width: '100%', background: 'var(--accent)', color: '#fff',
-              border: 'none', borderRadius: 'var(--radius-md)',
-              padding: '12px', fontSize: 13, fontWeight: 500,
-              cursor: generating ? 'wait' : 'pointer',
-              fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', gap: 8, opacity: generating ? 0.7 : 1,
+              width:      '100%', background: 'var(--accent)', color: '#fff',
+              border:     'none', borderRadius: 'var(--radius-md)',
+              padding:    '12px', fontSize: 13, fontWeight: 500,
+              cursor:     generating ? 'wait' : 'pointer',
+              fontFamily: 'var(--font-body)',
+              display:    'flex', alignItems: 'center',
+              justifyContent: 'center', gap: 8,
+              opacity:    generating ? 0.7 : 1,
             }}>
               {generating ? (
                 <>
@@ -159,47 +161,51 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                     border: '2px solid rgba(255,255,255,.3)',
                     borderTopColor: '#fff', animation: 'spin .7s linear infinite',
                   }} />
-                  {pl ? 'Generowanie (~15s)' : 'Generating (~15s)'}
+                  {pl ? 'Generowanie (~20s)' : 'Generating (~20s)'}
                 </>
-              ) : `✨ ${pl ? 'Generuj podgląd' : 'Generate preview'}`}
+              ) : `✨ ${pl ? 'Generuj' : 'Generate'}`}
             </button>
 
             {error && (
               <p style={{
-                fontSize: 12, color: '#c0392b', padding: '8px 10px',
-                background: '#fef4f2', borderRadius: 'var(--radius-sm)',
+                fontSize: 11, color: '#c0392b', marginTop: 8,
+                padding: '6px 10px', background: '#fef4f2',
+                borderRadius: 'var(--radius-sm)',
               }}>{error}</p>
             )}
           </div>
 
-          {/* right panel before/after + transformation */}
           <div className="playground-result">
             {!result && !generating && (
-              <div style={{ 
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center',
-                height: '100%', minHeight: 200,
-                color: 'var(--text-hint)', textAlign: 'center', 
+              <div style={{
+                display:        'flex', flexDirection: 'column',
+                alignItems:     'center', justifyContent: 'center',
+                height:         '100%', minHeight: 200,
+                color:          'var(--text-hint)',
+                textAlign:      'center',
               }}>
-                <Scissors size={36} color="var(--border)" strokeWidth={1} style={{ marginBottom: 16 }} />
-                <p style={{ fontSize: 14, fontWeight: 300 }}>
-                  {pl ? 'Wybierz fryzurę i kolor, kliknij Generuj'
-                      : 'Select a style and color, then click Generate'}
+                <Scissors size={36} color="var(--border)" strokeWidth={1} style={{ marginBottom: 12 }} />
+                <p style={{ fontSize: 13, fontWeight: 300 }}>
+                  {pl ? 'Wybierz fryzurę i kliknij Generuj'
+                      : 'Choose a style and click Generate'}
                 </p>
               </div>
             )}
 
             {generating && (
               <div style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', 
-                justifyContent: 'center', height: '100%', minHeight: 200,
+                display:        'flex', flexDirection: 'column',
+                alignItems:     'center', justifyContent: 'center',
+                height:         '100%', minHeight: 200,
               }}>
                 <div style={{
                   width: 40, height: 40, borderRadius: '50%',
-                  border: '3px solid var(--border)', borderTopColor: 'var(--accent)',
-                  animation: 'spin .7s linear infinite', marginBottom: '16',
+                  border: '3px solid var(--border)',
+                  borderTopColor: 'var(--accent)',
+                  animation: 'spin .7s linear infinite',
+                  marginBottom: 16,
                 }} />
-                <p style={{ fontSize: 14, fontWeight: 300 }}>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300 }}>
                   {pl ? 'Generowanie...' : 'Generating...'}
                 </p>
               </div>
@@ -207,6 +213,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
 
             {result && (
               <div style={{ animation: 'fadeIn .3s ease' }}>
+                {/* before/after */}
                 <div className="before-after-grid">
                   {[
                     { src: URL.createObjectURL(originalFile), label: pl ? 'Przed' : 'Before' },
@@ -215,12 +222,15 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                     <div key={label}>
                       <img src={src} alt={label} style={{
                         width: '100%', borderRadius: 'var(--radius-md)',
-                        objectFit: 'cover', maxHeight: 320, objectPosition: 'top',
+                        objectFit: 'cover',
+                        maxHeight: 320,
+                        objectPosition: 'top',
                         border: '1px solid var(--border)',
                       }} />
                       <p style={{
-                        fontSize: 9, color: 'var(--text-hint)', textAlign: 'center',
-                        marginTop: 4, fontFamily: 'var(--font-mono)',
+                        fontSize: 9, color: 'var(--text-hint)',
+                        textAlign: 'center', marginTop: 4,
+                        fontFamily: 'var(--font-mono)',
                         textTransform: 'uppercase', letterSpacing: '.06em',
                       }}>
                         {label}
@@ -229,32 +239,33 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                   ))}
                 </div>
 
-                {/* action buttons */}
+                {/* akcje */}
                 <div style={{ display: 'flex', gap: 8, marginTop: 12, marginBottom: 12 }}>
                   <a href={result}
                     download={`stylizzer-${selectedStyle.toLowerCase().replace(/ /g, '-')}.jpg`}
                     style={{
-                      flex: 1, textAlign: 'center', padding: '10px',
+                      flex: 1, textAlign: 'center', padding: '9px',
                       background: 'var(--accent)', color: '#fff',
-                      borderRadius: 'var(--radius-sm)', fontSize: 13,
-                      fontFamily: 'var(--font-body)', textDecoration: 'none', fontWeight: 500,
+                      borderRadius: 'var(--radius-sm)', fontSize: 12,
+                      fontFamily: 'var(--font-body)', textDecoration: 'none',
+                      fontWeight: 500,
                     }}>
                     {pl ? '↓ Pobierz' : '↓ Download'}
                   </a>
                   <button onClick={() => { setResult(null); setTransformation(null) }} style={{
-                    flex: 1, padding: '10px',
+                    flex: 1, padding: '9px',
                     border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)',
                     background: 'none', color: 'var(--text-muted)',
-                    fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)',
+                    fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)',
                   }}>
-                    {pl ? '↺ Generuj ponownie' : '↺ Regenerate'}
+                    {pl ? '↺ Ponów' : '↺ Retry'}
                   </button>
                 </div>
 
-                {/* transformation estimate */}
+                {/* transformation */}
                 {transformation && (
                   <div style={{
-                    padding: '12px 14px', background: 'var(--surface)',
+                    padding: '12px 14px', background: 'var(--surface-2)',
                     borderRadius: 'var(--radius-md)', border: '1px solid var(--border)',
                   }}>
                     <p style={{
@@ -264,49 +275,40 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                     }}>
                       {pl ? 'Szacowana transformacja' : 'Estimated transformation'}
                     </p>
-
                     <div style={{ display: 'flex', gap: 20, marginBottom: 8 }}>
                       {[
-                        { val: transformation.visits, label_pl: 'wizyta/y',   label_en: 'visits'  },
-                        { val: transformation.months, label_pl: 'miesięce/y', label_en: 'months'  },
+                        { val: transformation.visits, label: pl ? 'wizyty' : 'visits' },
+                        { val: transformation.months, label: pl ? 'miesięcy' : 'months' },
                       ].map(item => (
-                        <div key={item.label_en} style={{ textAlign: 'center' }}>
+                        <div key={item.label} style={{ textAlign: 'center' }}>
                           <p style={{
                             fontFamily: 'var(--font-mono)', fontSize: 22,
                             fontWeight: 600, color: 'var(--accent)', lineHeight: 1,
-                          }}>
-                            {item.val}
-                          </p>
+                          }}>{item.val}</p>
                           <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
-                            {pl ? item.label_pl : item.label_en}
+                            {item.label}
                           </p>
                         </div>
                       ))}
-
                       <div style={{ textAlign: 'center' }}>
                         <p style={{
-                          fontSize: 13, fontWeight: 600,
-                          color: {
-                            easy: '#2d8f4e',
-                            moderate: '#C8975A',
-                            challenging: '#c0392b',
-                          }[transformation.difficulty],
-                          textTransform: 'capitalize', lineHeight: 1,
+                          fontSize: 12, fontWeight: 600, lineHeight: 1,
+                          color: { easy: '#2d8f4e', moderate: '#C8975A',
+                                  challenging: '#c0392b' }[transformation.difficulty],
                         }}>
                           {{ easy: pl ? 'Łatwa' : 'Easy',
                             moderate: pl ? 'Umiarkowana' : 'Moderate',
                             challenging: pl ? 'Wymagająca' : 'Challenging',
                           }[transformation.difficulty]}
                         </p>
-                        <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
+                        <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
                           {pl ? 'trudność' : 'difficulty'}
                         </p>
                       </div>
                     </div>
-
                     <p style={{
-                      fontSize: 12, color: 'var(--text-muted)', fontWeight: 300,
-                      lineHeight: 1.6, borderTop: '1px solid var(--border)', paddingTop: 10,
+                      fontSize: 11, color: 'var(--text-muted)', fontWeight: 300,
+                      lineHeight: 1.5, borderTop: '1px solid var(--border)', paddingTop: 8,
                     }}>
                       {pl ? transformation.note_pl : transformation.note_en}
                     </p>
