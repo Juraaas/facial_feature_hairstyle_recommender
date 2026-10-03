@@ -420,3 +420,58 @@ async def delete_analysis(analysis_id: str, user = Depends(require_auth)):
     except Exception as e:
         print(f"Delete error: {e}")
         raise http_error(INTERNAL_ERROR, "Delete failed", 500)
+
+@app.post("/debug-skin-tone")
+async def debug_skin_tone(file: UploadFile = File(...)):
+    contents = await file.read()
+    arr = np.frombuffer(contents, np.uint8)
+    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise http_error("INVALID_IMAGE", "Cannot decode image", 400)
+
+    h, w = img.shape[:2]
+    if max(h, w) > 640:
+        scale = 640 / max(h, w)
+        img   = cv2.resize(img, (int(w*scale), int(h*scale)))
+
+    hair_mask, _ = segment_face(img)
+
+    from src.color_recommender import analyze_skin_tone
+    import cv2 as _cv2
+
+    debug_img = img.copy()
+    hh, ww = img.shape[:2]
+    y1, y2 = int(hh * 0.35), int(hh * 0.80)
+    x1, x2 = int(ww * 0.30), int(ww * 0.70)
+    _cv2.rectangle(debug_img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+    skin_zone = np.zeros((hh, ww), dtype=bool)
+    skin_zone[y1:y2, x1:x2] = True
+    skin_mask  = skin_zone & (~hair_mask.astype(bool))
+    skin_pixels = img[skin_mask]
+
+    avg_bgr = skin_pixels.mean(axis=0) if len(skin_pixels) > 0 else np.zeros(3)
+    avg_lab = cv2.cvtColor(avg_bgr.reshape(1,1,3).astype(np.uint8),cv2.COLOR_BGR2Lab)[0,0]
+    result = analyze_skin_tone(img, hair_mask)
+
+    return {
+        "color_recommendation": result,
+        "debug": {
+            "skin_pixels_count": int(len(skin_pixels)),
+            "avg_bgr":  [round(float(x), 1) for x in avg_bgr],
+            "avg_lab":  {
+                "L": round(float(avg_lab[0]) * 100.0 / 255.0, 1),
+                "a": round(float(avg_lab[1]) - 128, 1),
+                "b": round(float(avg_lab[2]) - 128, 1),
+            },
+            "undertone_score": round(
+                float(avg_lab[2]) - 128 + 0.3 * (float(avg_lab[1]) - 128), 2
+            ),
+            "zones": {
+                "face_zone": f"y={y1}-{y2}, x={x1}-{x2}",
+                "hair_mask_coverage": round(
+                    float(np.sum(hair_mask > 0)) / hair_mask.size, 3
+                ),
+            }
+        }
+    }

@@ -46,33 +46,33 @@ def analyze_skin_tone(img_bgr: np.ndarray, hair_mask: np.ndarray) -> dict:
     h, w = img_bgr.shape[:2]
 
     face_zone = np.zeros((h, w), dtype=bool)
-    y1, y2 = int(h * 0.35), int(h * 0.80)
-    x1, x2 = int(w * 0.30), int(w * 0.70)
+    y1, y2 = int(h * 0.40), int(h * 0.78)
+    x1, x2 = int(w * 0.28), int(w * 0.72)
     face_zone[y1:y2, x1:x2] = True
 
     skin_mask = face_zone & (~hair_mask.astype(bool))
-
     skin_pixels = img_bgr[skin_mask]
+
     if len(skin_pixels) < 100:
-        return {"undertone": "neutral", "confidence": 0.0, "colors": NEUTRAL_COLORS[:2]}
+        return {"undertone": "neutral", "confidence": 0.0,"colors": NEUTRAL_COLORS[:2]}
 
-    avg_bgr = skin_pixels.mean(axis=0).reshape(1, 1, 3).astype(np.uint8)
-    avg_lab = cv2.cvtColor(avg_bgr, cv2.COLOR_BGR2Lab)[0, 0]
+    pixels_u8 = skin_pixels.reshape(-1, 1, 3).astype(np.uint8)
+    pixels_lab = cv2.cvtColor(pixels_u8, cv2.COLOR_BGR2Lab)
+    pixels_lab = pixels_lab.reshape(-1, 3).astype(np.float32)
+    avg_lab = pixels_lab.mean(axis=0)
 
-    L, a, b = float(avg_lab[0]), float(avg_lab[1]), float(avg_lab[2])
+    L = float(avg_lab[0]) * 100.0 / 255.0
+    a = float(avg_lab[1]) - 128.0
+    b = float(avg_lab[2]) - 128.0
+    warmth_score = b + 0.3 * a
 
-    b_norm = b - 128
-    a_norm = a - 128
-
-    warmth_score = b_norm + 0.3 * a_norm
-
-    if warmth_score > 8:
+    if warmth_score > 5:
         undertone = "warm"
-        confidence = min(1.0, warmth_score / 25)
+        confidence = min(1.0, warmth_score / 20)
         colors = WARM_COLORS
-    elif warmth_score < -5:
+    elif warmth_score < -3:
         undertone = "cool"
-        confidence = min(1.0, abs(warmth_score) / 20)
+        confidence = min(1.0, abs(warmth_score) / 15)
         colors = COOL_COLORS
     else:
         undertone = "neutral"
@@ -83,5 +83,5 @@ def analyze_skin_tone(img_bgr: np.ndarray, hair_mask: np.ndarray) -> dict:
         "undertone": undertone,
         "confidence": round(confidence, 2),
         "colors": colors[:3],
-        "lab_values": {"L": round(L, 1), "a": round(a_norm, 1), "b": round(b_norm, 1)},
+        "lab_values": {"L": round(L, 1), "a": round(a, 1), "b": round(b, 1)},
     }

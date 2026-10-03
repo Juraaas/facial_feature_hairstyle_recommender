@@ -115,10 +115,10 @@ STYLE_PROMPTS_FEMALE = {
         "not perfectly straight or geometric."
     ),
     "Wolf Cut": (
-        "a women's Wolf Cut: heavy curtain fringe framing the forehead, "
-        "significant shaggy layering throughout with strong crown volume, "
-        "wispy layered ends. "
-        "The curtain fringe and shaggy high-volume crown are essential."
+        "a natural women's Wolf Cut with shaggy layers throughout the hair, "
+        "soft volume around the crown and wispy layered ends. "
+        "Natural face-framing layers that follow the shape of the face without covering "
+        "or flattening it. Relaxed, textured and effortless."
     ),
     "Lob": (
         "a Lob (long bob): hair ending at collarbone length, "
@@ -131,11 +131,14 @@ STYLE_PROMPTS_FEMALE = {
         "natural lived-in texture. "
         "The curtain fringe and visible feathered layering are essential."
     ),
-    "Curtain Fringe Medium": (
-        "Curtain Fringe: centre-parted fringe split into two sections "
-        "falling softly on each side of the forehead and framing the face. "
-        "Medium-length hair with soft layers. "
-        "The centre-parted face-framing fringe is essential."
+   "Curtain Fringe Medium": (
+        "medium-length soft shag with curtain bangs. "
+        "A clear center part at the forehead creates an open V-shaped fringe: "
+        "the hair starts at the center of the forehead and sweeps diagonally outward "
+        "to both sides, framing the face. "
+        "The middle of the forehead remains visible. "
+        "The two sides of the fringe blend into the layered hair naturally, "
+        "with soft wispy texture and movement."
     ),
     "Layered Medium": (
         "Layered Medium hair: shoulder-length with multiple soft blended layers, "
@@ -160,9 +163,12 @@ STYLE_PROMPTS_FEMALE = {
         "with natural texture and volume."
     ),
     "Long with Curtain Fringe": (
-        "long hair with soft curtain fringe parted in the center and framing the face. "
-        "The fringe blends naturally into the long layers, with soft movement and natural "
-        "volume. Relaxed, effortless finish."
+        "long hair with prominent curtain bangs and a clear center part. "
+        "The fringe opens from the center of the forehead and falls diagonally "
+        "outward on both sides of the face, creating two distinct face-framing sections. "
+        "The center of the forehead remains clearly visible. "
+        "The bangs gradually blend into the long face-framing layers, "
+        "with soft wispy texture, natural movement and relaxed volume."
     ),
     "Beach Waves": (
         "Beach Waves: loose irregular waves throughout medium-length hair "
@@ -218,6 +224,8 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
         "ears, skin, expression, clothing, lighting or background. "
         "Do not add, remove or change any facial hair or beard. "
         "The face must be pixel-perfect identical to the input. "
+        "Do not change the image dimensions, aspect ratio or crop the image. "
+        "The output image must be the same size and framing as the input. "
         "Only the hair on top of the head changes."
     )
 
