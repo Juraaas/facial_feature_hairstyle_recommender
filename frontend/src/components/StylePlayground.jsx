@@ -267,6 +267,52 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                   </button>
                 </div>
 
+                {result && !previewRating && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    marginTop: 8, padding: '8px 12px',background: 'var(--surface-2)', 
+                    borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)',
+                  }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)', flex: 1 }}>
+                      {pl ? 'Jak wygląda wynik?' : 'How does it look?'}
+                    </span>
+                    {[
+                      { v: 'good', icon: '👍', label: pl ? 'Dobrze' : 'Good' },
+                      { v: 'bad',  icon: '👎', label: pl ? 'Źle' : 'Bad' },
+                    ].map(({ v, icon, label }) => (
+                      <button key={v} onClick={async () => {
+                        setPreviewRating(v)
+                        const { data } = await supabase.auth.getSession()
+                        const token = data.session?.access_token
+                        await fetch(`${BASE}/preview-rating`, {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type':  'application/json',
+                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                          },
+                          body: JSON.stringify({
+                            style_name: selectedStyle,
+                            color_id: selectedColor,
+                            gender: gender,
+                            rating: v,
+                          }),
+                        })
+                      }} style={{
+                        padding: '4px 10px', borderRadius: 20, fontSize: 11,
+                        border: '1px solid var(--border)', background: 'none',
+                        cursor: 'pointer', color: 'var(--text-muted)',
+                      }}>
+                        {icon} {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {previewRating && (
+                  <p style={{ fontSize: 11, color: 'var(--text-hint)', textAlign: 'center', marginTop: 6 }}>
+                    {pl ? 'Dziękujemy za ocenę!' : 'Thanks for the feedback!'}
+                  </p>
+                )}
+
                 {/* transformation */}
                 {transformation && (
                   <div style={{
