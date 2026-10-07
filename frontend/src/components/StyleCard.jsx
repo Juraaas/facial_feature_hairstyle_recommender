@@ -58,21 +58,21 @@ export function StyleCard({style, rank, features, gender, isPremium=false }) {
             )}
             {/* score badge */}
             <div style={{
-            position: 'absolute', top: 10, right: 10, background: 'rgba(15,15,14,.72)', 
-            backdropFilter: 'blur(6px)', color: '#fff', borderRadius: 20,
-            padding: '5px 11px', display: 'flex', flexDirection: 'column',
-            alignItems: 'center', lineHeight: 1.2}}>
+            position: 'absolute', top: 10, right: 10, background: 'var(--surface)', 
+            border: '1px solid var(--border)', backdropFilter: 'blur(6px)', color: 'var(--text)', 
+            borderRadius: 20, padding: '4px 10px', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', lineHeight: 1.2, boxShadow: '0 1px 4px rgba(0,0,0,.08)'}}>
                 <span
                     style={{
                         fontSize: 12, fontFamily: "var(--font-mono)",
-                        fontWeight: 500,letterSpacing: ".02em",
+                        fontWeight: 600, color: 'var(--accent)', letterSpacing: ".02em",
                     }}>
                     {score} / 100
                 </span>
                 <span
                     style={{
-                        fontSize: 8, fontFamily: "var(--font-body)", fontWeight: 600,
-                        letterSpacing: ".07em",opacity: 0.75,textTransform: "uppercase",
+                        fontSize: 8, fontFamily: "var(--font-body)", fontWeight: 500,
+                        color: 'var(--text-hint)', letterSpacing: ".06em", textTransform: "uppercase",
                     }}>
                     {pl ? "dopasowanie" : "match"}
                 </span>
