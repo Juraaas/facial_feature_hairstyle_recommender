@@ -1,7 +1,6 @@
 STRONG = 3
 MEDIUM = 2
 WEAK = 1
-HAIR_TYPE_WEIGHT = 1.4
 
 FEMALE_DIMS = {"layers", "updo", "curtain_fringe"}
 
@@ -31,7 +30,6 @@ def apply_rules(traits, gender="Man"):
         scores["fringe"] += STRONG
         scores["volume_top"] -= MEDIUM
         scores["longer_hair"] -= MEDIUM if not is_female else WEAK
-        scores["clean_lines"] -= WEAK
         if is_female:
             scores["curtain_fringe"] += MEDIUM
             scores["layers"] += MEDIUM
@@ -40,40 +38,36 @@ def apply_rules(traits, gender="Man"):
     elif traits.get("face_length") == "short":
         scores["volume_top"] += STRONG
         scores["longer_hair"] += MEDIUM if not is_female else STRONG
-        scores["fringe"] -= MEDIUM
+        scores["fringe"] -= WEAK
         scores["volume_sides"] -= WEAK
         if is_female:
             scores["updo"] += MEDIUM
 
     if traits.get("jaw") == "wide":
-        scores["soft_texture"] += STRONG
+        scores["soft_texture"] += MEDIUM
         scores["longer_hair"] += WEAK if not is_female else MEDIUM
-        scores["clean_lines"] -= MEDIUM
+        scores["clean_lines"] -= WEAK
+        scores["volume_sides"] -= MEDIUM
         if is_female:
-            scores["layers"] += MEDIUM
-            scores["curtain_fringe"] += MEDIUM
-            scores["volume_sides"] -= MEDIUM
+            scores["layers"] += WEAK
+            scores["curtain_fringe"] += WEAK
         else:
-            scores["volume_top"] += MEDIUM
-            scores["short_sides"] -= STRONG
+            scores["volume_top"] += WEAK
+            scores["short_sides"] -= MEDIUM
 
     elif traits.get("jaw") == "narrow":
-        scores["volume_sides"] += MEDIUM if not is_female else STRONG
-        scores["clean_lines"] += WEAK
-        scores["soft_texture"] -= WEAK
+        scores["volume_sides"] += STRONG
+        scores["soft_texture"] += WEAK
         if is_female:
-            scores["layers"] += MEDIUM
-        else:
-            scores["short_sides"] += STRONG
+            scores["layers"] += WEAK
 
     if traits.get("jaw_height") == "high":
-        scores["longer_hair"] += MEDIUM
-        scores["volume_top"] -= MEDIUM
+        scores["longer_hair"] += WEAK
+        scores["volume_top"] -= WEAK
         if is_female:
             scores["layers"] += WEAK
         else:
             scores["soft_texture"] += WEAK
-            scores["short_sides"] -= WEAK
 
     elif traits.get("jaw_height") == "low":
         scores["volume_top"] += MEDIUM
@@ -82,54 +76,40 @@ def apply_rules(traits, gender="Man"):
 
     if traits.get("eyes") == "wide":
         scores["clean_lines"] += MEDIUM
-        scores["volume_top"] += MEDIUM if not is_female else WEAK
-        scores["volume_sides"] -= WEAK
-        if is_female:
-            scores["curtain_fringe"] -= WEAK
+        scores["volume_top"] += WEAK
 
     elif traits.get("eyes") == "close":
         scores["volume_sides"] += MEDIUM
-        scores["fringe"] -= MEDIUM
-        if is_female:
-            scores["curtain_fringe"] += STRONG
-        else:
-            scores["soft_texture"] += WEAK
-            scores["clean_lines"] -= WEAK
-
-    if traits.get("lips") == "wide":
-        scores["soft_texture"] += MEDIUM
-        scores["clean_lines"] -= WEAK
-        if is_female:
-            scores["layers"] += WEAK
-        else:
-            scores["volume_top"] += WEAK
-
-    elif traits.get("lips") == "narrow":
-        scores["clean_lines"] += MEDIUM
-        if is_female:
-            scores["updo"] += WEAK
-        else:
-            scores["short_sides"] += WEAK
-            scores["soft_texture"] -= WEAK
-
-    if traits.get("nose") == "upper-dominant":
-        scores["fringe"] += MEDIUM if not is_female else STRONG
-        scores["volume_top"] -= STRONG
+        scores["fringe"] -= WEAK
         if is_female:
             scores["curtain_fringe"] += MEDIUM
+        else:
+            scores["soft_texture"] += WEAK
+
+    if traits.get("lips") == "wide":
+        scores["soft_texture"] += WEAK
+        scores["clean_lines"] -= WEAK
+
+    elif traits.get("lips") == "narrow":
+        scores["clean_lines"] += WEAK
+
+    if traits.get("nose") == "upper-dominant":
+        scores["fringe"] += MEDIUM
+        scores["volume_top"] -= MEDIUM
+        if is_female:
+            scores["curtain_fringe"] += WEAK
         else:
             scores["volume_sides"] += WEAK
 
     elif traits.get("nose") == "lower-dominant":
-        scores["volume_top"] += STRONG
-        scores["fringe"] -= MEDIUM
+        scores["volume_top"] += MEDIUM
+        scores["fringe"] -= WEAK
         if is_female:
             scores["updo"] += WEAK
         else:
             scores["longer_hair"] += WEAK
 
     if traits.get("lower_face") == "long":
-        scores["longer_hair"] += MEDIUM
         scores["soft_texture"] += MEDIUM
         if is_female:
             scores["layers"] += WEAK
@@ -137,36 +117,32 @@ def apply_rules(traits, gender="Man"):
             scores["short_sides"] -= WEAK
 
     elif traits.get("lower_face") == "short":
-        scores["clean_lines"] += MEDIUM
+        scores["clean_lines"] += WEAK
         scores["longer_hair"] -= WEAK
-        if not is_female:
-            scores["short_sides"] += MEDIUM
 
     if traits.get("chin") == "prominent":
-        scores["longer_hair"] += MEDIUM if not is_female else STRONG
-        scores["soft_texture"] += MEDIUM if not is_female else STRONG
-        scores["clean_lines"] -= WEAK if not is_female else MEDIUM
+        scores["soft_texture"] += MEDIUM
+        scores["longer_hair"] += WEAK
+        scores["clean_lines"] -= WEAK
         if is_female:
-            scores["layers"] += MEDIUM
+            scores["layers"] += WEAK
         else:
-            scores["textured_top"] += STRONG
-            scores["short_sides"] -= WEAK
+            scores["textured_top"] += WEAK
 
     elif traits.get("chin") == "recessed":
-        scores["volume_top"] += STRONG
         scores["clean_lines"] += WEAK
         scores["longer_hair"] -= WEAK
         if is_female:
             scores["updo"] += WEAK
         else:
-            scores["short_sides"] += MEDIUM
-            scores["textured_top"] -= MEDIUM
+            scores["textured_top"] -= WEAK
 
     if traits.get("face_shape_type") == "triangle":
-        scores["volume_sides"] -= WEAK
-        scores["longer_hair"] += WEAK
+        scores["volume_top"] += MEDIUM
+        scores["fringe"] += WEAK
         if is_female:
             scores["layers"] += WEAK
+            scores["curtain_fringe"] += WEAK
 
     elif traits.get("face_shape_type") == "square":
         scores["soft_texture"] += MEDIUM
@@ -178,27 +154,27 @@ def apply_rules(traits, gender="Man"):
         scores["fringe"] += STRONG
         scores["volume_top"] -= MEDIUM
         if is_female:
-            scores["curtain_fringe"] += MEDIUM
-            scores["updo"] -= MEDIUM
+            scores["curtain_fringe"] += WEAK
+            scores["updo"] -= WEAK
 
     elif traits.get("forehead") == "low":
         scores["fringe"] -= STRONG
+        scores["volume_top"] += WEAK
         if is_female:
-            scores["updo"] += MEDIUM
-            scores["curtain_fringe"] -= MEDIUM
+            scores["updo"] += WEAK
+            scores["curtain_fringe"] -= WEAK
         else:
-            scores["volume_top"] += WEAK
             scores["textured_top"] += WEAK
 
     if traits.get("thirds_balance") == "imbalanced":
-        scores["soft_texture"] += MEDIUM
-        scores["clean_lines"] -= MEDIUM
+        scores["soft_texture"] += WEAK
+        scores["clean_lines"] -= WEAK
         if is_female:
-            scores["layers"] += MEDIUM
+            scores["layers"] += WEAK
 
     if traits.get("dominant_third") == "upper":
         scores["fringe"] += MEDIUM
-        scores["volume_top"] -= STRONG
+        scores["volume_top"] -= MEDIUM
         if is_female:
             scores["curtain_fringe"] += WEAK
             scores["updo"] -= WEAK
@@ -208,41 +184,35 @@ def apply_rules(traits, gender="Man"):
     elif traits.get("dominant_third") == "lower":
         scores["volume_top"] += MEDIUM
         scores["fringe"] -= WEAK
-        scores["longer_hair"] -= WEAK
         if is_female:
             scores["updo"] += WEAK
 
     elif traits.get("dominant_third") == "middle":
         scores["fringe"] += WEAK
-        scores["volume_top"] -= WEAK
         if is_female:
             scores["curtain_fringe"] += WEAK
-        else:
-            scores["volume_sides"] += WEAK
 
     if traits.get("hair_type") == "curly":
-        scores["soft_texture"] += MEDIUM * HAIR_TYPE_WEIGHT
-        scores["textured_top"] += MEDIUM * HAIR_TYPE_WEIGHT
-        scores["clean_lines"] -= WEAK * HAIR_TYPE_WEIGHT
-        scores["longer_hair"] -= WEAK * HAIR_TYPE_WEIGHT
+        scores["soft_texture"] += MEDIUM
+        scores["textured_top"] += MEDIUM
+        scores["clean_lines"] -= WEAK
+        scores["longer_hair"] -= WEAK
 
     elif traits.get("hair_type") in ("straight", "wavy"):
-        scores["clean_lines"] += WEAK * HAIR_TYPE_WEIGHT
-        scores["longer_hair"] += WEAK * HAIR_TYPE_WEIGHT
+        scores["clean_lines"] += WEAK
+        scores["longer_hair"] += WEAK
 
     elif traits.get("hair_type") == "coily":
-        scores["soft_texture"] += STRONG * HAIR_TYPE_WEIGHT
-        scores["textured_top"] += STRONG * HAIR_TYPE_WEIGHT
-        scores["volume_top"] += MEDIUM * HAIR_TYPE_WEIGHT
-        scores["clean_lines"] -= MEDIUM * HAIR_TYPE_WEIGHT
-        scores["longer_hair"] -= MEDIUM * HAIR_TYPE_WEIGHT
+        scores["soft_texture"] += STRONG
+        scores["textured_top"] += MEDIUM
+        scores["volume_top"] += WEAK
+        scores["clean_lines"] -= MEDIUM
+        scores["longer_hair"] -= WEAK
 
     if traits.get("hairline") == "receding":
         scores["textured_top"] += WEAK
         scores["fringe"] -= STRONG
         scores["volume_top"] -= WEAK
-        if not is_female:
-            scores["short_sides"] += WEAK
 
     elif traits.get("hairline") == "uneven":
         scores["fringe"] -= MEDIUM
@@ -259,71 +229,30 @@ def _apply_interaction_rules(scores, traits, gender):
     is_female = gender == "Woman"
 
     if traits.get("face_length") == "long" and traits.get("forehead") == "high":
-        scores["fringe"] += MEDIUM if not is_female else WEAK
         scores["volume_sides"] += WEAK
-        scores["volume_top"] -= STRONG if not is_female else MEDIUM
         if is_female:
             scores["curtain_fringe"] += WEAK
-            scores["updo"] -= WEAK
         else:
-            scores["longer_hair"] -= MEDIUM
-            scores["clean_lines"] -= WEAK
+            scores["textured_top"] += WEAK
 
     if traits.get("face_length") == "long" and traits.get("jaw") == "narrow":
-        scores["volume_sides"] += WEAK if not is_female else MEDIUM
-        if is_female:
-            scores["layers"] += MEDIUM
-            scores["curtain_fringe"] += WEAK
-            scores["volume_top"] -= WEAK
-            scores["updo"] -= WEAK
-        else:
-            scores["short_sides"] -= WEAK
+        scores["soft_texture"] += WEAK
 
     if traits.get("face_length") == "short" and traits.get("jaw") == "narrow":
-        scores["volume_top"] += MEDIUM
-        scores["clean_lines"] += WEAK
-        scores["fringe"] -= MEDIUM
+        scores["volume_top"] += WEAK
         scores["volume_sides"] -= WEAK
-        if is_female:
-            scores["updo"] += MEDIUM
-        else:
-            scores["short_sides"] += MEDIUM
 
     if traits.get("jaw") == "wide" and traits.get("chin") == "prominent":
-        scores["soft_texture"] += STRONG
-        scores["textured_top"] += MEDIUM
-        scores["longer_hair"] += WEAK if not is_female else MEDIUM
-        scores["short_sides"] -= MEDIUM
-        scores["clean_lines"] -= MEDIUM
-        if is_female:
-            scores["layers"] += MEDIUM
-            scores["curtain_fringe"] += WEAK
-            scores["updo"] -= WEAK
+        scores["soft_texture"] += WEAK
+        scores["clean_lines"] -= WEAK
 
     if traits.get("jaw") == "narrow" and traits.get("chin") == "recessed":
-        scores["clean_lines"] += MEDIUM if not is_female else WEAK
-        scores["volume_top"] += WEAK
-        scores["soft_texture"] -= WEAK
-        if is_female:
-            scores["longer_hair"] -= WEAK
-            if traits.get("face_length") != "long" and traits.get("forehead") != "high":
-                scores["updo"] += WEAK
-        else:
-            scores["short_sides"] += MEDIUM
-
-    if traits.get("eyes") == "wide" and traits.get("forehead") == "high":
-        scores["fringe"] += MEDIUM if not is_female else WEAK
-        scores["volume_top"] -= MEDIUM if not is_female else WEAK
+        scores["volume_sides"] += WEAK
+        scores["soft_texture"] += WEAK
 
     if traits.get("symmetry") == "low" and traits.get("jaw") == "wide":
         scores["soft_texture"] += WEAK
         scores["clean_lines"] -= WEAK
-        if is_female:
-            scores["layers"] += MEDIUM
-            scores["updo"] -= WEAK
-        else:
-            scores["textured_top"] += MEDIUM
-            scores["short_sides"] -= WEAK
 
     return scores
 
@@ -341,16 +270,16 @@ def _apply_symmetry_modulation(scores, traits, gender):
 
     if traits.get("symmetry") == "low":
         for k in TEXTURE_KEYS:
-            scores[k] = scores[k] * 1.3 + 1
+            scores[k] *= 1.15
         for k in CLEAN_KEYS:
-            scores[k] = scores[k] * 0.7
+            scores[k] *= 0.85
 
     elif traits.get("symmetry") == "high":
         for k in CLEAN_KEYS:
-            scores[k] = scores[k] * 1.2
+            scores[k] *= 1.15
         scores["clean_lines"] += WEAK
         for k in TEXTURE_KEYS:
-            scores[k] = scores[k] * 0.9
+            scores[k] *= 0.90
     return scores
 
 def _apply_hard_constraints(scores, traits):
