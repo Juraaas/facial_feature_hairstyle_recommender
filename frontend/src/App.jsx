@@ -57,9 +57,7 @@ function App() {
   useEffect(() => {
     if (!user) { setUserPlan('free'); return }
     
-    console.log('Fetching plan for user:', user.id)
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Session exists:', !!session)
       
       supabase
         .from('profiles')
@@ -67,7 +65,6 @@ function App() {
         .eq('id', user.id)
         .single()
         .then(({ data, error }) => {
-          console.log('Plan data:', data, error)
           if (data?.plan) setUserPlan(data.plan)
         })
     })
