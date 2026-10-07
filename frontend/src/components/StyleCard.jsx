@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { sendVote } from '../api/client'
 import { useTranslation } from 'react-i18next'
-import { TriangleAlert, Info, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { TriangleAlert, LockKeyhole, ThumbsUp, ThumbsDown } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+function formatContributionReason(description, isPolish) {
+    if (!description) return "";
+
+    return isPolish
+        ? `Dobrze wykorzystuje ${description}.`
+        : `Makes good use of ${description}.`;
+}
 
 export function StyleCard({style, rank, features, gender, isPremium = False }) {
     const { t, i18n } = useTranslation()
@@ -52,9 +60,22 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
             <div style={{
             position: 'absolute', top: 10, right: 10, background: 'rgba(15,15,14,.72)', 
             backdropFilter: 'blur(6px)', color: '#fff', borderRadius: 20,
-            padding: '3px 10px', fontSize: 11, fontFamily: 'var(--font-mono)',
-            fontWeight: 400, letterSpacing: '.02em',
-            }}>{score}%</div>
+            padding: '5px 11px'}}>
+                <span
+                    style={{
+                        fontSize: 12, fontFamily: "var(--font-mono)",
+                        fontWeight: 500,letterSpacing: ".02em",
+                    }}>
+                    {score} / 100
+                </span>
+                <span
+                    style={{
+                        fontSize: 8, fontFamily: "var(--font-body)", fontWeight: 600,
+                        letterSpacing: ".07em",opacity: 0.75,textTransform: "uppercase",
+                    }}>
+                    {pl ? "dopasowanie" : "match"}
+                </span>
+            </div>
         </div>
 
         {/* body */}
@@ -92,19 +113,21 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
                 textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8, 
                 fontFamily: 'var(--font-body)'}}>{t('why_it_works')}</p>
                 {style.contributions.slice(0, 2).map((c, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                    <span style={{
-                    fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, width: 90, 
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 300 
-                    }}>{c.desc}</span>
-                    <div style={{ flex: 1, height: 2, borderRadius: 2, background: 'var(--border)'}}>
-                    <div style={{
-                        width: `${c.percent * 100}%`, height: '100%',
-                        borderRadius: 2, background: 'var(--accent)'}}/>
-                    </div>
-                    <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)',
-                        color:'var(--text-muted)', width: 28, textAlign: 'right',}}>
-                    {Math.round(c.percent * 100)}%
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 7, marginBottom: 6 }}>
+                    <span
+                        style={{
+                            fontSize: 12, color: "var(--accent)", 
+                            lineHeight: 1.4, flexShrink: 0,
+                        }}>
+                        ✓
+                    </span>
+
+                    <span
+                        style={{
+                            fontSize: 11, color: "var(--text-muted)",
+                            lineHeight: 1.45, fontWeight: 300,
+                        }}>
+                        {formatContributionReason(c.desc, pl)}
                     </span>
                 </div>
                 ))}
@@ -144,22 +167,7 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
             }}>
                 <TriangleAlert size={11} strokeWidth={1.5} color="var(--text-muted)"
                 style={{ flexShrink: 0, marginTop: 2 }}/>
-                {style.negatives[0].reason} 
-            </div>
-            )}
-
-            {/* missing */}
-            {style.missing?.length > 0 && (
-            <div style={{
-                fontSize: 11, padding: '6px 10px',
-                borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)',
-                borderLeft: '2px solid var(--text-hint)', color: 'var(--text-muted)',
-                fontWeight:  300, lineHeight:  1.5,
-                display: 'flex', alignItems: 'flex-start', gap: 6,
-            }}>
-                <Info size={11} strokeWidth={1.5} color="var(--text-muted)"
-                style={{ flexShrink: 0, marginTop: 2 }}/>
-                <span>{style.missing[0].reason}</span>
+                <span>{style.negatives[0].reason}</span>
             </div>
             )}
 
