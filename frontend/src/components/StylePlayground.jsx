@@ -221,16 +221,17 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
               <div style={{ animation: 'fadeIn .3s ease' }}>
                 {/* before/after */}
                 <div className="before-after-grid" style={{
-                  display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12
+                  display: 'grid', gridTemplateColumns: '1fr 1fr', 
+                  gap: 12, marginBottom: 12, alignItems: 'start'
                 }}>
                   {[
                     { src: URL.createObjectURL(originalFile), label: pl ? 'Przed' : 'Before' },
                     { src: result, label: `${pl ? 'Po' : 'After'} — ${selectedStyle}` },
                   ].map(({ src, label }) => (
-                    <div key={label}>
+                    <div key={label} style={{ display: 'flex', flexDirection: 'column' }}>
                       <img src={src} alt={label} style={{
-                        width: '100%', height: 'auto', minHeight: 200, maxHeight: '60vh',
-                        borderRadius: 'var(--radius-md)', objectFit: 'cover',
+                        width: '100%', height: 'auto', maxHeight: '60vh',
+                        borderRadius: 'var(--radius-md)', objectFit: 'contain', background: 'var(--surface-2)',
                         objectPosition: 'top', border: '1px solid var(--border)', display: 'block'
                       }} />
                       <p style={{
