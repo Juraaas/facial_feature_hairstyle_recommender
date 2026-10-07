@@ -476,3 +476,18 @@ async def debug_skin_tone(file: UploadFile = File(...)):
             }
         }
     }
+
+@app.post("/preview-rating")
+async def preview_rating(body: dict, user = Depends(get_current_user)):
+    try:
+        sb = get_supabase()
+        sb.table("preview_ratings").insert({
+            "user_id": str(user.id) if user else None,
+            "style_name": body.get("style_name"),
+            "color_id": body.get("color_id"),
+            "gender": body.get("gender"),
+            "rating": body.get("rating"),
+        }).execute()
+    except Exception as e:
+        print(f"Preview rating error: {e}")
+    return {"ok": True}
