@@ -325,42 +325,90 @@ def _build_face_analysis_llm(user_scores, influences, traits, gender="Man", lang
 
     if lang == "pl":
         system_msg = (
-            f"Jesteś doświadczonym fryzjerem. Piszesz krótką, praktyczną analizę twarzy dla klienta.\n"
-            "Zwracaj się bezpośrednio: 'Twoja twarz', 'dla Ciebie', 'u Ciebie'.\n"
-            "Nigdy nie używaj: \"jego\", \"jej\", \"klient\", \"osoba\".\n"
-            "Każde zdanie musi dawać konkretną wskazówkę stylistyczną - nie opisuj cech, wyjaśniaj co zrobić.\n"
-            "Odpowiadasz TYLKO w JSON: {\"sentences\": [\"...\", \"...\", \"...\"]}"
+            "Jesteś doświadczonym fryzjerem. "
+            "Piszesz krótką, praktyczną analizę doboru fryzury dla klienta.\n"
+
+            "Zwracaj się bezpośrednio: "
+            "'Twoja twarz', 'dla Ciebie', 'u Ciebie'.\n"
+
+            "Nigdy nie używaj: "
+            "'jego', 'jej', 'klient', 'osoba'.\n"
+
+            "Otrzymujesz wyliczony profil idealnych cech fryzury. "
+            "Nie zmieniaj jego priorytetów i nie wymyślaj nowych cech.\n"
+
+            "Najpierw kieruj rekomendacje według SIŁY sygnału. "
+            "Najsilniejsze cechy są najważniejsze. "
+            "Słabsze cechy mogą być użyte tylko jako uzupełnienie, "
+            "nigdy jako główna rada, jeśli istnieją silniejsze sygnały.\n"
+
+            "Nie musisz wymieniać każdej cechy. "
+            "Skup się na 2-3 najważniejszych wskazówkach.\n"
+
+            "Każde zdanie musi mówić konkretnie CO wybrać lub CZEGO UNIKAĆ "
+            "i krótko wyjaśniać DLACZEGO.\n"
+
+            "Nie opisuj ponownie cech twarzy. "
+            "Nie używaj języka diagnostycznego ani technicznych nazw parametrów.\n"
+
+            "Odpowiadasz TYLKO w JSON: "
+            '{"sentences": ["...", "...", "..."]}'
         )
         user_msg = (
-            f"Klient ({gender_pl}). Cechy twarzy i ich wpływ na dobór fryzury:\n\n"
+            f"Klient ({gender_pl}). "
+            "Poniżej znajduje się wyliczony profil idealnych cech fryzury:\n\n"
             + "\n".join(trait_summary)
-            + "\n\nNapisz 3 zdania które mówią klientowi CO konkretnie powinien wybrać i DLACZEGO. "
-            "Unikaj ogólników. Każde zdanie = jedna konkretna rada."
-            "\n{\"sentences\": [\"rada 1\", \"rada 2\", \"rada 3\"]}"
+            + "\n\n"
+            "Napisz dokładnie 3 krótkie zdania.\n"
+            "Każde zdanie ma być jedną konkretną poradą stylistyczną.\n"
+            "Priorytet nadaj najsilniejszym sygnałom z profilu.\n"
+            "Nie dodawaj cech, których nie ma w profilu.\n"
+            "Nie przedstawiaj słabszej cechy jako głównego zalecenia, "
+            "jeśli istnieje silniejszy sygnał.\n"
+            "Połącz rekomendację z krótkim uzasadnieniem.\n\n"
+            '{"sentences": ["rada 1", "rada 2", "rada 3"]}'
         )
     else:
         system_msg = (
-            f"You are an experienced hairstylist writing a short, practical facial analysis for a client.\n"
+            "You are an experienced hairstylist writing a short, practical hairstyle "
+            "recommendation for a client.\n"
             "Address the client directly using: \"your face\", \"for you\", \"your jawline\".\n"
-            "Never use: \"his\", \"her\", \"the client\", \"this person\".\n"
-            "Each sentence must provide a specific stylistic tip - don't describe characteristics, explain what to do.\n"
-            "Reply ONLY in JSON format: {\"sentences\": [\"...\", \"...\", \"...\"]}"
+            "Never use: \"his\", \"her\", \"the client\", \"this person\".\n\n"
+
+            "The input is an already-calculated ideal hairstyle profile derived from "
+            "the client's facial features. You must NOT recalculate the profile, change "
+            "the priorities, or invent additional hairstyle features.\n"
+            "Positive values indicate hairstyle features that should be used.\n"
+            "Negative values indicate hairstyle features that should be avoided.\n"
+            "The larger the absolute value, the more important the feature is.\n\n"
+
+            "Prioritize the strongest signals. Focus mainly on the 2–3 most important "
+            "features and use weaker signals only as supporting advice.\n"
+            "Do not give equal attention to every feature.\n"
+            "Do not mention facial measurements, technical parameter names, scores, "
+            "or the internal recommendation system.\n"
+            "Do not simply describe the client's facial characteristics.\n\n"
+
+            "Each sentence must tell the client what hairstyle characteristic to choose "
+            "or avoid and briefly explain why it is beneficial or problematic.\n"
+            "Write exactly 3 short, practical sentences.\n\n"
+
+            "Reply ONLY in valid JSON format:\n"
+            "{\"sentences\": [\"advice 1\", \"advice 2\", \"advice 3\"]}"
         )
         user_msg = (
-            f"({gender_en}) client. Facial features and their impact on choosing a hairstyle:\n\n"
+            f"({gender_en}) client. "
+            "The following is the calculated ideal hairstyle profile:\n\n"
             + "\n".join(trait_summary)
-            + "\n\n Write three sentences that tell the customer EXACTLY what they should choose and WHY. "
-            "Avoid generalisations. Each sentence = one specific piece of advice."
-            "\n{\"sentences\": [\"advice 1\", \"advice 2\", \"advice 3\"]}"
+            + "\n\n"
+            "Based ONLY on this profile, write exactly 3 short hairstyle recommendations.\n"
+            "Prioritize the strongest positive and negative signals.\n"
+            "Tell the client what to choose or avoid and why.\n"
+            "Do not introduce any hairstyle features that are not present in the profile.\n"
+            "Do not repeat facial characteristics or technical feature names.\n"
+            "Each sentence should communicate one clear, practical styling recommendation.\n\n"
+            "{\"sentences\": [\"advice 1\", \"advice 2\", \"advice 3\"]}"
         )
-
-    print("\n[LLM SYSTEM PROMPT]")
-    print(system_msg)
-
-    print("\n[LLM USER PROMPT]")
-    print(user_msg)
-
-    print("\n=============================================\n")
 
     try:
         client = Groq(api_key=api_key)
@@ -377,15 +425,12 @@ def _build_face_analysis_llm(user_scores, influences, traits, gender="Man", lang
         )
 
         text = response.choices[0].message.content.strip()
-        print("\n[LLM RESPONSE]")
-        print(text)
-        print("\n=============================================\n")
         if not text.endswith('}'):
             matches = re.findall(r'"([^"]*)"', text)
             if matches:
                 sentences = [m for m in matches if len(m) > 10]
                 if sentences:
-                    return sentences[:4]
+                    return sentences[:3]
         try:
             parsed = json.loads(text)
         except json.JSONDecodeError:
@@ -408,7 +453,7 @@ def _build_face_analysis_llm(user_scores, influences, traits, gender="Man", lang
             return _build_face_analysis(influences, traits)
 
         if isinstance(sentences, list) and all(isinstance(s, str) for s in sentences):
-            return sentences[:4]
+            return sentences[:3]
 
     except Exception as e:
         print(f"LLM error: {e}")
@@ -440,40 +485,33 @@ def _prepare_trait_summary(user_scores, lang="pl"):
             negative.append((dim, value, desc))
 
     positive.sort(key=lambda x: x[1], reverse=True)
-
     negative.sort(key=lambda x: abs(x[1]), reverse=True)
 
+    positive = positive[:3]
+    negative = negative[:2]
     summary = []
 
     if lang == "pl":
         if positive:
-            summary.append("ZALECANE CECHY FRYZURY:")
+            summary.append("NAJWAŻNIEJSZE CECHY FRYZURY, KTÓRE WARTO WYKORZYSTAĆ:")
             for dim, value, desc in positive:
-                summary.append(
-                    f"- {desc} (siła: {value:+.1f})"
-                )
+                summary.append(f"- {desc} (siła: {value:+.1f})")
 
         if negative:
-            summary.append("CECHY FRYZURY, KTÓRYCH NALEŻY UNIKAĆ:")
+            summary.append("NAJWAŻNIEJSZE CECHY FRYZURY, KTÓRYCH WARTO UNIKAĆ:")
             for dim, value, desc in negative:
-                summary.append(
-                    f"- {desc} (siła: {abs(value):.1f})"
-                )
+                summary.append(f"- {desc} (siła: {abs(value):.1f})")
 
     else:
         if positive:
-            summary.append("RECOMMENDED HAIRSTYLE FEATURES:")
+            summary.append("MOST IMPORTANT HAIRSTYLE FEATURES TO EMPHASIZE:")
             for dim, value, desc in positive:
-                summary.append(
-                    f"- {desc} (strength: {value:+.1f})"
-                )
+                summary.append(f"- {desc} (strength: {value:+.1f})")
 
         if negative:
-            summary.append("HAIRSTYLE FEATURES TO AVOID:")
+            summary.append("MOST IMPORTANT HAIRSTYLE FEATURES TO AVOID:")
             for dim, value, desc in negative:
-                summary.append(
-                    f"- {desc} (strength: {abs(value):.1f})"
-                )
+                summary.append(f"- {desc} (strength: {abs(value):.1f})")
 
     return summary
 
