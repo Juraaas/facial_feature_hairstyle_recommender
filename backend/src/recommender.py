@@ -192,7 +192,7 @@ def compute_traits_influences(traits, gender):
         reverse=True,
     ))
 
-def score_hairstyle(user_scores, style, traits=None):
+def score_hairstyle(user_scores, style):
     score = 0.0
     total_importance = 0.0
 
