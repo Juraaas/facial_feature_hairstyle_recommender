@@ -132,10 +132,10 @@ STYLE_PROMPTS_FEMALE = {
         "The curtain fringe and visible feathered layering are essential."
     ),
    "Curtain Fringe Medium": (
-        "medium-length hair with Bardot bangs. "
-        "Soft wispy bangs parted down the middle, "
-        "each half sweeping gently to the side. "
-        "Natural and effortless."
+        "medium-length hair. The front hair is split in the middle and the left part "
+        "falls across the left side of the forehead while the right part falls across "
+        "the right side of the forehead. The middle of the forehead is exposed. "
+        "Soft wispy texture. Natural and relaxed."
     ),
     "Layered Medium": (
         "Layered Medium hair: shoulder-length with multiple soft blended layers, "
@@ -160,10 +160,10 @@ STYLE_PROMPTS_FEMALE = {
         "with natural texture and volume."
     ),
     "Long with Curtain Fringe": (
-        "long hair with Bardot bangs. "
-        "Soft wispy bangs parted down the middle, "
-        "each half sweeping gently to the side. "
-        "The bangs blend into long layers."
+        "long hair. The front hair is split in the middle and the left part "
+        "falls across the left side of the forehead while the right part falls across "
+        "the right side of the forehead. The middle of the forehead is exposed. "
+        "Soft wispy texture. The front sections blend into long layers."
     ),
     "Beach Waves": (
         "Beach Waves: loose irregular waves throughout medium-length hair "
