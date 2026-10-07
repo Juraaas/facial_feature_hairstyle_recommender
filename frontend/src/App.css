@@ -363,7 +363,11 @@ body {
   }
 
   .before-after-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+  }
+  
+  .before-after-grid img {
+    max-height: 50vh !important;
   }
 }
 

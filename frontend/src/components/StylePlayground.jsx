@@ -44,7 +44,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
       form.append('color_id', selectedColor)
       form.append('gender', gender)
       form.append('hair_type', result?.traits?.hair_type ?? '')
-      form.append('hair_coverage', String(result?.traits?.hair_coverage ?? 0.05))
+      form.append('hair_coverage', String(result?.traits?.coverage ?? 0.05))
 
       const res = await fetch(`${BASE}/style-preview`, {
         method: 'POST', 
@@ -220,18 +220,18 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
             {result && (
               <div style={{ animation: 'fadeIn .3s ease' }}>
                 {/* before/after */}
-                <div className="before-after-grid">
+                <div className="before-after-grid" style={{
+                  display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12
+                }}>
                   {[
                     { src: URL.createObjectURL(originalFile), label: pl ? 'Przed' : 'Before' },
                     { src: result, label: `${pl ? 'Po' : 'After'} — ${selectedStyle}` },
                   ].map(({ src, label }) => (
                     <div key={label}>
                       <img src={src} alt={label} style={{
-                        width: '100%', borderRadius: 'var(--radius-md)',
-                        objectFit: 'cover',
-                        maxHeight: 320,
-                        objectPosition: 'top',
-                        border: '1px solid var(--border)',
+                        width: '100%', height: 'auto', minHeight: 200, maxHeight: '60vh',
+                        borderRadius: 'var(--radius-md)', objectFit: 'cover',
+                        objectPosition: 'top', border: '1px solid var(--border)', display: 'block'
                       }} />
                       <p style={{
                         fontSize: 9, color: 'var(--text-hint)',
