@@ -43,7 +43,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
       form.append('color_id', selectedColor)
       form.append('gender', gender)
       form.append('hair_type', result?.traits?.hair_type ?? '')
-      form.append('hair_coverage', result?.quality?.hair_coverage ?? '0.05')
+      form.append('hair_coverage', String(result?.traits?.hair_coverage ?? 0.05))
 
       const res = await fetch(`${BASE}/style-preview`, {
         method: 'POST', 
