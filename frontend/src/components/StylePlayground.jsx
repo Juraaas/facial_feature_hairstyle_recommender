@@ -23,6 +23,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [transformation, setTransformation] = useState(null)
+  const [previewRating, setPreviewRating] = useState(null)
 
   async function handleGenerate() {
     if (!isPremium) { onUpgrade(); return }
