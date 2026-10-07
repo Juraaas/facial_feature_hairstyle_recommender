@@ -47,6 +47,14 @@ function App() {
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
 
   useEffect(() => {
+    if (result) {
+      console.log('result.traits:', result.traits)
+      console.log('coverage:', result.traits?.coverage)
+      console.log('hair_type:', result.traits?.hair_type)
+    }
+  }, [result])
+
+  useEffect(() => {
     if (!user) { setUserPlan('free'); return }
     
     console.log('Fetching plan for user:', user.id)
