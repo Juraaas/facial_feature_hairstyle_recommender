@@ -1,4 +1,4 @@
-import json
+import json, re
 import os
 from groq import Groq
 from src.fade_recommender import recommend_fade_from_front
@@ -6,7 +6,7 @@ from src.fade_recommender import recommend_fade_from_front
 STYLE_DESCRIPTIONS = {
     "volume_top": "height on top",
     "volume_sides": "fuller sides",
-    "short_sides": "tapered sides",
+    "short_sides": "shorter sides",
     "longer_hair": "longer length",
     "fringe": "front fringe",
     "clean_lines": "clean shape",
@@ -35,7 +35,7 @@ NEGATIVE_EXPLANATIONS = {
     "fringe": "fringe may not suit your eye proportions or add unwanted weight to the forehead",
     "volume_sides": "side volume may widen your face shape",
     "volume_top": "extra height may emphasise the length of your face",
-    "short_sides": "tapered sides may draw attention to a wider jaw",
+    "short_sides": "very short sides may emphasise the width of your jaw",
     "clean_lines": "sharp geometric cuts can highlight facial asymmetry",
     "soft_texture": "heavy texture may work against your face's natural structure",
     "longer_hair": "added length risks elongating your face further",
@@ -49,7 +49,7 @@ NEGATIVE_EXPLANATIONS_PL = {
     "fringe": "grzywka może zasłaniać oczy lub dodawać wagi czołu",
     "volume_sides": "objętość boków może optycznie poszerzyć twarz",
     "volume_top": "dodatkowa wysokość może podkreślić długość twarzy",
-    "short_sides": "krótkie boki mogą zwracać uwagę na szeroką szczękę",
+    "short_sides": "bardzo krótkie boki mogą mocniej podkreślać szerokość szczęki",
     "clean_lines": "geometryczne cięcia mogą uwydatniać asymetrię",
     "soft_texture": "miękka tekstura może nie pasować do struktury twarzy",
     "longer_hair": "długość może dodatkowo wydłużyć twarz",
@@ -160,51 +160,6 @@ TRAIT_EXPLANATIONS_PL = {
     },
 }
 
-MISSING_SENSITIVE_FEATURES = {
-    "volume_sides",
-    "fringe",
-    "curtain_fringe",
-    "layers",
-    "short_sides",
-    "longer_hair",
-}
-
-HAIR_TYPE_COMPATIBILITY = {
-    "straight": {
-        "Curly Volume": -0.3,
-        "Beach Waves": -0.15,
-        "Braided Crown": -0.1,
-    },
-    "wavy": {
-        "Long Straight Blunt": -0.2,
-        "Bob Classic": -0.1,
-    },
-    "curly": {
-        "Long Straight Blunt": -0.4,
-        "Slick Back": -0.3,
-        "Side Part": -0.2,
-        "Comb Over": -0.2,
-        "Pompadour": -0.15,
-    },
-    "coily": {
-        "Long Straight Blunt": -0.5,
-        "Slick Back": -0.4,
-        "Side Part": -0.3,
-        "Bro Flow": -0.3,
-        "Pompadour": -0.2,
-    }
-}
-
-HAIRLINE_INCOMPATIBLE = {
-    "receding": [
-        "French Crop",
-        "Textured Fringe",
-        "Curtain Fringe Medium",
-        "French Bob",
-        "Long with Curtain Fringe",
-    ],
-}
-
 def load_hairstyles(path="data/hairstyles.json"):
     with open(path, "r") as f:
         return json.load(f)["styles"]
@@ -237,23 +192,9 @@ def compute_traits_influences(traits, gender):
         reverse=True,
     ))
 
-def apply_hair_compatibility(score, style_name, traits):
-    hair_type = traits.get("hair_type")
-    hairline = traits.get("hairline")
-
-    if hair_type is not None and hair_type in HAIR_TYPE_COMPATIBILITY:
-        penalty = HAIR_TYPE_COMPATIBILITY[hair_type].get(style_name, 0)
-        score = score + penalty
-
-    if hairline == "receding" and style_name in HAIRLINE_INCOMPATIBLE["receding"]:
-        score = score - 0.4
-
-    return max(0.0, score) 
-
 def score_hairstyle(user_scores, style, traits=None):
     score = 0.0
     total_importance = 0.0
-    matched_importance = 0.0
 
     for key, user_value in user_scores.items():
         style_value = style["attributes"].get(key, 0)
@@ -261,29 +202,12 @@ def score_hairstyle(user_scores, style, traits=None):
         importance = abs(user_value)
         total_importance += importance
 
-        contribution = user_value * style_value
-        score += contribution
-        
-        if contribution > 0:
-            matched_importance += importance * style_value
-
-        if key in MISSING_SENSITIVE_FEATURES and user_value >= 3 and style_value < 0.2:
-            score -= user_value * 0.35
-
-        if user_value <= -3 and style_value > 0.6:
-            score -= abs(user_value) * style_value * 0.35
+        score += user_value * style_value
     
     if total_importance == 0:
         return 0.0
     
-    base_score = score / total_importance
-    match_concentration = matched_importance / total_importance
-    final_score = base_score * (0.75 + 0.25 * match_concentration)
-
-    if traits:
-        final_score = apply_hair_compatibility(
-            final_score, style["name"], traits
-        )
+    final_score = score / total_importance
 
     return final_score
 
@@ -292,15 +216,16 @@ def explain_match(user_scores, style, total_score, lang="pl"):
     negatives_map = NEGATIVE_EXPLANATIONS_PL if lang == "pl" else NEGATIVE_EXPLANATIONS
     positive = []
     negative = []
-    missing = []
 
     pos_total = 0.0
     neg_total = 0.0
-    missing_total = 0.0
 
     attributes = style.get("attributes", {})
 
     for key, user_value in user_scores.items():
+        if user_value == 0:
+            continue
+
         style_value = attributes.get(key, 0)
         contribution = user_value * style_value
 
@@ -325,42 +250,16 @@ def explain_match(user_scores, style, total_score, lang="pl"):
             })
             neg_total += abs(contribution)
         
-        if key in MISSING_SENSITIVE_FEATURES and user_value >= 3 and style_value < 0.2:
-            missing_strength = user_value * (1 - style_value)
-            feature_desc = descriptions.get(key, key)
-            if lang == "pl":
-                reason = (
-                    f"ten styl nie oferuje cechy „{feature_desc}”, "
-                    f"którą Twoja analiza wyraźnie sugeruje"
-                )
-            else:
-                reason = (
-                    f"this style lacks {feature_desc}, "
-                    f"which your analysis strongly favours"
-                )
-
-            missing.append({
-                "feature": key,
-                "raw": missing_strength,
-                "desc": feature_desc,
-                "reason": reason,
-            })
-            missing_total += missing_strength
-
     for c in positive:
         c["percent"] = c["raw"] / pos_total if pos_total > 0 else 0.0
     
     for c in negative:
         c["percent"] = abs(c["raw"]) / neg_total if neg_total > 0 else 0.0
 
-    for c in missing:
-        c["percent"] = c["raw"] / missing_total if missing_total > 0 else 0.0
-
     positive.sort(key=lambda x: x["percent"], reverse=True)
     negative.sort(key=lambda x: x["percent"], reverse=True)
-    missing.sort(key=lambda x: x["percent"], reverse=True)
 
-    return positive, negative, missing
+    return positive, negative
 
 def _build_face_analysis(influences, traits, lang="pl"):
     explanations = []
@@ -403,12 +302,12 @@ def _build_face_analysis(influences, traits, lang="pl"):
         
     return explanations
 
-def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
+def _build_face_analysis_llm(user_scores, influences, traits, gender="Man", lang="pl"):
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
         return _build_face_analysis(influences, traits)
 
-    trait_summary = _prepare_trait_summary(influences, traits, lang=lang)
+    trait_summary = _prepare_trait_summary(user_scores, lang=lang)
 
     if not trait_summary:
         if lang == "pl":
@@ -455,6 +354,14 @@ def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
             "\n{\"sentences\": [\"advice 1\", \"advice 2\", \"advice 3\"]}"
         )
 
+    print("\n[LLM SYSTEM PROMPT]")
+    print(system_msg)
+
+    print("\n[LLM USER PROMPT]")
+    print(user_msg)
+
+    print("\n=============================================\n")
+
     try:
         client = Groq(api_key=api_key)
         response = client.chat.completions.create(
@@ -469,10 +376,10 @@ def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
             ],
         )
 
-        import json
-        import re
         text = response.choices[0].message.content.strip()
-        print(f"DEBUG LLM response: {text!r}")
+        print("\n[LLM RESPONSE]")
+        print(text)
+        print("\n=============================================\n")
         if not text.endswith('}'):
             matches = re.findall(r'"([^"]*)"', text)
             if matches:
@@ -508,57 +415,81 @@ def _build_face_analysis_llm(influences, traits, gender="Man", lang="pl"):
 
     return _build_face_analysis(influences, traits)
 
-def _prepare_trait_summary(influences, traits, lang="pl"):
-    skip_values = {None, "normal", "balanced", "slight_imbalance"}
-    descriptions = STYLE_DESCRIPTIONS_PL if lang == "pl" else STYLE_DESCRIPTIONS
-    explanations = TRAIT_EXPLANATIONS_PL  if lang == "pl" else TRAIT_EXPLANATIONS
-    favours_word = "korzystna jest" if lang == "pl" else "benefits from"
-    against_word = "należy unikać" if lang == "pl" else "should avoid"
+def _prepare_trait_summary(user_scores, lang="pl"):
+    descriptions = (
+        STYLE_DESCRIPTIONS_PL
+        if lang == "pl"
+        else STYLE_DESCRIPTIONS
+    )
 
-    trait_summary = []
-    priority_order = ["hairline", "hair_type", "face_shape_type"] + [
-        k for k in influences.keys()
-        if k not in ("hairline", "hair_type", "face_shape_type")
-    ]
+    if not user_scores:
+        return []
 
-    for key in priority_order[:5]:
-        if key not in influences:
-            continue
-        info = influences[key]
-        value = info["value"]
-        if value in skip_values:
+    positive = []
+    negative = []
+
+    for dim, value in user_scores.items():
+        if abs(value) < 0.01:
             continue
 
-        delta = info["delta"]
-        top_dims = sorted(delta.items(),
-                          key=lambda x: abs(x[1]), reverse=True)[:2]
-        hints = []
-        for dim, change in top_dims:
-            desc = descriptions.get(dim, dim)
-            hints.append(
-                f"{favours_word} {desc}" if change > 0
-                else f"{against_word} {desc}"
-            )
+        desc = descriptions.get(dim, dim)
 
-        trait_label = explanations.get(key, {}).get(value) or f"{key}: {value}"
-        line = f"- {trait_label}"
-        if hints:
-            line += f" → {', '.join(hints)}"
-        trait_summary.append(line)
+        if value > 0:
+            positive.append((dim, value, desc))
+        else:
+            negative.append((dim, value, desc))
 
-    return trait_summary
+    positive.sort(key=lambda x: x[1], reverse=True)
+
+    negative.sort(key=lambda x: abs(x[1]), reverse=True)
+
+    summary = []
+
+    if lang == "pl":
+        if positive:
+            summary.append("ZALECANE CECHY FRYZURY:")
+            for dim, value, desc in positive:
+                summary.append(
+                    f"- {desc} (siła: {value:+.1f})"
+                )
+
+        if negative:
+            summary.append("CECHY FRYZURY, KTÓRYCH NALEŻY UNIKAĆ:")
+            for dim, value, desc in negative:
+                summary.append(
+                    f"- {desc} (siła: {abs(value):.1f})"
+                )
+
+    else:
+        if positive:
+            summary.append("RECOMMENDED HAIRSTYLE FEATURES:")
+            for dim, value, desc in positive:
+                summary.append(
+                    f"- {desc} (strength: {value:+.1f})"
+                )
+
+        if negative:
+            summary.append("HAIRSTYLE FEATURES TO AVOID:")
+            for dim, value, desc in negative:
+                summary.append(
+                    f"- {desc} (strength: {abs(value):.1f})"
+                )
+
+    return summary
 
 def _build_style_result(style, user_scores, traits, score, lang):
-    positive, negative, missing = explain_match(
+    positive, negative = explain_match(
         user_scores,
         style,
         score,
         lang=lang
     )
+    display_score = calculate_display_score(user_scores, style)
 
     return {
         "name": style["name"],
         "score": score,
+        "display_score": display_score,
         "category": style.get("category", ""),
         "tags": style.get(f"tags_{lang}", style.get("tags", [])),
         "description": style.get(
@@ -567,22 +498,39 @@ def _build_style_result(style, user_scores, traits, score, lang):
         ),
         "contributions": positive,
         "negatives": negative,
-        "missing": missing,
         "image": style.get("image"),
     }
 
-def normalize_scores_for_display(results):
-    if not results:
-        return results
-    raw = [r["score"] for r in results]
-    max_s = max(raw)
-    min_s = min(raw)
-    rng = max_s - min_s if max_s != min_s else 1.0
+def calculate_display_score(user_scores, style):
+    attributes = style.get("attributes", {})
 
-    for r in results:
-        normalized = 50 + ((r["score"] - min_s) / rng) * 49
-        r["display_score"] = round(normalized)
-    return results
+    total_importance = 0.0
+    total_match = 0.0
+
+    for key, user_value in user_scores.items():
+        importance = abs(user_value)
+
+        if importance < 0.01:
+            continue
+
+        style_value = attributes.get(key, 0.0)
+
+        if user_value > 0:
+            target = 1.0
+        else:
+            target = 0.0
+
+        closeness = 1.0 - abs(style_value - target)
+
+        total_match += importance * closeness
+        total_importance += importance
+
+    if total_importance == 0:
+        return 50
+
+    return round(
+        100 * total_match / total_importance
+    )
 
 def generate_recommendations(user_scores, traits, gender="Man", top_k=3, 
                              hairstyles_path="data/hairstyles.json", lang="pl"):
@@ -619,9 +567,6 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
     results_pl.sort(key=lambda x: x["score"], reverse=True)
     results_en.sort(key=lambda x: x["score"], reverse=True)
 
-    results_pl = normalize_scores_for_display(results_pl)
-    results_en = normalize_scores_for_display(results_en)
-
     return {
         "top_styles": {
             "pl": results_pl[:top_k],
@@ -635,10 +580,10 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
 
         "face_analysis": {
             "pl": _build_face_analysis_llm(
-                influences, traits, gender, lang="pl"
+                user_scores, influences, traits, gender, lang="pl"
             ),
             "en": _build_face_analysis_llm(
-                influences, traits, gender, lang="en"
+                user_scores, influences, traits, gender, lang="en"
             ),
         },
 
