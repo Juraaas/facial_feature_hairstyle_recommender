@@ -1,8 +1,6 @@
 from src.features import extract_features
 from src.face_traits import interpret_face
 from src.rules import apply_rules
-from src.face_traits_female import interpret_face_female
-from src.rules_female import apply_rules_female
 from src.recommender import generate_recommendations
 from src.validation import validate_landmarks, validate_features
 from src.logger import get_logger
@@ -54,6 +52,8 @@ def run_pipeline(img, detector, gender=None, lang="pl"):
             traits["hair_type"] = hair_result["hair_type"]
         if hair_result["hairline"] is not None:
             traits["hairline"] = hair_result["hairline"]
+        if hair_result["coverage"] is not None:
+            traits["coverage"] = hair_result["coverage"]
         scores = apply_rules(traits, gender="Woman")
         recs = generate_recommendations(scores, traits, gender="Woman",
                                         hairstyles_path="data/hairstyles_female.json", lang=lang)
@@ -63,6 +63,8 @@ def run_pipeline(img, detector, gender=None, lang="pl"):
             traits["hair_type"] = hair_result["hair_type"]
         if hair_result["hairline"] is not None:
             traits["hairline"] = hair_result["hairline"]
+        if hair_result["coverage"] is not None:
+            traits["coverage"] = hair_result["coverage"]    
         scores = apply_rules(traits, gender="Man")
         recs = generate_recommendations(scores, traits, gender="Man",
                                         hairstyles_path="data/hairstyles.json", lang=lang)
