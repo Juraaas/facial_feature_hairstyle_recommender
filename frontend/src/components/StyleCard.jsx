@@ -13,7 +13,7 @@ function formatContributionReason(description, isPolish) {
         : `Makes good use of ${description}.`;
 }
 
-export function StyleCard({style, rank, features, gender, isPremium = False }) {
+export function StyleCard({style, rank, features, gender, isPremium=false }) {
     const { t, i18n } = useTranslation()
     const [voted, setVoted] = useState(null)
     const score = style.display_score ?? 0
@@ -60,7 +60,8 @@ export function StyleCard({style, rank, features, gender, isPremium = False }) {
             <div style={{
             position: 'absolute', top: 10, right: 10, background: 'rgba(15,15,14,.72)', 
             backdropFilter: 'blur(6px)', color: '#fff', borderRadius: 20,
-            padding: '5px 11px'}}>
+            padding: '5px 11px', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', lineHeight: 1.2}}>
                 <span
                     style={{
                         fontSize: 12, fontFamily: "var(--font-mono)",
