@@ -10,17 +10,6 @@ export function Admin() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
 
-  console.log('user email:', user?.email)
-
-  if (!user) {
-    return <div style={{ padding: 40 }}>Not logged in</div>
-  }
-  if (user.email !== 'pozdroelobenc@gmail.com') {
-    return <div style={{ padding: 40 }}>
-      Access denied. Your email: {user.email}
-    </div>
-  }
-
   useEffect(() => {
     async function load() {
       const [
@@ -50,7 +39,7 @@ export function Admin() {
       setLoading(false)
     }
     load()
-  }, [])
+  }, [user])
 
   async function upgradeToPremium(userId) {
     await supabase.from('profiles').update({ plan: 'premium' }).eq('id', userId)
@@ -62,7 +51,9 @@ export function Admin() {
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: 'free' } : u))
   }
 
-  if (loading) return <div style={{ padding: 40 }}>Loading...</div>
+  if (!user) return <div style={{ padding: 40 }}>Not logged in</div>
+  if (user.email !== ADMIN_EMAIL) return <div style={{ padding: 40 }}>Access denied: {user.email}</div>
+  if (loading || !stats) return <div style={{ padding: 40 }}>Loading...</div>
 
   return (
     <div style={{ padding: 40, maxWidth: 900, margin: '0 auto',
