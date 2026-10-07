@@ -10,8 +10,15 @@ export function Admin() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
 
-  if (!user || user.email !== ADMIN_EMAIL) {
-    return <div style={{ padding: 40, textAlign: 'center' }}>Access denied</div>
+  console.log('user email:', user?.email)
+
+  if (!user) {
+    return <div style={{ padding: 40 }}>Not logged in</div>
+  }
+  if (user.email !== 'pozdroelobenc@gmail.com') {
+    return <div style={{ padding: 40 }}>
+      Access denied. Your email: {user.email}
+    </div>
   }
 
   useEffect(() => {
@@ -21,6 +28,7 @@ export function Admin() {
         { count: totalAnalyses },
         { count: premiumUsers },
         { data: recentUsers },
+        { data: ratings },
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('analyses').select('*', { count: 'exact', head: true }),
@@ -28,7 +36,15 @@ export function Admin() {
           .eq('plan', 'premium'),
         supabase.from('profiles').select('id, email, plan, created_at')
           .order('created_at', { ascending: false }).limit(20),
+        supabase.from('preview_ratings').select('style_name, rating'),
       ])
+      const ratingStats = (ratings || []).reduce((acc, r) => {
+        if (!acc[r.style_name]) acc[r.style_name] = { good: 0, bad: 0, total: 0 }
+        acc[r.style_name][r.rating]++
+        acc[r.style_name].total++
+        return acc
+      }, {})
+
       setStats({ totalUsers, totalAnalyses, premiumUsers })
       setUsers(recentUsers || [])
       setLoading(false)
@@ -123,6 +139,45 @@ export function Admin() {
           ))}
         </tbody>
       </table>
+
+      {/* preview ratings */}
+        {stats.ratingStats && Object.keys(stats.ratingStats).length > 0 && (
+          <>
+            <h2 style={{ margin: '40px 0 16px', fontSize: 16 }}>Preview ratings by style</h2>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid var(--border)' }}>
+                  {['Style', 'Good', 'Bad', 'Total', 'Score'].map(h => (
+                    <th key={h} style={{ padding: '8px 12px', textAlign: 'left',
+                      color: 'var(--text-hint)', fontWeight: 500 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(stats.ratingStats)
+                  .sort((a, b) => b[1].total - a[1].total)
+                  .map(([style, r]) => (
+                  <tr key={style} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '8px 12px' }}>{style}</td>
+                    <td style={{ padding: '8px 12px', color: '#2d8f4e' }}>{r.good}</td>
+                    <td style={{ padding: '8px 12px', color: '#c0392b' }}>{r.bad}</td>
+                    <td style={{ padding: '8px 12px', color: 'var(--text-muted)' }}>{r.total}</td>
+                    <td style={{ padding: '8px 12px' }}>
+                      <span style={{
+                        fontSize: 11, padding: '2px 8px', borderRadius: 20,
+                        background: r.good / r.total > 0.7 ? '#f0faf4' : '#fef4f2',
+                        color: r.good / r.total > 0.7 ? '#2d8f4e' : '#c0392b',
+                        border: `1px solid ${r.good / r.total > 0.7 ? '#b7dfc7' : '#f5c6bc'}`,
+                      }}>
+                        {Math.round(r.good / r.total * 100)}%
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
     </div>
   )
 }
