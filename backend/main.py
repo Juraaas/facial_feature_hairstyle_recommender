@@ -374,7 +374,9 @@ async def style_preview(
         from src.hair_classifier import estimate_hair_length
         import base64
 
+        print(f"FORM DATA: hair_coverage={hair_coverage}, hair_type={hair_type}")
         current_length = estimate_hair_length(hair_coverage)
+        print(f"ESTIMATED LENGTH: {current_length}")
         transformation = estimate_transformation(
             current_length = current_length,
             current_hair_type = hair_type or "straight",
