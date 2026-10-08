@@ -5,14 +5,6 @@ import { TriangleAlert, LockKeyhole, ThumbsUp, ThumbsDown } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function formatContributionReason(description, isPolish) {
-    if (!description) return "";
-
-    return isPolish
-        ? `Dobrze wykorzystuje ${description}.`
-        : `Makes good use of ${description}.`;
-}
-
 export function StyleCard({style, rank, features, gender, isPremium=false }) {
     const { t, i18n } = useTranslation()
     const [voted, setVoted] = useState(null)
@@ -113,24 +105,26 @@ export function StyleCard({style, rank, features, gender, isPremium=false }) {
                 <p style={{fontSize: 9, fontWeight: 600, color: 'var(--text-hint)',
                 textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8, 
                 fontFamily: 'var(--font-body)'}}>{t('why_it_works')}</p>
-                {style.contributions.slice(0, 2).map((c, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 7, marginBottom: 6 }}>
-                    <span
-                        style={{
-                            fontSize: 12, color: "var(--accent)", 
-                            lineHeight: 1.4, flexShrink: 0,
-                        }}>
-                        ✓
-                    </span>
+                {style.contributions.slice(0, 2).map((c) => ( 
+                    <div key={c.feature} style={{ 
+                        display: 'flex', alignItems: 'flex-start', 
+                        gap: 7, marginBottom: 6 
+                    }}> 
+                        <span 
+                            style={{ 
+                                fontSize: 12, color: "var(--accent)",  
+                                lineHeight: 1.4, flexShrink: 0 }}> 
+                            ✓ 
+                        </span> 
 
-                    <span
-                        style={{
-                            fontSize: 11, color: "var(--text-muted)",
-                            lineHeight: 1.45, fontWeight: 300,
-                        }}>
-                        {formatContributionReason(c.desc, pl)}
-                    </span>
-                </div>
+                        <span 
+                            style={{ 
+                                fontSize: 11, color: "var(--text-muted)", 
+                                lineHeight: 1.45, fontWeight: 300, 
+                            }}> 
+                            {c.reason}
+                        </span> 
+                    </div> 
                 ))}
             </div>
             )}

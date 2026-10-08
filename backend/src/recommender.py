@@ -31,6 +31,38 @@ STYLE_DESCRIPTIONS_PL = {
     "curtain_fringe": "kurtynowa grzywka",
 }
 
+STYLE_REASONS = {
+    "volume_top": "Makes good use of height on top.",
+    "volume_sides": "Makes good use of fuller sides.",
+    "short_sides": "Makes good use of shorter sides.",
+    "longer_hair": "Makes good use of longer hair.",
+    "fringe": "Makes good use of a fringe.",
+    "clean_lines": "Makes good use of clean, defined lines.",
+    "soft_texture": "Makes good use of soft texture.",
+    "textured_top": "Makes good use of texture on top.",
+    "layers": "Makes good use of layered cutting.",
+    "updo": "Makes good use of a lifted style.",
+    "curtain_fringe": "Makes good use of a curtain fringe.",
+}
+
+STYLE_REASONS_PL = {
+    "volume_top": "Dobrze wykorzystuje objętość na górze.",
+    "volume_sides": "Dobrze wykorzystuje objętość po bokach.",
+    "short_sides": "Dobrze wykorzystuje krótsze boki.",
+    "longer_hair": "Dobrze wykorzystuje dłuższą długość włosów.",
+    "fringe": "Dobrze wykorzystuje grzywkę.",
+    "clean_lines": "Dobrze wykorzystuje wyraźne, czyste linie.",
+    "soft_texture": "Dobrze wykorzystuje miękką teksturę.",
+    "textured_top": "Dobrze wykorzystuje teksturę na górze.",
+    "layers": "Dobrze wykorzystuje warstwowe cięcie.",
+    "updo": "Dobrze wykorzystuje uniesione upięcie.",
+    "curtain_fringe": "Dobrze wykorzystuje kurtynową grzywkę.",
+}
+
+REDUNDANT_FEATURE_GROUPS = [
+    {"fringe", "curtain_fringe"},
+]
+
 NEGATIVE_EXPLANATIONS = {
     "fringe": "fringe may not suit your eye proportions or add unwanted weight to the forehead",
     "volume_sides": "side volume may widen your face shape",
@@ -211,8 +243,47 @@ def score_hairstyle(user_scores, style):
 
     return final_score
 
+def _deduplicate_contributions(contributions):
+    result = []
+    used_groups = set()
+
+    for contribution in contributions:
+        feature = contribution["feature"]
+
+        group_index = None
+
+        for i, group in enumerate(REDUNDANT_FEATURE_GROUPS):
+            if feature in group:
+                group_index = i
+                break
+
+        if group_index is None:
+            result.append(contribution)
+            continue
+
+        if group_index in used_groups:
+            continue
+
+        group_features = REDUNDANT_FEATURE_GROUPS[group_index]
+
+        candidates = [
+            c for c in contributions
+            if c["feature"] in group_features
+        ]
+
+        strongest = max(
+            candidates,
+            key=lambda c: abs(c["raw"])
+        )
+
+        result.append(strongest)
+        used_groups.add(group_index)
+
+    return result
+
 def explain_match(user_scores, style, total_score, lang="pl"):
     descriptions = STYLE_DESCRIPTIONS_PL if lang == "pl" else STYLE_DESCRIPTIONS
+    reasons = STYLE_REASONS_PL if lang == "pl" else STYLE_REASONS
     negatives_map = NEGATIVE_EXPLANATIONS_PL if lang == "pl" else NEGATIVE_EXPLANATIONS
     positive = []
     negative = []
@@ -234,6 +305,7 @@ def explain_match(user_scores, style, total_score, lang="pl"):
                 "feature": key,
                 "raw": contribution,
                 "desc": descriptions.get(key,key),
+                "reason": reasons.get(key, ""),
             })
             pos_total += contribution
         
@@ -249,6 +321,8 @@ def explain_match(user_scores, style, total_score, lang="pl"):
             ),
             })
             neg_total += abs(contribution)
+
+    positive = _deduplicate_contributions(positive)
         
     for c in positive:
         c["percent"] = c["raw"] / pos_total if pos_total > 0 else 0.0
