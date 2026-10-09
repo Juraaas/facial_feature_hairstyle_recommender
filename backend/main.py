@@ -214,6 +214,7 @@ async def analyse(request: Request,
             "quality": {
                 "score": quality.score,
                 "warnings": quality.warnings,
+                "hair_coverage": traits.get("coverage", 0.05),
             },
             "face_analysis": recs["face_analysis"],
             "styles": recs["all_styles"],
