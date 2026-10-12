@@ -389,7 +389,7 @@ function App() {
                   styles={styles}
                   originalFile={file}
                   isPremium={isPremium}
-                  result={result}
+                  analysisResult={result}
                   onUpgrade={() => {setShowPlayground(false); setShowPremium(true) }}
                   onClose={() => setShowPlayground(false)}
                   gender={result.gender}

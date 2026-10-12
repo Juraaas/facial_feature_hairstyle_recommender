@@ -6,14 +6,14 @@ import { supabase } from '../lib/supabase'
 const BASE = import.meta.env.VITE_API_URL
 
 const HAIR_COLORS = [
-  { id: 'natural',  label_pl: 'Naturalny',     label_en: 'Natural',      prompt: 'keep the natural hair color' },
-  { id: 'blonde',   label_pl: 'Blond',          label_en: 'Blonde',       prompt: 'platinum blonde hair color' },
-  { id: 'dark',     label_pl: 'Ciemny brąz',    label_en: 'Dark brown',   prompt: 'dark brown hair color' },
-  { id: 'black',    label_pl: 'Czarny',         label_en: 'Black',        prompt: 'jet black hair color' },
-  { id: 'auburn',   label_pl: 'Rudy',           label_en: 'Auburn',       prompt: 'auburn red hair color' },
+  { id: 'natural', label_pl: 'Naturalny', label_en: 'Natural', prompt: 'keep the natural hair color' },
+  { id: 'blonde', label_pl: 'Blond', label_en: 'Blonde', prompt: 'platinum blonde hair color' },
+  { id: 'dark', label_pl: 'Ciemny brąz', label_en: 'Dark brown', prompt: 'dark brown hair color' },
+  { id: 'black', label_pl: 'Czarny', label_en: 'Black', prompt: 'jet black hair color' },
+  { id: 'auburn', label_pl: 'Rudy', label_en: 'Auburn', prompt: 'auburn red hair color' },
 ]
 
-export function StylePlayground({ styles, originalFile, onClose, isPremium, onUpgrade, gender }) {
+export function StylePlayground({ styles, originalFile, onClose, isPremium, onUpgrade, gender, analysisResult }) {
   const { i18n } = useTranslation()
   const pl = i18n.language === 'pl'
 
@@ -43,8 +43,8 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
       form.append('style_name', selectedStyle)
       form.append('color_id', selectedColor)
       form.append('gender', gender)
-      form.append('hair_type', result?.traits?.hair_type ?? '')
-      form.append('hair_coverage', String(result?.quality?.hair_coverage ?? 0.05))
+      form.append('hair_type', analysisResult?.traits?.hair_type ?? '')
+      form.append('hair_coverage', String(analysisResult?.quality?.hair_coverage ?? 0.05))
 
       const res = await fetch(`${BASE}/style-preview`, {
         method: 'POST', 
