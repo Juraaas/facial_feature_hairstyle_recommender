@@ -318,7 +318,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                 {/* transformation */}
                 {transformation && (
                   <div style={{
-                    padding: '12px 14px', background: 'var(--surface-2)',
+                    padding: '14px', background: 'var(--surface-2)',
                     borderRadius: 'var(--radius-md)', border: '1px solid var(--border)',
                   }}>
                     <p style={{
@@ -328,7 +328,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                     }}>
                       {pl ? 'Szacowana transformacja' : 'Estimated transformation'}
                     </p>
-                    <div style={{ display: 'flex', gap: 20, marginBottom: 8 }}>
+                    <div style={{ display: 'flex', gap: 20, marginBottom: 10 }}>
                       {[
                         { val: transformation.visits, label: pl ? 'wizyty' : 'visits' },
                         { val: transformation.months, label: pl ? 'miesięcy' : 'months' },
@@ -365,6 +365,51 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                     }}>
                       {pl ? transformation.note_pl : transformation.note_en}
                     </p>
+                    
+                    {transformation.recommendation_pl && (
+                      <div style={{ marginBottom: 6 }}>
+                        <p style={{
+                          fontSize: 9, fontWeight: 600, color: 'var(--text-hint)',
+                          textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 3,
+                        }}>
+                          {pl ? 'Rekomendacja' : 'Recommendation'}
+                        </p>
+                        <p style={{ fontSize: 11, color: 'var(--text-muted)',
+                          fontWeight: 300, lineHeight: 1.55 }}>
+                          {pl ? transformation.recommendation_pl : transformation.note_en}
+                        </p>
+                      </div>
+                    )}
+
+                    {transformation.first_step_pl && (
+                      <div style={{ marginBottom: 6 }}>
+                        <p style={{
+                          fontSize: 9, fontWeight: 600, color: 'var(--text-hint)',
+                          textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 3,
+                        }}>
+                          {pl ? 'Pierwszy krok' : 'First step'}
+                        </p>
+                        <p style={{ fontSize: 11, color: 'var(--text-muted)',
+                          fontWeight: 300, lineHeight: 1.55 }}>
+                          {transformation.first_step_pl}
+                        </p>
+                      </div>
+                    )}
+
+                    {transformation.maintenance_pl && (
+                      <div>
+                        <p style={{
+                          fontSize: 9, fontWeight: 600, color: 'var(--text-hint)',
+                          textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 3,
+                        }}>
+                          {pl ? 'Pielęgnacja' : 'Maintenance'}
+                        </p>
+                        <p style={{ fontSize: 11, color: 'var(--text-muted)',
+                          fontWeight: 300, lineHeight: 1.55 }}>
+                          {transformation.maintenance_pl}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
