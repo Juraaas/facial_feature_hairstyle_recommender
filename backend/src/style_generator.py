@@ -11,7 +11,7 @@ STYLE_PROMPTS_MALE = {
         "longer than the sides with natural texture. Clean masculine finish."
     ),
     "Comb Over": (
-        "a classic Comb Over: moderately short sides with a subtle fade, and medium-short hair on top" 
+        "a classic Comb Over: moderately short sides with a subtle fade, and medium-short hair on top. " 
         "A clearly visible side part separates the top into two sections. The longer section is combed horizontally across to one side, following the shape of the head." 
         "The hair must sweep sideways, not straight backward. Natural, neat finish without excessive volume."
     ),
@@ -22,23 +22,31 @@ STYLE_PROMPTS_MALE = {
         "Natural matte finish, not wet or glossy."
     ),
     "Quiff": (
-        "a natural Quiff: the front section of the hair is directed slightly forward at the roots and then lifted upward and gently backward," 
-        "forming one cohesive, rounded volume at the front hairline. The front is visibly raised but not excessively tall." 
-        "The top blends naturally into the rest of the hair. Short tapered sides. "
-        "No separate spikes, no split front sections, no side-swept fringe."
+        "Short tapered sides and a compact, textured top. "
+        "At the front hairline, the hair rises upward from the forehead "
+        "and curves gently backward, creating a rounded, elevated shape. "
+        "Hair from both the left and right sides of the front hairline "
+        "lifts upward and blends together near the center of the top. "
+        "The front must have visible height and balanced volume on both sides. "
+        "No sideways sweep, no side part, no flat fringe, no long back."
     ),
     "Classic Undercut": (
-        "a Classic Undercut: very short sides with a clear, abrupt disconnection from the medium-length top." 
-        "The top forms one cohesive section and flows backward without a prominent side part. The contrast between the short sides and longer top is clearly visible." 
-        "Keep the top controlled and natural, not excessively tall or glossy."
+        "a Classic Undercut: very short sides and back, sharply disconnected "
+        "from a moderately short top. The top is approximately 5-7 cm long "
+        "and combed backward as one cohesive section. "
+        "Keep the nape short, with no long hair extending down the back of the neck. "
+        "Moderate top volume, close-fitting sides, no flowing or shoulder-length hair. "
+        "The sharp contrast between the top and sides is essential."
     ),
     "Textured Fringe": (
-        "a Textured Fringe: short-to-medium hair on top with a soft, naturally irregular fringe resting across the forehead." 
-        "The ends are lightly separated and slightly uneven, with subtle texture rather than exaggerated spikes." 
-        "Short tapered sides. The hair should look naturally styled and touchable, not heavily choppy, messy or over-textured."
+        "a Textured Fringe: short-to-medium hair on top with a naturally "
+        "choppy fringe resting across the forehead. "
+        "The top has clearly visible piecey texture and separation between "
+        "individual locks, while remaining soft and realistic. "
+        "Short tapered sides. Avoid exaggerated spikes or an excessively messy finish."
     ),
     "Messy Crop": (
-        "a short Messy Crop: a compact haircut with a top approximately 2-3 cm long, visibly shorter than a medium-length hairstyle." 
+        "a short Messy Crop: a compact haircut with a top approximately 2-3 cm long, visibly shorter than a medium-length hairstyle. " 
         "The top has subtle, rough natural texture and is styled slightly forward. The sides and back are short and tapered." 
         "Keep the overall silhouette close to the head. No long layers, no flowing hair, no extended fringe."
 
@@ -60,20 +68,26 @@ STYLE_PROMPTS_MALE = {
         "Contemporary and compact."
     ),
     "Layered Medium": (
-        "a Layered Medium haircut: hair ending around the chin or jaw, "
-        "with visible soft layers and natural movement. "
-        "Medium length, not long. No fringe."
+        "A medium-length layered haircut ending around the chin or jaw. "
+        "Soft, visible layers with natural movement. "
+        "The hair is medium length, not long. No fringe."
     ),
     "Curtain Bangs": (
-        "men's Curtain Bangs: medium-length hair with the front split into two sections, "
-        "left half falling to the left side of the forehead, "
-        "right half falling to the right side. "
-        "Natural relaxed look, not perfectly symmetrical or forced."
+        "Medium-length hair with a clear center part at the forehead. "
+        "The hair separates into two distinct sections that sweep outward "
+        "in opposite directions, one toward the left temple and the other "
+        "toward the right temple. "
+        "Both sections follow the natural shape of the head and blend "
+        "smoothly into the hair on each side. "
+        "Natural, relaxed texture with moderate volume and a clean silhouette."
     ),
     "Bro Flow": (
-        "a Bro Flow: medium-to-long hair grown past the ears, flowing naturally backward and outward from the crown." 
-        "The sides remain medium length, without a fade or tight taper. Relaxed, natural movement and realistic hair texture." 
-        "Preserve the original facial hair exactly; do not add, remove or alter a beard, moustache, stubble or clean-shaven appearance."
+        "Medium-to-long hair extending past the ears, flowing naturally "
+        "backward and slightly outward from the crown. "
+        "Loose, continuous layers with natural movement and moderate volume. "
+        "The sides remain medium-length, without a fade or tight taper. "
+        "The back follows the natural shape of the head and neck. "
+        "Relaxed, natural finish, without exaggerated length or volume."
     ),
     "Long Straight": (
         "long straight hair reaching the shoulders or slightly past. "
@@ -89,11 +103,12 @@ STYLE_PROMPTS_FEMALE = {
         "Clean tapered nape and sides."
     ),
     "Bob Classic": (
-        "a classic Bob ending just below the jaw, smooth and rounded. "
-        "No fringe, forehead fully exposed. Natural hair texture."
-        "a classic Bob haircut ending around the jawline or slightly below it, with a smooth, rounded outline and naturally inward-curving ends."
-        "No fringe or bangs: the forehead remains fully visible. The haircut frames the sides of the face without changing or obscuring its shape." 
-        "Natural hair texture, realistic volume and a balanced silhouette."
+        "a classic Bob haircut ending around the jawline or slightly below, "
+        "with a soft rounded outline and naturally curved ends. "
+        "The forehead remains fully visible, with no fringe or bangs. "
+        "Natural hair texture with subtle strand variation and gentle volume. "
+        "The hair should look integrated with the original photograph, "
+        "not overly smooth, flat, slicked down or wig-like."
     ),
     "Textured Bob": (
         "a Textured Bob: jaw-length hair with soft layers and natural movement. "
@@ -176,10 +191,10 @@ STYLE_PROMPTS_FEMALE = {
 
 COLOR_PROMPTS = {
 "natural": None,
-"blonde": "natural-looking blonde hair",
-"dark": "natural-looking dark brown hair",
-"black": "natural-looking black hair",
-"auburn": "natural-looking auburn hair",
+"blonde": "blonde",
+"dark": "dark brown",
+"black": "black",
+"auburn": "auburn",
 }
 
 def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
@@ -188,26 +203,24 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
     color = COLOR_PROMPTS.get(color_id)
 
     prompt = (
-        f"Edit only the hair of the person in the input image. "
+        "Edit the hairstyle of the person in the input photograph. "
         f"Change the hairstyle to {style}. "
     )
 
     if color:
-        prompt += f"Also change the hair color to {color}. "
+        prompt += f"Change the hair color to {color}. "
     else:
-        prompt += "Keep the exact same hair color as in the original photo. "
+        prompt += "Preserve the original hair color. "
 
     prompt += (
-        "IMPORTANT: Preserve the person's exact identity and facial geometry, including face shape, face width-to-height ratio, "
-        "jawline, chin, nose, eyes, eye spacing and natural skin texture. "
-        "ears, skin, expression, clothing, lighting or background. "
-        "Preserve the original facial expression, gaze, background, lighting, skin tone, eye color and existing facial hair. "
-        "Do not add, remove or alter facial hair. Preserve the original hair color unless a different color is explicitly requested."
-        "Keep the result photorealistic and consistent with the original photograph. Do not beautify, reshape, smooth or retouch the face."
-        "The face must be pixel-perfect identical to the input. "
-        "Do not change the image dimensions, aspect ratio or crop the image. "
-        "The output image must be the same size and framing as the input. "
-        "Only the hair on top of the head changes."
+        "Preserve the person's exact identity and facial geometry, including "
+        "face shape, jawline, chin, nose, eyes and eye spacing. "
+        "Preserve the original expression, gaze, skin tone, skin texture, "
+        "eye color, facial hair, ears, clothing, lighting, background "
+        "Do not beautify, reshape, smooth or retouch the face. "
+        "Change only the hair characteristics required by the requested "
+        "hairstyle and color. Keep all other elements unchanged. "
+        "Maintain the original image framing and aspect ratio."
     )
 
     print(f"SEEDREAM [{style_name} + {color_id} + {gender}]: {prompt}")
