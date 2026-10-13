@@ -315,103 +315,81 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                   </p>
                 )}
 
-                {/* transformation */}
                 {transformation && (
-                  <div style={{
-                    padding: '14px', background: 'var(--surface-2)',
-                    borderRadius: 'var(--radius-md)', border: '1px solid var(--border)',
-                  }}>
-                    <p style={{
-                      fontSize: 9, fontWeight: 600, letterSpacing: '.08em',
-                      textTransform: 'uppercase', color: 'var(--text-hint)',
-                      marginBottom: 10, fontFamily: 'var(--font-body)',
-                    }}>
-                      {pl ? 'Szacowana transformacja' : 'Estimated transformation'}
-                    </p>
-                    <div style={{ display: 'flex', gap: 20, marginBottom: 10 }}>
-                      {[
-                        { val: transformation.visits, label: pl ? 'wizyty' : 'visits' },
-                        { val: transformation.months, label: pl ? 'miesięcy' : 'months' },
-                      ].map(item => (
-                        <div key={item.label} style={{ textAlign: 'center' }}>
-                          <p style={{
-                            fontFamily: 'var(--font-mono)', fontSize: 22,
-                            fontWeight: 600, color: 'var(--accent)', lineHeight: 1,
-                          }}>{item.val}</p>
-                          <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
-                            {item.label}
-                          </p>
-                        </div>
-                      ))}
-                      <div style={{ textAlign: 'center' }}>
-                        <p style={{
-                          fontSize: 12, fontWeight: 600, lineHeight: 1,
-                          color: { easy: '#2d8f4e', moderate: '#C8975A',
-                                  challenging: '#c0392b' }[transformation.difficulty],
-                        }}>
-                          {{ easy: pl ? 'Łatwa' : 'Easy',
-                            moderate: pl ? 'Umiarkowana' : 'Moderate',
-                            challenging: pl ? 'Wymagająca' : 'Challenging',
-                          }[transformation.difficulty]}
-                        </p>
-                        <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
-                          {pl ? 'trudność' : 'difficulty'}
+                <div style={{ marginTop: 16, padding: '18px 20px', background: 'var(--surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
+                  {/* header */}
+                  <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--text-hint)', marginBottom: 14, fontFamily: 'var(--font-body)' }}>
+                    {pl ? 'Szacowana transformacja' : 'Estimated transformation'}
+                  </p>
+
+                  {/* estimate */}
+                  <div style={{ display: 'flex', gap: 24, marginBottom: 14, alignItems: 'flex-end' }}>
+                    {[
+                      { val: transformation.visits, label: pl ? 'wizyty' : 'visits' },
+                      { val: transformation.months, label: pl ? 'miesięcy' : 'months' },
+                    ].map(item => (
+                      <div key={item.label} style={{ textAlign: 'center' }}>
+                        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 32, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{item.val}</p>
+                        <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4, fontWeight: 300 }}>
+                          {item.label}
                         </p>
                       </div>
+                    ))}
+
+                    <div style={{ textAlign: 'center', marginLeft: 'auto' }}>
+                      <span style={{
+                        display: 'inline-block', padding: '5px 14px', borderRadius: 20, fontSize: 11, fontWeight: 500,
+                        background: {
+                          easy:        '#f0faf4',
+                          moderate:    '#fef8f0',
+                          challenging: '#fef4f2',
+                        }[transformation.difficulty],
+                        color: {
+                          easy:        '#2d8f4e',
+                          moderate:    '#C8975A',
+                          challenging: '#c0392b',
+                        }[transformation.difficulty],
+                        border: `1px solid ${{
+                          easy:        '#b7dfc7',
+                          moderate:    '#f0d5a8',
+                          challenging: '#f5c6bc',
+                        }[transformation.difficulty]}`,
+                      }}>
+                        {{ easy: pl ? 'Łatwa' : 'Easy',
+                          moderate: pl ? 'Umiarkowana' : 'Moderate',
+                          challenging: pl ? 'Wymagająca' : 'Challenging',
+                        }[transformation.difficulty]}
+                      </span>
+                      <p style={{ fontSize: 10, color: 'var(--text-hint)', marginTop: 4 }}>
+                        {pl ? 'trudność' : 'difficulty'}
+                      </p>
                     </div>
-                    <p style={{
-                      fontSize: 11, color: 'var(--text-muted)', fontWeight: 300,
-                      lineHeight: 1.5, borderTop: '1px solid var(--border)', paddingTop: 8,
-                    }}>
-                      {pl ? transformation.note_pl : transformation.note_en}
-                    </p>
-                    
-                    {transformation.recommendation_pl && (
-                      <div style={{ marginBottom: 6 }}>
-                        <p style={{
-                          fontSize: 9, fontWeight: 600, color: 'var(--text-hint)',
-                          textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 3,
-                        }}>
-                          {pl ? 'Rekomendacja' : 'Recommendation'}
-                        </p>
-                        <p style={{ fontSize: 11, color: 'var(--text-muted)',
-                          fontWeight: 300, lineHeight: 1.55 }}>
-                          {pl ? transformation.recommendation_pl : transformation.note_en}
-                        </p>
-                      </div>
-                    )}
-
-                    {transformation.first_step_pl && (
-                      <div style={{ marginBottom: 6 }}>
-                        <p style={{
-                          fontSize: 9, fontWeight: 600, color: 'var(--text-hint)',
-                          textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 3,
-                        }}>
-                          {pl ? 'Pierwszy krok' : 'First step'}
-                        </p>
-                        <p style={{ fontSize: 11, color: 'var(--text-muted)',
-                          fontWeight: 300, lineHeight: 1.55 }}>
-                          {transformation.first_step_pl}
-                        </p>
-                      </div>
-                    )}
-
-                    {transformation.maintenance_pl && (
-                      <div>
-                        <p style={{
-                          fontSize: 9, fontWeight: 600, color: 'var(--text-hint)',
-                          textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 3,
-                        }}>
-                          {pl ? 'Pielęgnacja' : 'Maintenance'}
-                        </p>
-                        <p style={{ fontSize: 11, color: 'var(--text-muted)',
-                          fontWeight: 300, lineHeight: 1.55 }}>
-                          {transformation.maintenance_pl}
-                        </p>
-                      </div>
-                    )}
                   </div>
-                )}
+
+                  {/* divider */}
+                  <div style={{ borderTop: '1px solid var(--border)', marginBottom: 14 }} />
+
+                  {/* note */}
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6, marginBottom: transformation.recommendation_pl ? 12 : 0 }}>
+                    {pl ? transformation.note_pl : transformation.note_en}
+                  </p>
+
+                  {[
+                    { key: 'recommendation_pl', label_pl: 'Rekomendacja', label_en: 'Recommendation' },
+                    { key: 'first_step_pl', label_pl: 'Pierwszy krok', label_en: 'First step' },
+                    { key: 'maintenance_pl', label_pl: 'Pielęgnacja', label_en: 'Maintenance' },
+                  ].filter(f => transformation[f.key]).map(f => (
+                    <div key={f.key} style={{ marginBottom: 10 }}>
+                      <p style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 4, fontFamily: 'var(--font-body)' }}>
+                        {pl ? f.label_pl : f.label_en}
+                      </p>
+                      <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6 }}>
+                        {transformation[f.key]}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
               </div>
             )}
           </div>

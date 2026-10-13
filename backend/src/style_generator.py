@@ -68,18 +68,18 @@ STYLE_PROMPTS_MALE = {
         "Contemporary and compact."
     ),
     "Layered Medium": (
-        "A medium-length layered haircut ending around the chin or jaw. "
-        "Soft, visible layers with natural movement. "
-        "The hair is medium length, not long. No fringe."
+        "a medium-length layered haircut with natural layers and soft movement. "
+        "The hair has visible volume and texture, with slightly shorter layers around "
+        "the face and longer layers toward the back. Natural, relaxed finish, no fringe."
     ),
     "Curtain Bangs": (
-        "Medium-length hair with a clear center part at the forehead. "
-        "The hair separates into two distinct sections that sweep outward "
-        "in opposite directions, one toward the left temple and the other "
-        "toward the right temple. "
-        "Both sections follow the natural shape of the head and blend "
-        "smoothly into the hair on each side. "
-        "Natural, relaxed texture with moderate volume and a clean silhouette."
+        "medium-length hair with a soft natural centre part. "
+        "The front hair is divided into two loose sections — "
+        "one falling softly across the left side of the forehead "
+        "and one across the right side, each section grazing the eyebrow on its side. "
+        "The top of the forehead is visible between the two sections. "
+        "The rest of the hair flows naturally to the sides. "
+        "Relaxed and slightly wispy, not theatrical or forced."
     ),
     "Bro Flow": (
         "Medium-to-long hair extending past the ears, flowing naturally "
@@ -216,11 +216,22 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
         "Preserve the person's exact identity and facial geometry, including "
         "face shape, jawline, chin, nose, eyes and eye spacing. "
         "Preserve the original expression, gaze, skin tone, skin texture, "
-        "eye color, facial hair, ears, clothing, lighting, background "
+        "eye color, facial hair, ears, clothing, lighting, background. "
+        "IMPORTANT: Do not add, remove or change any facial hair or beard. Person's face must remain pixel-perfect identical to the provided image."
         "Do not beautify, reshape, smooth or retouch the face. "
         "Change only the hair characteristics required by the requested "
         "hairstyle and color. Keep all other elements unchanged. "
-        "Maintain the original image framing and aspect ratio."
+    )
+
+    prompt += (
+        "Preserve the person's exact identity and facial geometry, including "
+        "face shape, jawline, chin, nose, eyes and eye spacing. "
+        "Preserve the original expression, gaze, skin tone, skin texture, "
+        "eye color, ears, clothing, lighting, background. "
+        "IMPORTANT: The face must remain pixel-perfect identical to the input image. "
+        "Do not add, remove or change any facial hair, beard, stubble or moustache — "
+        "if the person is clean-shaven, the result must be clean-shaven. "
+        "Do not beautify, reshape, smooth or retouch the face in any way. "
     )
 
     print(f"SEEDREAM [{style_name} + {color_id} + {gender}]: {prompt}")
