@@ -12,7 +12,7 @@
       "attributes": {
         "volume_top": 0.0,
         "volume_sides": 0.0,
-        "short_sides": 1.0,
+        "short_sides": 0.0,
         "longer_hair": 0.0,
         "fringe": 0.0,
         "clean_lines": 1.0,
