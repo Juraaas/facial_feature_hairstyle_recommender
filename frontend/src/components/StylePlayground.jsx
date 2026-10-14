@@ -323,7 +323,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                   </p>
 
                   {/* estimate */}
-                  <div style={{ display: 'flex', gap: 24, marginBottom: 14, alignItems: 'flex-end' }}>
+                  <div style={{ display: 'flex', gap: 32, marginBottom: 14, justifyContent: 'center' }}>
                     {[
                       { val: transformation.visits, label: pl ? 'wizyty' : 'visits' },
                       { val: transformation.months, label: pl ? 'miesięcy' : 'months' },
@@ -336,7 +336,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                       </div>
                     ))}
 
-                    <div style={{ textAlign: 'center', marginLeft: 'auto' }}>
+                    <div style={{ textAlign: 'center' }}>
                       <span style={{
                         display: 'inline-block', padding: '5px 14px', borderRadius: 20, fontSize: 11, fontWeight: 500,
                         background: {
