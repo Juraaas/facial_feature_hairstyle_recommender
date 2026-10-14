@@ -165,6 +165,7 @@ async def analyse(request: Request,
             file: UploadFile = File(...),
             lang: str = Query("pl"),
             debug: bool = Query(False),
+            compact_debug: bool = Query(False),
             user = Depends(get_current_user)):
     try:
         MAX_FILE_SIZE = 10 * 1024 * 1024 
@@ -231,6 +232,41 @@ async def analyse(request: Request,
             "color_recommendation": color_rec,
         }
 
+        if compact_debug:
+            styles_list = (
+                recs["all_styles"].get(lang, [])
+                if isinstance(recs["all_styles"], dict)
+                else recs["all_styles"]
+            )
+
+            def compact_items(items):
+                return [
+                    {
+                        "feature": item.get("feature"),
+                        "raw": round(float(item.get("raw", 0)), 3),
+                    }
+                    for item in items
+                ]
+
+            compact_styles = [
+                {
+                    "rank": i + 1,
+                    "name": style.get("name"),
+                    "score": round(float(style.get("score", 0)), 4),
+                    "display_score": style.get("display_score"),
+                    "positive": compact_items(style.get("contributions", [])),
+                    "negative": compact_items(style.get("negatives", [])),
+                    "missing": style.get("missing", []),
+                }
+                for i, style in enumerate(styles_list)
+            ]
+
+            response["styles"] = compact_styles
+            response["debug"] = {
+                "raw_scores": scores,
+                "compact_ranking": compact_styles,
+            }
+
         if debug:
             styles_list = recs["all_styles"].get(lang, []) if isinstance(recs["all_styles"], dict) else recs["all_styles"]
             top_styles_list = recs["top_styles"].get(lang, []) if isinstance(recs.get("top_styles"), dict) else recs.get("top_styles", [])
@@ -277,7 +313,7 @@ async def analyse(request: Request,
                 }).execute()
             except Exception as e:
                 print(f"Failed to save analysis: {e}")
-        
+                
         return response
     except HTTPException:
         raise
