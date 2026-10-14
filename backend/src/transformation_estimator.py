@@ -2,10 +2,10 @@ import os, json
 from groq import Groq
 
 HAIR_LENGTH_LABELS = {
-    "very_short": "very short (buzz/crop)",
-    "short": "short",
-    "medium": "medium length",
-    "long": "long",
+    "very_short": "very short — currently 0.5-1 cm, like a buzz cut",
+    "short": "short — currently 1-5 cm",
+    "medium": "medium — currently around chin or jaw length",
+    "long": "long — past the shoulders",
 }
 
 HAIR_TYPE_LABELS = {
@@ -39,12 +39,12 @@ def estimate_transformation(
             - Current hair length: {HAIR_LENGTH_LABELS.get(current_length, current_length)}
             - Current hair texture: {HAIR_TYPE_LABELS.get(current_hair_type, 'unknown texture')}
             - Target hairstyle: {target_style}
-            - Gender: {gender}
+            - Gender: {'Woman' if gender == 'Woman' else 'Man'}
             {color_note}
 
             Guidelines:
             - Estimate the number of salon visits and months needed to achieve the target hairstyle.
-            - Distinguish between a style that can be achieved at the next haircut and one that requires growing the hair out.
+            - Distinguish between a style that can be achieved at the next haircut and one that requires realistic time for the growing of the hair.
             - Consider the current length, target style, hair texture, trimming during the transition, and any requested color change.
             - Do not assume that hair must grow longer if the target style can be achieved by cutting or restyling the existing hair.
             - Give practical advice that directly relates to this client's transition. Avoid generic advice.
@@ -53,7 +53,7 @@ def estimate_transformation(
             - The recommendation should explain the most useful next step, not merely repeat the target hairstyle.
             - Keep each text field concise and actionable.
             - Write in natural, friendly Polish for Polish fields and natural English for English fields.
-            - Return only valid JSON. Do not include Markdown or any text outside the JSON object.
+            - Return ONLY valid JSON without Markdown.
 
             Return this schema:
             {{
@@ -62,11 +62,11 @@ def estimate_transformation(
             "difficulty": "easy",
             "note_pl": "Jedno krótkie zdanie podsumowujące czas i trudność transformacji.",
             "note_en": "One short sentence summarizing the time and difficulty of the transition.",
-            "recommendation_pl": "Spersonalizowana porada dotycząca przejścia do docelowej fryzury.",
+            "recommendation_pl": "Konkretna porada dotycząca tej transformacji.",
             "first_step_pl": "Co konkretnie zrobić lub powiedzieć podczas pierwszej wizyty u fryzjera.",
-            "maintenance_pl": "Jak utrzymać docelową fryzurę po jej uzyskaniu."
+            "maintenance_pl": "Jak utrzymać fryzurę po osiągnięciu celu."
             }}
-            Use an integer from 1 to 8 for visits, 0 to 18 for months, and only easy, moderate, or challenging for difficulty."""
+            Use an integer from 1-8 for visits, 0-18 for months, difficulty: easy/moderate/challenging."""
 
     try:
         client = Groq(api_key=api_key)
