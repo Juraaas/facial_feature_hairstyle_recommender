@@ -95,7 +95,7 @@ export function StyleCard({style, rank, features, gender, isPremium=false }) {
             {style.description && (
             <p style={{fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.55,
                 paddingBottom: 10, borderBottom: '1px solid var(--border)',
-                display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
+                display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical',
                 overflow: 'hidden', fontWeight: 300}}>{style.description}</p>
             )}
 
