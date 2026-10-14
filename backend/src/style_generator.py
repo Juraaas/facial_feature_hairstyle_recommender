@@ -157,8 +157,12 @@ STYLE_PROMPTS_FEMALE = {
         "Natural movement and volume."
     ),
     "Long Straight Blunt": (
-        "long straight hair with a clean blunt cut at the ends. "
-        "No fringe — forehead fully exposed. Smooth and natural."
+        "a long straight blunt haircut ending well below the shoulders, "
+        "with a clean even perimeter and straight ends. "
+        "The hair is worn down with a simple natural shape. "
+        "No fringe, no bangs, no short front pieces falling across the forehead. "
+        "The forehead remains fully visible and the front hair length "
+        "matches the rest of the haircut."
     ),
     "Long with Curtain Fringe": (
         "long hair with a soft natural curtain fringe. "
@@ -211,17 +215,6 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
         prompt += f"Change the hair color to {color}. "
     else:
         prompt += "Preserve the original hair color. "
-
-    prompt += (
-        "Preserve the person's exact identity and facial geometry, including "
-        "face shape, jawline, chin, nose, eyes and eye spacing. "
-        "Preserve the original expression, gaze, skin tone, skin texture, "
-        "eye color, facial hair, ears, clothing, lighting, background. "
-        "IMPORTANT: Do not add, remove or change any facial hair or beard. Person's face must remain pixel-perfect identical to the provided image."
-        "Do not beautify, reshape, smooth or retouch the face. "
-        "Change only the hair characteristics required by the requested "
-        "hairstyle and color. Keep all other elements unchanged. "
-    )
 
     prompt += (
         "Preserve the person's exact identity and facial geometry, including "
