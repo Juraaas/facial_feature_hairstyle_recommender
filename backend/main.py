@@ -192,7 +192,7 @@ async def analyse(request: Request,
         norms, female_norms = get_norms()
         gender = get_gender(img)
         
-        result = run_pipeline(img, detector, gender=gender, lang=lang)
+        result = run_pipeline(img, detector, gender=gender, lang=lang, debug_rules=True)
         landmarks, features, traits, scores, recs, quality, hair_mask = result
 
         if landmarks is None:

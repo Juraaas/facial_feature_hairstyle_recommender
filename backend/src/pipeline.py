@@ -11,7 +11,7 @@ from src.hair_classifier import classify_hair
 
 log = get_logger(__name__) 
 
-def run_pipeline(img, detector, gender=None, lang="pl"):
+def run_pipeline(img, detector, gender=None, lang="pl", debug_rules=False):
     landmarks = detector.detect(img)
     lm_check = validate_landmarks(landmarks)
 
@@ -54,9 +54,7 @@ def run_pipeline(img, detector, gender=None, lang="pl"):
             traits["hairline"] = hair_result["hairline"]
         if hair_result["coverage"] is not None:
             traits["coverage"] = hair_result["coverage"]
-        scores = apply_rules(traits, gender="Woman")
-        recs = generate_recommendations(scores, traits, gender="Woman",
-                                        hairstyles_path="data/hairstyles_female.json", lang=lang)
+
     else:
         traits = interpret_face(features, gender="Man")
         if hair_result["hair_type"] is not None:
@@ -65,8 +63,40 @@ def run_pipeline(img, detector, gender=None, lang="pl"):
             traits["hairline"] = hair_result["hairline"]
         if hair_result["coverage"] is not None:
             traits["coverage"] = hair_result["coverage"]    
-        scores = apply_rules(traits, gender="Man")
-        recs = generate_recommendations(scores, traits, gender="Man",
-                                        hairstyles_path="data/hairstyles.json", lang=lang)
+
+    if debug_rules:
+        debug_result = apply_rules(traits, gender=gender or "Man", debug=True)
+        scores = debug_result["scores"]
+        trace = debug_result["trace"]
+
+        print("\n" + "=" * 60)
+        print(f"RULES DEBUG | gender={gender or 'Man'}")
+        print("Traits:", traits)
+
+        for stage in (
+            "base",
+            "after_interactions",
+            "after_symmetry",
+            "after_constraints",
+            "after_clamp",
+        ):
+            print(f"\n{stage}:")
+            print(trace[stage])
+
+        print("\nDELTAS:")
+        for stage, delta in trace["deltas"].items():
+            print(f"{stage}: {delta}")
+
+        print("\nCLAMPED DIMENSIONS:")
+        print(trace["clamped_dimensions"])
+        print("=" * 60)
+
+    else:
+        scores = apply_rules(traits, gender=gender or "Man")
+
+    if gender == "Woman":
+        recs = generate_recommendations(scores, traits, gender="Woman", hairstyles_path="data/hairstyles_female.json", lang=lang)
+    else:
+        recs = generate_recommendations(scores, traits, gender="Man", hairstyles_path="data/hairstyles.json", lang=lang)
 
     return landmarks, features, traits, scores, recs, quality, hair_mask

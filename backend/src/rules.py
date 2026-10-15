@@ -20,8 +20,19 @@ def _base_scores(gender):
         scores["short_sides"] = 0
     return scores
 
+def _snapshot_scores(scores):
+    return dict(scores)
 
-def apply_rules(traits, gender="Man"):
+
+def _score_delta(before, after):
+    return {
+        key: round(after.get(key, 0) - before.get(key, 0), 3)
+        for key in before.keys() | after.keys()
+        if abs(after.get(key, 0) - before.get(key, 0)) > 1e-9
+    }
+
+
+def apply_rules(traits, gender="Man", debug=False):
     scores = _base_scores(gender)
     is_female = gender == "Woman"
 
@@ -218,10 +229,57 @@ def apply_rules(traits, gender="Man"):
         scores["fringe"] -= MEDIUM
         scores["soft_texture"] += WEAK
 
-    scores = _apply_interaction_rules(scores, traits, gender)
-    scores = _apply_symmetry_modulation(scores, traits, gender)
-    scores = _apply_hard_constraints(scores, traits)
+    trace = {}
+
+    if debug:
+        trace["base"] = _snapshot_scores(scores)
+
+    _apply_interaction_rules(scores, traits, gender)
+
+    if debug:
+        trace["after_interactions"] = _snapshot_scores(scores)
+
+    _apply_symmetry_modulation(scores, traits, gender)
+
+    if debug:
+        trace["after_symmetry"] = _snapshot_scores(scores)
+
+    _apply_hard_constraints(scores, traits)
+
+    if debug:
+        trace["after_constraints"] = _snapshot_scores(scores)
+
+    before_clamp = _snapshot_scores(scores)
     scores = clamp_scores(scores)
+
+    if debug:
+        trace["after_clamp"] = _snapshot_scores(scores)
+
+        stages = [
+            ("interactions", "base", "after_interactions"),
+            ("symmetry", "after_interactions", "after_symmetry"),
+            ("constraints", "after_symmetry", "after_constraints"),
+            ("clamp", "after_constraints", "after_clamp"),
+        ]
+
+        trace["deltas"] = {
+            name: _score_delta(trace[before], trace[after])
+            for name, before, after in stages
+        }
+
+        trace["clamped_dimensions"] = {
+            key: {
+                "before": before_clamp[key],
+                "after": scores[key],
+            }
+            for key in before_clamp
+            if abs(before_clamp[key] - scores[key]) > 1e-9
+        }
+
+        return {
+            "scores": scores,
+            "trace": trace,
+        }
 
     return scores
 
