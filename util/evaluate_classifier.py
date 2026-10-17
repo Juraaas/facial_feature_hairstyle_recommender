@@ -142,7 +142,7 @@ def run_evaluation(df: pd.DataFrame, images_dir: str) -> dict:
 
         try:
             hair_mask, _ = segment_face(img)
-            result = classify_hair(img, hair_mask)
+            result = classify_hair(img, hair_mask, hairline_conf_threshold=0.65)
 
         except Exception as e:
             rows.append({
