@@ -91,56 +91,38 @@ export function PhotoTutorial({ onDone }) {
       </h3>
 
       {/* items */}
-      <div style={{ marginBottom: 24 }}>
-        {items.map((item, i) => (
-          <div key={i} style={{
-            display: 'flex', alignItems: 'flex-start', gap: 10,
-            marginBottom: 10,
-          }}>
-            <span style={{
-              fontSize: 13, flexShrink: 0, marginTop: 1,
-              color: item.ok ? '#2d8f4e' : '#c0392b',
-            }}>
-              {item.ok ? '✓' : '✗'}
-            </span>
-            <span style={{
-              fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5,
-            }}>
-              {item.text}
-            </span>
-          </div>
-        ))}
+      <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ width: '100%', maxWidth: 280 }}>
+          {items.map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
+              <span style={{ fontSize: 13, flexShrink: 0, marginTop: 1, color: item.ok ? '#2d8f4e' : '#c0392b' }}>
+                {item.ok ? '✓' : '✗'}
+              </span>
+              <span style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                {item.text}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* navigation */}
       <div style={{ display: 'flex', gap: 8 }}>
-        {step > 0 && (
+        {step > 0 ? (
           <button
             onClick={() => setStep(s => s - 1)}
-            style={{
-              flex: 1, padding: '10px 0',
-              background: 'none',
-              border: '0.5px solid var(--border)',
-              borderRadius: 8, cursor: 'pointer',
-              fontSize: 13, color: 'var(--text-muted)',
-            }}
+            style={{ flex: 1, padding: '10px 0', background: 'none', border: '0.5px solid var(--border)', borderRadius: 8, cursor: 'pointer', fontSize: 13, color: 'var(--text-muted)' }}
           >
             {t('tutorial_back')}
           </button>
+        ) : (
+          <div style={{ flex: 1 }} />
         )}
         <button
           onClick={() => isLast ? onDone() : setStep(s => s + 1)}
-          style={{
-            flex: 2, padding: '10px 0',
-            background: 'var(--accent)',
-            border: 'none', borderRadius: 8,
-            cursor: 'pointer', fontSize: 13,
-            color: '#fff', fontWeight: 500,
-          }}
+          style={{ flex: 1, padding: '10px 0', background: 'var(--accent)', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 13, color: '#fff', fontWeight: 500 }}
         >
-          {isLast
-            ? t('tutorial_done')
-            : t('tutorial_next')}
+          {isLast ? t('tutorial_done') : t('tutorial_next')}
         </button>
       </div>
 
