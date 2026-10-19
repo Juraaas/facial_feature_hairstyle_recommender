@@ -2,8 +2,7 @@ import cv2
 import os
 import numpy as np
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "hair_classifier.onnx")
+MODEL_PATH = os.path.join("models", "hair_classifier_2.onnx")
 
 HAIR_TYPES = ["straight", "wavy", "curly", "coily"]
 HAIRLINES = ["normal", "receding", "uneven"]
@@ -17,10 +16,8 @@ def get_session():
     global _session
     if _session is None:
         import onnxruntime as ort
-        model_path = os.path.join(os.path.dirname(__file__),
-                                  MODEL_PATH)
         _session = ort.InferenceSession(
-            model_path,
+            MODEL_PATH,
             providers=["CPUExecutionProvider"],
         )
     return _session
@@ -88,7 +85,7 @@ def classify_hair(img_bgr, hair_mask, gender="Man", landmarks=None,
     hairline = None
     hairline_conf = 0.0
 
-    if gender != "Woman" and coverage >= HAIRLINE_COVERAGE_MIN:
+    if coverage >= HAIRLINE_COVERAGE_MIN:
         crop_hl = prepare_hairline_crop(img_bgr, hair_mask, landmarks=landmarks)
         if crop_hl is not None:
             inp = _preprocess(crop_hl)
@@ -97,9 +94,7 @@ def classify_hair(img_bgr, hair_mask, gender="Man", landmarks=None,
             hairline_conf = float(np.max(hairline_probs))
             hairline_pred = HAIRLINES[np.argmax(hairline_probs)]
 
-            if hairline_pred == "receding" and hairline_conf >= 0.90:
-                hairline = "receding"
-            elif hairline_pred in ("normal", "uneven") and hairline_conf >= hairline_conf_threshold:
+            if hairline_pred in ("normal", "uneven", "receding") and hairline_conf >= hairline_conf_threshold:
                 hairline = hairline_pred
 
     return {
