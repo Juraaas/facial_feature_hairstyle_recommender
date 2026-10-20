@@ -11,6 +11,7 @@ export function useAnalysis() {
     setError(null)
     setResult(null)
     try {
+      console.log('analyse called with gender:', gender) 
       const data = await analysePhoto(file, lang, gender)
       setResult(data)
     } catch (e) {
