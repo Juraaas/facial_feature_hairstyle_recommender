@@ -54,8 +54,9 @@ export function PhotoTutorial({ onDone }) {
 
   return (
     <div style={{
+      display: 'flex',flexDirection: 'column', alignItems: 'center', 
       background: 'var(--surface)', border: '0.5px solid var(--border)', borderRadius: 16,
-      padding: '28px 24px', marginBottom: 24, animation: 'fadeIn .2s ease',
+      padding: '28px 20px', marginBottom: 24, animation: 'fadeIn .2s ease',
     }}>
       {/* progress dots */}
       <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 24 }}>
@@ -77,18 +78,18 @@ export function PhotoTutorial({ onDone }) {
       </div>
 
       {/* title */}
-      <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', textAlign: 'center', marginBottom: 16 }}>
+      <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', textAlign: 'center', marginBottom: 14 }}>
         {t(current.titleKey)}
       </h3>
 
       {/* items */}
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 24, width: '100%', maxWidth: 320 }}>
           {items.map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
-              <span style={{ fontSize: 13, flexShrink: 0, marginTop: 1, color: item.ok ? '#2d8f4e' : '#c0392b' }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
+              <span style={{ fontSize: 13, flexShrink: 0, marginTop: 2, color: item.ok ? '#2d8f4e' : '#c0392b' }}>
                 {item.ok ? '✓' : '✗'}
               </span>
-              <span style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              <span style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.55 }}>
                 {item.text}
               </span>
             </div>
@@ -96,22 +97,20 @@ export function PhotoTutorial({ onDone }) {
       </div>
 
       {/* navigation */}
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center'}}>
-        {step > 0 ? (
+      <div style={{ display: 'flex', gap: 8, width: '100%', maxWidth: 320 }}>
           <button
             onClick={() => setStep(s => s - 1)}
             style={{ flex: 1, padding: '10px 0', background: 'none', border: '0.5px solid var(--border)', borderRadius: 8,
-              cursor: step === 0 ? 'default' : 'pointer', fontSize: 13, color: 'var(--text-muted)', opacity: step === 0 ? 0 : 1,
-              transition:  'opacity .2s', pointerEvents: step === 0 ? 'none' : 'auto', }}
+              cursor: 'pointer', fontSize: 13, color: 'var(--text-muted)', visibility: step === 0 ? 'hidden' : 'visible' 
+            }}
           >
             {t('tutorial_back')}
           </button>
-        ) : (
-          <div style={{ flex: 1 }} />
-        )}
+
         <button
           onClick={() => isLast ? onDone() : setStep(s => s + 1)}
-          style={{ flex: 1, padding: '10px 0', background: 'var(--accent)', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 13, color: '#fff', fontWeight: 500 }}
+          style={{ flex: 1, padding: '10px 0', background: 'var(--accent)', border: 'none', borderRadius: 8, 
+            cursor: 'pointer', fontSize: 13, color: '#fff', fontWeight: 500 }}
         >
           {isLast ? t('tutorial_done') : t('tutorial_next')}
         </button>
@@ -121,8 +120,7 @@ export function PhotoTutorial({ onDone }) {
       <button
         onClick={onDone}
         style={{
-          display: 'block', width: '100%',
-          marginTop: 10, padding: '6px 0',
+          marginTop: 8, padding: '6px 16px',
           background: 'none', border: 'none',
           cursor: 'pointer', fontSize: 12,
           color: 'var(--text-hint)',
