@@ -49,27 +49,22 @@ export function PhotoTutorial({ onDone }) {
   const { t } = useTranslation()
   const [step, setStep] = useState(0)
   const current = STEPS[step]
-  const isLast  = step === STEPS.length - 1
+  const isLast = step === STEPS.length - 1
   const items = t(current.itemsKey, {returnObjects: true})
 
   return (
     <div style={{
-      background:   'var(--surface)',
-      border:       '0.5px solid var(--border)',
-      borderRadius: 16,
-      padding:      '28px 24px',
-      marginBottom: 24,
-      animation:    'fadeIn .2s ease',
+      background: 'var(--surface)', border: '0.5px solid var(--border)', borderRadius: 16,
+      padding: '28px 24px', marginBottom: 24, animation: 'fadeIn .2s ease',
     }}>
       {/* progress dots */}
       <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 24 }}>
         {STEPS.map((_, i) => (
           <div key={i} style={{
-            width: i === step ? 20 : 6, height: 6,
+            width: i === step ? 20 : 6,
+            height: 6,
             borderRadius: 3,
-            background: i === step ? 'var(--accent-mid)'
-                      : i < step  ? 'var(--accent-mid)'
-                      : 'var(--border)',
+            background: i <= step ? 'var(--accent-mid)' : 'var(--border)',
             transition: 'all .3s',
             opacity: i < step ? 0.4 : 1,
           }} />
@@ -82,19 +77,14 @@ export function PhotoTutorial({ onDone }) {
       </div>
 
       {/* title */}
-      <h3 style={{
-        fontSize: 16, fontWeight: 600,
-        color: 'var(--text)', textAlign: 'center',
-        marginBottom: 16,
-      }}>
+      <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', textAlign: 'center', marginBottom: 16 }}>
         {t(current.titleKey)}
       </h3>
 
       {/* items */}
-      <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ width: '100%', maxWidth: 280 }}>
+      <div style={{ marginBottom: 24 }}>
           {items.map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
               <span style={{ fontSize: 13, flexShrink: 0, marginTop: 1, color: item.ok ? '#2d8f4e' : '#c0392b' }}>
                 {item.ok ? '✓' : '✗'}
               </span>
@@ -103,7 +93,6 @@ export function PhotoTutorial({ onDone }) {
               </span>
             </div>
           ))}
-        </div>
       </div>
 
       {/* navigation */}
@@ -111,7 +100,9 @@ export function PhotoTutorial({ onDone }) {
         {step > 0 ? (
           <button
             onClick={() => setStep(s => s - 1)}
-            style={{ flex: 1, padding: '10px 0', background: 'none', border: '0.5px solid var(--border)', borderRadius: 8, cursor: 'pointer', fontSize: 13, color: 'var(--text-muted)' }}
+            style={{ flex: 1, padding: '10px 0', background: 'none', border: '0.5px solid var(--border)', borderRadius: 8,
+              cursor: step === 0 ? 'default' : 'pointer', fontSize: 13, color: 'var(--text-muted)', opacity: step === 0 ? 0 : 1,
+              transition:  'opacity .2s', pointerEvents: step === 0 ? 'none' : 'auto', }}
           >
             {t('tutorial_back')}
           </button>
