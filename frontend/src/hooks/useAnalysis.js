@@ -6,12 +6,12 @@ export function useAnalysis() {
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState(null)
 
-  async function analyse(file, lang) {
+  async function analyse(file, lang, gender = null) {
     setLoading(true)
     setError(null)
     setResult(null)
     try {
-      const data = await analysePhoto(file, lang)
+      const data = await analysePhoto(file, lang, gender)
       setResult(data)
     } catch (e) {
       try {

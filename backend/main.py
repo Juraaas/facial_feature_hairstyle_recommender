@@ -166,6 +166,7 @@ async def analyse(request: Request,
             lang: str = Query("pl"),
             debug: bool = Query(False),
             compact_debug: bool = Query(False),
+            gender: str = Query(None),
             user = Depends(get_current_user)):
     try:
         MAX_FILE_SIZE = 10 * 1024 * 1024 
@@ -190,9 +191,10 @@ async def analyse(request: Request,
 
         detector = get_detector()
         norms, female_norms = get_norms()
-        gender = get_gender(img)
+        detected_gender = get_gender(img)
+        final_gender = gender if gender in ("Man", "Woman") else detected_gender
         
-        result = run_pipeline(img, detector, gender=gender, lang=lang, debug_rules=True)
+        result = run_pipeline(img, detector, gender=final_gender, lang=lang, debug_rules=True)
         landmarks, features, traits, scores, recs, quality, hair_mask = result
 
         if landmarks is None:
@@ -200,7 +202,7 @@ async def analyse(request: Request,
             message = getattr(quality, "blocking", None) or "No face detected"
             raise http_error(code, message)
         
-        selected_norms = female_norms if gender == "Woman" else norms
+        selected_norms = female_norms if final_gender == "Woman" else norms
 
         color_rec = None
         try:
@@ -209,7 +211,7 @@ async def analyse(request: Request,
             print(f"Color recommendation error: {e}")
         
         response = {
-            "gender": gender,
+            "gender": final_gender,
             "features": features,
             "traits": traits,
             "quality": {
@@ -309,7 +311,7 @@ async def analyse(request: Request,
                     "user_id": str(user.id),
                     "traits": traits,
                     "top_styles": top3,
-                    "gender": gender,
+                    "gender": final_gender,
                 }).execute()
             except Exception as e:
                 print(f"Failed to save analysis: {e}")

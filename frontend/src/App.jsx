@@ -36,6 +36,7 @@ function App() {
   const [showPanel, setShowPanel] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
   const [consent, setConsent] = useState(false)
+  const [overrideGender, setOverrideGender] = useState(null)
 
   const { t, i18n } = useTranslation()
   const pl = i18n.language === 'pl'
@@ -88,9 +89,9 @@ function App() {
     setTutorialDone(true); setShowTutorial(false)
   }
 
-  async function handleAnalyse() {
+  async function handleAnalyse(forcedGender = null) {
     if (!file) return
-    analyse(file, i18n.language)
+    analyse(file, i18n.language, forcedGender || overrideGender)
   }
 
   async function handleUpgrade() {
@@ -217,10 +218,23 @@ function App() {
                   padding: '8px 14px', borderBottom: '1px solid var(--border)',
                 }}> 
                   <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', 
-                    whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 5, }}>
+                    whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 5, flex: 1,}}>
                     <ScanFace size={14} strokeWidth={1.5} color="var(--accent)"/>
                     {result.gender === 'Woman' ? t('detected_woman') : t('detected_man')}
                   </span>
+                  {/* adjust button */}
+                  <button
+                    onClick={() => {
+                      const corrected = result.gender === 'Woman' ? 'Man' : 'Woman'
+                      setOverrideGender(corrected)
+                      handleAnalyse(corrected)
+                    }}
+                    style={{ fontSize: 10, padding: '3px 10px', borderRadius: 20, border: '1px solid var(--border)', background: 'none', color: 'var(--text-hint)', cursor: 'pointer', fontFamily: 'var(--font-mono)', letterSpacing: '.04em' }}
+                  >
+                    {result.gender === 'Woman'
+                      ? (pl ? 'To mężczyzna' : 'Switch to male')
+                      : (pl ? 'To kobieta' : 'Switch to female')}
+                  </button>
                   <div className="confidence-track" style={{ flex: 1 }}>
                     <div className="confidence-fill" style={{
                       width: `${result.quality.score * 100}%`,

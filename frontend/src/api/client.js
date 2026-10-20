@@ -12,7 +12,11 @@ export async function analysePhoto(file, lang) {
   const form = new FormData()
   form.append('file', file)
   const headers = await getAuthHeaders()
-  const res = await fetch(`${BASE}/analyse?lang=${lang}`, 
+
+  const params = new URLSearchParams({ lang })
+  if (gender) params.append('gender', gender)
+
+  const res = await fetch(`${BASE}/analyse?${params}`, 
     { method: 'POST', body: form, headers})
   if (!res.ok) {
     const err = await res.json()
