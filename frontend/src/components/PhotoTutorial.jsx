@@ -56,7 +56,7 @@ export function PhotoTutorial({ onDone }) {
     <div style={{
       display: 'flex',flexDirection: 'column', alignItems: 'center', 
       background: 'var(--surface)', border: '0.5px solid var(--border)', borderRadius: 16,
-      padding: '28px 20px', marginBottom: 24, animation: 'fadeIn .2s ease',
+      padding: '28px 24px', marginBottom: 24, animation: 'fadeIn .2s ease',
     }}>
       {/* progress dots */}
       <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 24 }}>
@@ -78,14 +78,14 @@ export function PhotoTutorial({ onDone }) {
       </div>
 
       {/* title */}
-      <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', textAlign: 'center', marginBottom: 14 }}>
+      <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', textAlign: 'center', marginBottom: 16, maxWidth: 340 }}>
         {t(current.titleKey)}
       </h3>
 
       {/* items */}
-      <div style={{ marginBottom: 24, width: '100%', maxWidth: 320 }}>
+      <div style={{ marginBottom: 24, width: '100%', maxWidth: 360 }}>
           {items.map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 9 }}>
               <span style={{ fontSize: 13, flexShrink: 0, marginTop: 2, color: item.ok ? '#2d8f4e' : '#c0392b' }}>
                 {item.ok ? '✓' : '✗'}
               </span>
@@ -97,20 +97,25 @@ export function PhotoTutorial({ onDone }) {
       </div>
 
       {/* navigation */}
-      <div style={{ display: 'flex', gap: 8, width: '100%', maxWidth: 320 }}>
+      <div style={{ display: 'flex', gap: 8, width: '100%', maxWidth: 360 }}>
           <button
-            onClick={() => setStep(s => s - 1)}
-            style={{ flex: 1, padding: '10px 0', background: 'none', border: '0.5px solid var(--border)', borderRadius: 8,
-              cursor: 'pointer', fontSize: 13, color: 'var(--text-muted)', visibility: step === 0 ? 'hidden' : 'visible' 
-            }}
+            onClick={() => step > 0 && setStep(s => s - 1)}
+            style={{
+            flex: 1, padding: '10px 0', background: 'none',
+            border: '0.5px solid var(--border)', borderRadius: 8,
+            cursor: step === 0 ? 'default' : 'pointer', fontSize: 13,
+            color: step === 0 ? 'var(--border)' : 'var(--text-muted)', transition: 'color .2s, border-color .2s',
+          }}
           >
             {t('tutorial_back')}
           </button>
 
         <button
           onClick={() => isLast ? onDone() : setStep(s => s + 1)}
-          style={{ flex: 1, padding: '10px 0', background: 'var(--accent)', border: 'none', borderRadius: 8, 
-            cursor: 'pointer', fontSize: 13, color: '#fff', fontWeight: 500 }}
+          style={{ 
+            flex: 1, padding: '10px 0', background: 'var(--accent)', border: 'none',
+            borderRadius: 8, cursor: 'pointer', fontSize: 13, color: '#fff', fontWeight: 500
+          }}
         >
           {isLast ? t('tutorial_done') : t('tutorial_next')}
         </button>
