@@ -96,7 +96,7 @@ export function PhotoTutorial({ onDone }) {
       </div>
 
       {/* navigation */}
-      <div style={{ display: 'flex', gap: 8 }}>
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center'}}>
         {step > 0 ? (
           <button
             onClick={() => setStep(s => s - 1)}

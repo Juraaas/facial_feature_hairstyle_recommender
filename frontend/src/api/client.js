@@ -8,7 +8,7 @@ async function getAuthHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
-export async function analysePhoto(file, lang) {
+export async function analysePhoto(file, lang, gender = null) {
   const form = new FormData()
   form.append('file', file)
   const headers = await getAuthHeaders()
