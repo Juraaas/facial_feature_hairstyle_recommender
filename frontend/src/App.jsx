@@ -179,7 +179,7 @@ function App() {
                   <ConsentCheckboxes onChange={setConsent} />
                   <button
                     className="analyse-btn"
-                    onClick={handleAnalyse}
+                    onClick={() => handleAnalyse()}
                     disabled={!consent}
                     style={{ opacity: consent ? 1 : 0.45 }}
                   >
