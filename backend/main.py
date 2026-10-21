@@ -408,7 +408,28 @@ async def style_preview(
         contents = await file.read()
         if not validate_image_bytes(contents):
             raise http_error("INVALID_IMAGE", "Only JPEG and PNG files are accepted", 400)
-        preview_bytes = await generate_preview(contents, style_name, color_id, gender)
+
+        import io
+        from PIL import Image as PILImage
+
+        arr = np.frombuffer(contents, np.uint8)
+        img_cv = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+        oh, ow = img_cv.shape[:2]
+
+        side = min(oh, ow)
+        y0 = (oh - side) // 2
+        x0 = (ow - side) // 2
+        crop = img_cv[y0:y0+side, x0:x0+side]
+
+        resized = cv2.resize(crop, (512, 512), interpolation=cv2.INTER_LANCZOS4)
+
+        buf = io.BytesIO()
+        PILImage.fromarray(
+            cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
+        ).save(buf, format="JPEG", quality=90)
+        processed_bytes = buf.getvalue()
+        
+        preview_bytes = await generate_preview(processed_bytes, style_name, color_id, gender)
 
         from src.hair_classifier import estimate_hair_length
         import base64
