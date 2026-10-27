@@ -97,6 +97,18 @@ def decode_and_resize_image(contents, max_size=640):
 
     return img
 
+def preprocess_image(contents: bytes, target: int = 512) -> np.ndarray:
+    arr = np.frombuffer(contents, np.uint8)
+    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+    if img is None:
+        return None
+    oh, ow = img.shape[:2]
+    side = min(oh, ow)
+    y0 = (oh - side) // 2
+    x0 = (ow - side) // 2
+    crop = img[y0:y0+side, x0:x0+side]
+    return cv2.resize(crop, (target, target), interpolation=cv2.INTER_LANCZOS4)
+
 def validate_image_bytes(contents: bytes) -> bool:
     return (
         contents[:2] == b'\xff\xd8' or
@@ -164,18 +176,18 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 async def analyse(request: Request,
             file: UploadFile = File(...),
             lang: str = Query("pl"),
+            gender: str = Query(None),
             debug: bool = Query(False),
             compact_debug: bool = Query(False),
-            gender: str = Query(None),
             user = Depends(get_current_user)):
     try:
+        print(f"GENDER PARAM: {gender}")
+        print(f"QUERY STRING: {request.url}")
         MAX_FILE_SIZE = 10 * 1024 * 1024 
         contents = file.file.read()
         if len(contents) > MAX_FILE_SIZE:
             raise http_error("FILE_TOO_LARGE", "File too large — max 10MB", 400)
-        arr = np.frombuffer(contents, np.uint8)
-        img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-
+        img = preprocess_image(contents, target=512)
         if img is None:
             raise http_error(INVALID_IMAGE,
                              "Could not decode image - try a JPG or PNG file",
@@ -183,11 +195,6 @@ async def analyse(request: Request,
 
         if not validate_image_bytes(contents):
             raise http_error("INVALID_IMAGE", "Only JPEG and PNG files are accepted", 400)
-    
-        h, w = img.shape[:2]
-        if max(h, w) > 640:
-            scale = 640 / max(h, w)
-            img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
 
         detector = get_detector()
         norms, female_norms = get_norms()
@@ -258,7 +265,6 @@ async def analyse(request: Request,
                     "display_score": style.get("display_score"),
                     "positive": compact_items(style.get("contributions", [])),
                     "negative": compact_items(style.get("negatives", [])),
-                    "missing": style.get("missing", []),
                 }
                 for i, style in enumerate(styles_list)
             ]
@@ -315,7 +321,7 @@ async def analyse(request: Request,
                 }).execute()
             except Exception as e:
                 print(f"Failed to save analysis: {e}")
-                
+
         return response
     except HTTPException:
         raise
@@ -408,27 +414,18 @@ async def style_preview(
         contents = await file.read()
         if not validate_image_bytes(contents):
             raise http_error("INVALID_IMAGE", "Only JPEG and PNG files are accepted", 400)
+        img_processed = preprocess_image(contents, target=512)
+        if img_processed is None:
+            raise http_error("INVALID_IMAGE", "Cannot decode image", 400)
 
         import io
         from PIL import Image as PILImage
-
-        arr = np.frombuffer(contents, np.uint8)
-        img_cv = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-        oh, ow = img_cv.shape[:2]
-
-        side = min(oh, ow)
-        y0 = (oh - side) // 2
-        x0 = (ow - side) // 2
-        crop = img_cv[y0:y0+side, x0:x0+side]
-
-        resized = cv2.resize(crop, (512, 512), interpolation=cv2.INTER_LANCZOS4)
-
         buf = io.BytesIO()
         PILImage.fromarray(
-            cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
+            cv2.cvtColor(img_processed, cv2.COLOR_BGR2RGB)
         ).save(buf, format="JPEG", quality=90)
         processed_bytes = buf.getvalue()
-        
+
         preview_bytes = await generate_preview(processed_bytes, style_name, color_id, gender)
 
         from src.hair_classifier import estimate_hair_length
