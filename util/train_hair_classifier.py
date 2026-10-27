@@ -142,7 +142,7 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
 
     criterion = nn.CrossEntropyLoss(label_smoothing=0.10)
 
-    best_path = f"models/hair_{head_name}_v2_best.pt"
+    best_path = f"models/hair_{head_name}_v3_best.pt"
     os.makedirs("models", exist_ok=True)
 
     if head_name == "hair_type":
@@ -270,7 +270,7 @@ def train_head(model, head_name, train_csv, val_csv, label_col, classes):
 def export_onnx(model):
     model.eval()
     dummy = torch.randn(1, 3, 224, 224).to(DEVICE)
-    out_path = "models/hair_classifier_2.onnx"
+    out_path = "models/hair_classifier_3.onnx"
 
     torch.onnx.export(
         model, dummy, out_path,
