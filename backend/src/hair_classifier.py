@@ -2,7 +2,7 @@ import cv2
 import os
 import numpy as np
 
-MODEL_PATH = os.path.join("models", "hair_classifier_2.onnx")
+MODEL_PATH = os.path.join("models", "hair_classifier_3.onnx")
 
 HAIR_TYPES = ["straight", "wavy", "curly", "coily"]
 HAIRLINES = ["normal", "receding", "uneven"]
@@ -57,7 +57,7 @@ def prepare_hairline_crop(img_bgr, hair_mask, landmarks=None, size=224):
     return cv2.resize(region, (size, size))
 
 def classify_hair(img_bgr, hair_mask, gender="Man", landmarks=None,
-                  hair_conf_threshold=0.6, hairline_conf_threshold=0.82):
+                  hair_conf_threshold=0.5, hairline_conf_threshold=0.6):
     if hair_mask is None:
         return {
             "hair_type": None,
