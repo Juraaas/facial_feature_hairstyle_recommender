@@ -7,7 +7,7 @@ MODEL_PATH = os.path.join("models", "hair_classifier_3.onnx")
 HAIR_TYPES = ["straight", "wavy", "curly", "coily"]
 HAIRLINES = ["normal", "receding", "uneven"]
 
-HAIR_TYPE_COVERAGE_MIN = 0.025
+HAIR_TYPE_COVERAGE_MIN = 0.01
 HAIRLINE_COVERAGE_MIN = 0.01
 
 _session = None
