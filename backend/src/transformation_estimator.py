@@ -63,8 +63,11 @@ def estimate_transformation(
             "note_pl": "Jedno krótkie zdanie podsumowujące czas i trudność transformacji.",
             "note_en": "One short sentence summarizing the time and difficulty of the transition.",
             "recommendation_pl": "Konkretna porada dotycząca tej transformacji.",
+            "recommendation_en": "Specific advice regarding this transformation.",
             "first_step_pl": "Co konkretnie zrobić lub powiedzieć podczas pierwszej wizyty u fryzjera.",
-            "maintenance_pl": "Jak utrzymać fryzurę po osiągnięciu celu."
+            "first_step_en": "What exactly to do or say during your first visit to the hairdresser.",
+            "maintenance_pl": "Jak utrzymać fryzurę po osiągnięciu celu.",
+            "maintenance_en": "How to maintain your hairstyle once you've achieved your goal"
             }}
             Use an integer from 1-8 for visits, 0-18 for months, difficulty: easy/moderate/challenging."""
 
@@ -81,14 +84,11 @@ def estimate_transformation(
         data = json.loads(raw)
 
         required_fields = (
-            "visits",
-            "months",
-            "difficulty",
-            "note_pl",
-            "note_en",
-            "recommendation_pl",
-            "first_step_pl",
-            "maintenance_pl",
+            "visits", "months", "difficulty",
+            "note_pl", "note_en",
+            "recommendation_pl", "recommendation_en",
+            "first_step_pl", "first_step_en",
+            "maintenance_pl", "maintenance_en",
         )
 
         if not isinstance(data, dict):
