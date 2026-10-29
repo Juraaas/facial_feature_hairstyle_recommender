@@ -377,24 +377,27 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                   <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12 }}>
                     {[
                       { key: pl ? 'note_pl' : 'note_en',   label: null },
-                      { key: 'recommendation_pl', label: pl?'Rekomendacja':'Recommendation' },
-                      { key: 'first_step_pl',     label: pl?'Pierwszy krok':'First step'    },
-                      { key: 'maintenance_pl',    label: pl?'Pielęgnacja':'Maintenance'     },
-                    ].filter(f => transformation[f.key]).map(f => (
-                      <div key={f.key} style={{ marginBottom: 10 }}>
-                        {f.label && (
-                          <p style={{ fontSize: 9, fontWeight: 600,
-                            color: 'var(--accent)', textTransform: 'uppercase',
-                            letterSpacing: '.06em', marginBottom: 3,
-                            fontFamily: 'var(--font-body)',
-                          }}>{f.label}</p>
-                        )}
-                        <p style={{ fontSize: 12, color: 'var(--text-muted)',
-                          fontWeight: 300, lineHeight: 1.65 }}>
-                          {transformation[f.key]}
-                        </p>
-                      </div>
-                    ))}
+                      { key: 'recommendation_pl', key_en: 'recommendation_en', label: pl?'Rekomendacja':'Recommendation'},
+                      { key: 'first_step_pl', key_en: 'first_step_en', label: pl?'Pierwszy krok':'First step'},
+                      { key: 'maintenance_pl', key_en: 'maintenance_en', label: pl?'Pielęgnacja':'Maintenance'},
+                    ].filter(f => transformation[pl ? f.key_pl : f.key_en]).map(f => {
+                      const key = pl ? f.key_pl : f.key_en
+                      return (
+                        <div key={f.key} style={{ marginBottom: 10 }}>
+                          {f.label && (
+                            <p style={{ fontSize: 9, fontWeight: 600,
+                              color: 'var(--accent)', textTransform: 'uppercase',
+                              letterSpacing: '.06em', marginBottom: 3,
+                              fontFamily: 'var(--font-body)',
+                            }}>{f.label}</p>
+                          )}
+                          <p style={{ fontSize: 12, color: 'var(--text-muted)',
+                            fontWeight: 300, lineHeight: 1.65 }}>
+                            {transformation[f.key]}
+                          </p>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               )}
