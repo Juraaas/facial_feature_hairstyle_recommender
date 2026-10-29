@@ -209,8 +209,12 @@ def apply_rules(traits, gender="Man", debug=False):
         scores["clean_lines"] -= WEAK
         scores["longer_hair"] -= WEAK
 
-    elif traits.get("hair_type") in ("straight", "wavy"):
+    elif traits.get("hair_type") == "straight":
         scores["clean_lines"] += WEAK
+        scores["longer_hair"] += WEAK
+
+    elif traits.get("hair_type") == "wavy":
+        scores["soft_texture"] += WEAK
         scores["longer_hair"] += WEAK
 
     elif traits.get("hair_type") == "coily":
