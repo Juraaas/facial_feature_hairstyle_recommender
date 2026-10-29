@@ -11,9 +11,12 @@ STYLE_PROMPTS_MALE = {
         "longer than the sides with natural texture. Clean masculine finish."
     ),
     "Comb Over": (
-        "a classic Comb Over: moderately short sides with a subtle fade, and medium-short hair on top. " 
-        "A clearly visible side part separates the top into two sections. The longer section is combed horizontally across to one side, following the shape of the head." 
-        "The hair must sweep sideways, not straight backward. Natural, neat finish without excessive volume."
+        "an elegant Comb Over: short faded sides and medium-length hair on top " 
+        "with a sharp, clearly defined side part. All the hair on top is firmly "
+        "combed and swept horizontally to one side in a clean, controlled arc "
+        "that follows the shape of the head. The hair lies flat and smooth against "
+        "the head — no loose strands, no drooping, no falling forward. "
+        "Polished, structured and well-groomed."
     ),
     "Slick Back": (
         "a classic Slick Back: medium-length hair on top combed straight backward from the forehead in one continuous, unified direction."
