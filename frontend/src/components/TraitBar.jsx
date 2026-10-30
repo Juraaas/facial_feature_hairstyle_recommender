@@ -1,8 +1,11 @@
 import { useTranslation } from 'react-i18next'
 
-export function TraitBar({ title, value, minVal, maxVal, avgVal, minLabel, maxLabel }) {
+export function TraitBar({ title, value, minVal, maxVal, avgVal, 
+    minLabel, maxLabel, interp, scale = 'linear' }) {
     const { t } = useTranslation()
-    const clamp = v => Math.min(100, Math.max(0, (v - minVal) / (maxVal - minVal) * 100))
+    const tf = scale === 'sqrt' ? v => Math.sqrt(Math.max(v, 0)) : v => v
+    const clamp = v =>
+        Math.min(100, Math.max(0, (tf(v) - tf(minVal)) / (tf(maxVal) - tf(minVal)) * 100))
 
     const pct = clamp(value)
     const avgPct = clamp(avgVal)
@@ -13,86 +16,54 @@ export function TraitBar({ title, value, minVal, maxVal, avgVal, minLabel, maxLa
     else if (outOfRange === 'above') { dotPct = 98; dotColor = 'var(--text-hint)' }
     else { dotPct = pct; dotColor = 'var(--accent)' }
 
-    const isBalance = title === t('trait_thirds_balance')
-    const interp = isBalance
-        ? value < 0.1 ? t('label_balanced')
-        : value < 0.6 ? t('trait_low')
-        : t('label_imbalanced')
-        : outOfRange
-            ? (outOfRange === 'below' ? t('trait_below') : t('trait_above'))
-            : pct < 33 ? t('trait_low')
-            : pct > 67 ? t('trait_high')
-            : t('trait_average')
+    const fallbackInterp = outOfRange
+        ? (outOfRange === 'below' ? t('trait_below') : t('trait_above'))
+        : pct < 33 ? t('trait_low')
+        : pct > 67 ? t('trait_high')
+        : t('trait_average')
+
+    const label = interp ?? fallbackInterp
 
     return (
         <div style={{ marginBottom: 20 }}>
-            {/* header row */}
-            <div style={{
-                display: 'flex', justifyContent: 'space-between',
-                alignItems: 'baseline', marginBottom: 7,
-            }}>
-                <span style={{
-                    fontSize: 12, fontWeight: 500,
-                    color: 'var(--text)', letterSpacing: '.01em',
-                }}>{title}</span>
-                <span style={{
-                    fontSize: 11, fontFamily: 'var(--font-mono)',
-                    color: 'var(--text-muted)',
-                }}>
-                    <span style={{ color: 'var(--text)', marginRight: 6 }}>
-                        {value.toFixed(3)}
-                    </span>
-                    <span style={{ color: 'var(--text-hint)' }}>→ {interp}</span>
-                </span>
-            </div>
-
-            {/* track */}
-            <div style={{
-                position: 'relative', height: 4,
-                borderRadius: 2, background: 'var(--surface-2)',
-                border: '1px solid var(--border)',
-            }}>
-                {/* fill */}
-                <div style={{
-                    position: 'absolute', left: 0, top: 0, height: '100%',
-                    width: `${pct}%`, borderRadius: 2,
-                    background: outOfRange ? 'var(--border)' : 'var(--accent)',
-                    opacity: 0.35,
-                }} />
-
-                {/* avg marker */}
-                <div style={{
-                    position: 'absolute', top: -4, width: 1,
-                    height: 12, background: 'var(--border)',
-                    transform: 'translateX(-50%)', left: `${avgPct}%`,
-                }} />
-
-                {/* value dot */}
-                <div style={{
-                    position: 'absolute', top: -5,
-                    width: 14, height: 14, borderRadius: '50%',
-                    background: dotColor,
-                    border: '2px solid var(--bg)',
-                    transform: 'translateX(-50%)',
-                    left: `${dotPct}%`,
-                    boxShadow: '0 1px 3px rgba(0,0,0,.15)',
-                }} />
-            </div>
-
-            {/* min / max labels */}
-            <div style={{
-                display: 'flex', justifyContent: 'space-between',
-                marginTop: 5,
-            }}>
-                <span style={{
-                    fontSize: 10, color: 'var(--text-hint)',
-                    fontFamily: 'var(--font-mono)',
-                }}>{minLabel}</span>
-                <span style={{
-                    fontSize: 10, color: 'var(--text-hint)',
-                    fontFamily: 'var(--font-mono)',
-                }}>{maxLabel}</span>
-            </div>
+        <div style={{
+            display: 'flex', justifyContent: 'space-between',
+            alignItems: 'baseline', marginBottom: 7,
+        }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', letterSpacing: '.01em' }}>
+            {title}
+            </span>
+            <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+            <span style={{ color: 'var(--text)', marginRight: 6 }}>{value.toFixed(3)}</span>
+            <span style={{ color: 'var(--text-hint)' }}>→ {label}</span>
+            </span>
         </div>
+
+        <div style={{
+            position: 'relative', height: 4, borderRadius: 2,
+            background: 'var(--surface-2)', border: '1px solid var(--border)',
+        }}>
+            <div style={{
+            position: 'absolute', left: 0, top: 0, height: '100%',
+            width: `${pct}%`, borderRadius: 2,
+            background: outOfRange ? 'var(--border)' : 'var(--accent)', opacity: 0.35,
+            }} />
+            <div style={{
+            position: 'absolute', top: -4, width: 1, height: 12,
+            background: 'var(--border)', transform: 'translateX(-50%)', left: `${avgPct}%`,
+            }} />
+            <div style={{
+            position: 'absolute', top: -5, width: 14, height: 14, borderRadius: '50%',
+            background: dotColor, border: '2px solid var(--bg)',
+            transform: 'translateX(-50%)', left: `${dotPct}%`,
+            boxShadow: '0 1px 3px rgba(0,0,0,.15)',
+            }} />
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 5 }}>
+            <span style={{ fontSize: 10, color: 'var(--text-hint)', fontFamily: 'var(--font-mono)' }}>{minLabel}</span>
+            <span style={{ fontSize: 10, color: 'var(--text-hint)', fontFamily: 'var(--font-mono)' }}>{maxLabel}</span>
+        </div>
+    </div>
     )
 }
