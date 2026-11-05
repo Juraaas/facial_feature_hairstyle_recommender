@@ -54,11 +54,7 @@ function StarRating({ rating, onChange }) {
         )
       })}
       {rating !== null && (
-        <span style={{
-          fontSize: 12, color: 'var(--text-muted)',
-          fontFamily: 'var(--font-mono)', marginLeft: 6,
-          alignSelf: 'center',
-        }}>
+        <span style={{ fontSize: 12, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginLeft: 6, alignSelf: 'center' }}>
           {rating}/5
         </span>
       )}
@@ -91,10 +87,8 @@ export function FeedbackSection({ features, qualityScore, topStyles }) {
         return (
             <section style={{ marginBottom: 32 }}>
                 <div style={{
-                    padding: '14px 16px', background: 'var(--surface)',
-                    borderRadius: 'var(--radius-md)', border: '1px solid var(--border)',
-                    fontSize: 13, color: 'var(--text-muted)',
-                    textAlign: 'center', fontWeight: 300,
+                    padding: '14px 16px', background: 'var(--surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)',
+                    fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', fontWeight: 300,
                 }}>
                     {t('feedback_saved')}
                 </div>
@@ -113,14 +107,11 @@ export function FeedbackSection({ features, qualityScore, topStyles }) {
                     value={comment}
                     onChange={e => setComment(e.target.value)}
                     placeholder={t('feedback_comment_placeholder')}
-                    rows={3}
+                    rows={4}
+                    maxLength={1000}
                     style={{
-                        width: '100%', padding: '10px 12px',
-                        border: '1px solid var(--border)',
-                        borderRadius: 'var(--radius-md)', background: 'var(--surface-2)',
-                        color: 'var(--text)', fontSize: 13,
-                        resize: 'vertical', marginBottom: 14,
-                        outline: 'none', lineHeight: 1.5,
+                        width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface-2)',
+                        color: 'var(--text)', fontSize: 13, resize: 'none', marginBottom: 4, outline: 'none', lineHeight: 1.5,
                     }}
                 />
 
