@@ -19,6 +19,7 @@ import { NavBar } from './components/NavBar'
 import { ConsentCheckboxes } from './components/ConsentCheckboxes'
 import { FadeLevel } from './components/FadeLevel'
 import { HairColorSuggestions } from './components/HairColorSuggestions'
+import { AuthModal } from './components/AuthModal'
 import { X, Scissors, Sparkles, ArrowRight, ScanFace, Waves, ScanLine, Brush } from 'lucide-react'
 import './App.css'
 
@@ -48,40 +49,26 @@ function App() {
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
 
   useEffect(() => {
-    if (result) {
-      console.log('result.traits:', result.traits)
-      console.log('coverage:', result.traits?.coverage)
-      console.log('hair_type:', result.traits?.hair_type)
-    }
-  }, [result])
+  if (!user) { setUserPlan('free'); return }
+  let cancelled = false
+  supabase.from('profiles').select('plan').eq('id', user.id).single()
+    .then(({ data }) => { if (!cancelled && data?.plan) setUserPlan(data.plan) })
+  return () => { cancelled = true }
+}, [user])
 
-  useEffect(() => {
-    if (!user) { setUserPlan('free'); return }
-    
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      
-      supabase
-        .from('profiles')
-        .select('plan')
-        .eq('id', user.id)
-        .single()
-        .then(({ data, error }) => {
-          if (data?.plan) setUserPlan(data.plan)
-        })
-    })
-  }, [user])
-
-  useEffect(() => {
-    const handler = (event) => {
-      alert(`Error: ${event.message}\nat ${event.filename}:${event.lineno}`)
-    }
-    window.addEventListener('error', handler)
-    return () => window.removeEventListener('error', handler)
-  }, [])
+  function clearFile() {
+    if (preview) URL.revokeObjectURL(preview)
+    setFile(null); setPreview(null); reset()
+    setOverrideGender(null); setConsent(false)
+    const input = document.getElementById('file-input')
+    if (input) input.value = ''
+  }
 
   function handleFile(f) {
     if (!f) return
+    if (preview) URL.revokeObjectURL(preview)
     setFile(f); setPreview(URL.createObjectURL(f)); reset()
+    setOverrideGender(null); setConsent(false)
   }
 
   function handleTutorialDone() {
@@ -149,14 +136,7 @@ function App() {
                 </div>
                 {preview && (
                   <button
-                    onClick={e => {
-                      e.stopPropagation()
-                      setFile(null)
-                      setPreview(null)
-                      reset()
-                      const input = document.getElementById('file-input')
-                      if (input) input.value = ''
-                    }}
+                    onClick={clearFile}
                     style={{
                       position: 'absolute', top: 8, right: 8, width: 28, height: 28,
                       borderRadius: '50%', background: 'rgba(15,15,14,.7)',
@@ -189,7 +169,7 @@ function App() {
               )}
               {result && (
                 <button className="analyse-btn secondary"
-                  onClick={() => { reset(); setFile(null); setPreview(null); }}>
+                  onClick={() => {clearFile}}>
                   {t('btn_upload_new')}
                 </button>
               )}
@@ -259,10 +239,10 @@ function App() {
                     },
                     {
                       Icon: ScanLine,
-                      label: (result.traits?.hairline && result.traits.hairline !== 'normal')
+                      label: result.traits?.hairline
                         ? t(`hairline_${result.traits.hairline}`)
-                        : t('hairline_normal'),
-                      dashed: false,
+                        : t('hairline_not_detected'),
+                      dashed: !result.traits?.hairline,
                     },
                   ].map(({ Icon, label, dashed }, idx) => {
                     const ItemIcon = Icon
@@ -288,7 +268,7 @@ function App() {
 
               <HairColorSuggestions recommendation={result.color_recommendation} />
 
-              <FaceProportions features={result.features} norms={result.norms} />
+              <FaceProportions features={result.features} norms={result.norms} traits={result.traits} />
 
               <StylesSection
                 styles={isPremium ? styles : styles.slice(0, 3)}
