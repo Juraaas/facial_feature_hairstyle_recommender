@@ -17,13 +17,13 @@ def run_pipeline(img, detector, gender=None, lang="pl", debug_rules=False):
 
     if not lm_check.valid:
         log.error(f"Landmarks validation failed: {lm_check.error}")
-        return None, None, None, None, None, None
+        return None, None, None, None, None, None, None
     
     quality = assess_quality(landmarks, img)
 
     if quality.blocking:
         log.warning(f"Quality check blocked: {quality.blocking}")
-        return None, None, None, None, None, quality
+        return None, None, None, None, None, quality, None
     
     hair_mask, _ = segment_face(img)
     geo_temp = FaceGeometry(landmarks)
@@ -35,7 +35,7 @@ def run_pipeline(img, detector, gender=None, lang="pl", debug_rules=False):
 
     if not feat_check.valid:
         log.error(f"Feature validation failed: {feat_check.error}")
-        return None, None, None, None, None, quality
+        return None, None, None, None, None, quality, None
     
     log.info(f"Features extracted: { {k: f'{v:.3f}' for k, v in features.items()} }")
     
