@@ -2,45 +2,37 @@ import { useTranslation } from "react-i18next"
 
 const ERROR_CONFIG = {
   NO_FACE_DETECTED: {
-    icon: "🔍",
-    titleKey: "error_no_face",
-    hintKey: "error_no_face_hint",
+    icon: "🔍", titleKey: "error_no_face", hintKey: "error_no_face_hint",
   },
-
   FACE_TOO_SMALL: {
-    icon: "📏",
-    titleKey: "error_too_small",
-    hintKey: "error_too_small_hint",
+    icon: "📏", titleKey: "error_too_small", hintKey: "error_too_small_hint",
   },
-
   FACE_ROTATED: {
-    icon: "↩️",
-    titleKey: "error_rotated",
-    hintKey: "error_rotated_hint",
+    icon: "↩️", titleKey: "error_rotated", hintKey: "error_rotated_hint",
   },
-
   FACE_TILTED: {
-    icon: "↕️",
-    titleKey: "error_tilted",
-    hintKey: "error_tilted_hint",
+    icon: "↕️", titleKey: "error_tilted", hintKey: "error_tilted_hint",
   },
-
   POOR_ALIGNMENT: {
-    icon: "⚠️",
-    titleKey: "error_alignment",
-    hintKey: "error_alignment_hint",
+    icon: "⚠️", titleKey: "error_alignment", hintKey: "error_alignment_hint",
   },
-
   INVALID_IMAGE: {
-    icon: "🖼️",
-    titleKey: "error_invalid_image",
-    hintKey: "error_invalid_image_hint",
+    icon: "🖼️", titleKey: "error_invalid_image", hintKey: "error_invalid_image_hint",
   },
-
   INTERNAL_ERROR: {
-    icon: "⚙️",
-    titleKey: "error_internal",
-    hintKey: "error_internal_hint",
+    icon: "⚙️", titleKey: "error_internal", hintKey: "error_internal_hint",
+  },
+  FILE_TOO_LARGE: {
+    icon: "📦", titleKey: "error_file_too_large", hintKey: "error_file_too_large_hint",
+  },
+  RATE_LIMITED: {
+    icon: "⏳", titleKey: "error_rate_limited", hintKey: "error_rate_limited_hint",
+  },
+  INVALID_INPUT: {
+    icon: "🚫", titleKey: "error_invalid_input", hintKey: "error_invalid_input_hint",
+  },
+  SERVER_UNAVAILABLE: {
+    icon: "🔌", titleKey: "error_server_unavailable", hintKey: "error_server_unavailable_hint",
   },
 }
 
@@ -73,7 +65,7 @@ export function ErrorBox({error}) {
             <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
                 {hint}
             </p>
-            {msg && msg !== title && (
+            {import.meta.env.DEV && msg && msg !== title && (
                 <p style={{
                     fontSize: 11, color: 'var(--text-hint)',
                     marginTop: 8, fontFamily: 'monospace'}}>

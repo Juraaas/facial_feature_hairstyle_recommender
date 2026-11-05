@@ -12,37 +12,30 @@ export async function analysePhoto(file, lang, gender = null) {
   const form = new FormData()
   form.append('file', file)
   const headers = await getAuthHeaders()
-  console.log('analysePhoto gender param:', gender)
   const params = new URLSearchParams({ lang })
-  if (gender) params.append('gender', gender)
-  console.log('params:', params.toString())  
+  if (gender) params.append('gender', gender)  
   const res = await fetch(`${BASE}/analyse?${params}`, 
     { method: 'POST', body: form, headers})
-  if (!res.ok) {
-    const err = await res.json()
-    throw new Error(JSON.stringify(
-            err.detail || { code: "INTERNAL_ERROR", message: "Analysis failed" }
-        ))
-  }
+  if (!res.ok) throw await apiError(res)
   return res.json()
 }
 
 export async function sendVote(styleName, vote, features, gender) {
   await fetch(`${BASE}/vote`, {
-    method:  'POST',
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ style_name: styleName, vote, features, gender }),
+    body: JSON.stringify({ style_name: styleName, vote, features, gender }),
   })
 }
 
 export async function sendFeedback(features, qualityScore, topStyles, rating, comment) {
   await fetch(`${BASE}/feedback`, {
-    method:  'POST',
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({
+    body: JSON.stringify({
       features,
       quality_score: qualityScore,
-      top_styles:    topStyles,
+      top_styles: topStyles,
       rating,
       comment,
     }),
@@ -57,4 +50,17 @@ export async function createCheckout() {
   if (!res.ok) throw new Error('Checkout failed')
   const { url } = await res.json()
   window.location.href = url 
+}
+
+async function apiError(res) {
+  const err = await res.json().catch(() => null)
+  let payload
+  if (err?.detail && !Array.isArray(err.detail)) payload = err.detail 
+  else if (Array.isArray(err?.detail)) payload = { code: 'INVALID_INPUT', message: 'Invalid request' }
+  else if (err?.code) payload = err
+  else payload = {
+    code: res.status === 429 ? 'RATE_LIMITED' : 'SERVER_UNAVAILABLE',
+    message: 'Request failed',
+  }
+  return new Error(JSON.stringify(payload))
 }
