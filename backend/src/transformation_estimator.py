@@ -1,5 +1,8 @@
 import os, json
 from groq import Groq
+from src.logger import get_logger
+
+log = get_logger(__name__)
 
 HAIR_LENGTH_LABELS = {
     "very_short": "very short — currently 0.5-1 cm, like a buzz cut",
@@ -80,7 +83,6 @@ def estimate_transformation(
             temperature = 0.3,
         )
         raw = response.choices[0].message.content
-        print(f"TRANSFORMATION RAW: {raw[:200]}")
         data = json.loads(raw)
 
         required_fields = (
@@ -112,6 +114,6 @@ def estimate_transformation(
 
         return data
 
-    except Exception as e:
-        print(f"Transformation estimator error: {e}")
+    except Exception:
+        log.exception("Transformation estimation error")
         return None

@@ -2,6 +2,9 @@ import json, re
 import os
 from groq import Groq
 from src.fade_recommender import recommend_fade_from_front
+from src.logger import get_logger
+
+log = get_logger(__name__)
 
 STYLE_DESCRIPTIONS = {
     "volume_top": "height on top",
@@ -515,7 +518,7 @@ def _build_face_analysis_llm(user_scores, influences, traits, gender="Man", lang
                 except json.JSONDecodeError:
                     continue
             else:
-                print(f"LLM JSON parse failed: {text!r}")
+                log.warning("LLM JSON parse failed: %r", text)
                 return _build_face_analysis(influences, traits)
 
         if isinstance(parsed, dict) and "sentences" in parsed:
@@ -523,14 +526,14 @@ def _build_face_analysis_llm(user_scores, influences, traits, gender="Man", lang
         elif isinstance(parsed, list):
             sentences = parsed
         else:
-            print(f"DEBUG unexpected structure: {parsed}")
+            log.warning("LLM unexpected structure: %r", parsed)
             return _build_face_analysis(influences, traits)
 
         if isinstance(sentences, list) and all(isinstance(s, str) for s in sentences):
             return sentences[:3]
 
-    except Exception as e:
-        print(f"LLM error: {e}")
+    except Exception:
+        log.exception("LLM face analysis failed")
 
     return _build_face_analysis(influences, traits)
 
@@ -649,7 +652,7 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
     styles = load_hairstyles(hairstyles_path)
     influences = compute_traits_influences(traits, gender)
     fade_rec = recommend_fade_from_front(traits, gender)
-    print(f"DEBUG influences: {list(influences.keys())}")
+    log.debug("influences: %s", list(influences.keys()))
     results_pl = []
     results_en = []
 
