@@ -6,6 +6,8 @@ from typing import Literal, Optional
 import cv2
 import numpy as np
 import pandas as pd
+import io
+from PIL import Image
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Form, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
@@ -37,6 +39,7 @@ ALLOWED_ORIGINS = [
     if o.strip()
 ]
 MAX_FILE_SIZE = 10 * 1024 * 1024
+MAX_PIXELS = 40_000_000
 HAIR_TYPES = {"straight", "wavy", "curly", "coily"}
 
 log = get_logger(__name__)
@@ -102,7 +105,13 @@ def get_gender(img):
     from src.gender import detect_gender
     return detect_gender(img) or "Unknown"
 
-def preprocess_image(contents: bytes, target: int = 512) -> np.ndarray:
+def preprocess_image(contents: bytes, target: int = 512) -> Optional[np.ndarray]:
+    try:
+        with Image.open(io.BytesIO(contents)) as im:
+            if im.width * im.height > MAX_PIXELS:
+                return None
+    except Exception:
+        return None
     arr = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
     if img is None:
@@ -207,7 +216,7 @@ def analyse(request: Request,
             user = Depends(get_current_user)):
     lang = norm_lang(lang)
     try:
-        contents = file.file.read()
+        contents = file.file.read(MAX_FILE_SIZE + 1)
         if len(contents) > MAX_FILE_SIZE:
             raise http_error("FILE_TOO_LARGE", "File too large - max 10MB", 400)
         if not validate_image_bytes(contents):
@@ -346,7 +355,7 @@ async def style_preview(
     hair_type = hair_type if hair_type in HAIR_TYPES else None
 
     try:
-        contents = await file.read()
+        contents = await file.read(MAX_FILE_SIZE + 1)
         if len(contents) > MAX_FILE_SIZE:
             raise http_error("FILE_TOO_LARGE", "File too large - max 10MB", 400)
         if not validate_image_bytes(contents):

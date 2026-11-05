@@ -1,5 +1,10 @@
-import os, json, base64, httpx
+import asyncio
+import base64
+import httpx
 import fal_client
+from src.logger import get_logger
+
+log = get_logger(__name__)
 
 STYLE_PROMPTS_MALE = {
     "Buzz Cut": (
@@ -206,7 +211,7 @@ COLOR_PROMPTS = {
 
 def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
     prompts = STYLE_PROMPTS_FEMALE if gender == "Woman" else STYLE_PROMPTS_MALE
-    style = prompts.get(style_name) or STYLE_PROMPTS_MALE.get(style_name) or f"{style_name} hairstyle"
+    style = prompts[style_name]
     color = COLOR_PROMPTS.get(color_id)
 
     prompt = (
@@ -230,7 +235,7 @@ def build_prompt(style_name: str, color_id: str, gender: str = "Man") -> str:
         "Do not beautify, reshape, smooth or retouch the face in any way. "
     )
 
-    print(f"SEEDREAM [{style_name} + {color_id} + {gender}]: {prompt}")
+    log.debug("SEEDREAM [%s + %s + %s]: %s", style_name, color_id, gender, prompt)
     return prompt
 
 async def generate_preview(img_bytes: bytes, style_name: str, 
@@ -240,16 +245,12 @@ async def generate_preview(img_bytes: bytes, style_name: str,
     user_url = f"data:image/jpeg;base64,{img_b64}"
     prompt = build_prompt(style_name, color_id, gender)
     
-    handler = fal_client.submit(
-        "fal-ai/bytedance/seedream/v4.5/edit",
-        arguments={
-            "image_urls": [user_url],
-            "prompt": prompt,
-            "guidance_scale": 7.5,
-        }
-    )
-
-    result = handler.get()
+    handler = await asyncio.to_thread(
+    fal_client.submit,
+    "fal-ai/bytedance/seedream/v4.5/edit",
+    arguments={"image_urls": [user_url], "prompt": prompt, "guidance_scale": 7.5},
+)
+    result = await asyncio.to_thread(handler.get)
     out_url = result["images"][0]["url"]
 
     async with httpx.AsyncClient(timeout=60) as client:
