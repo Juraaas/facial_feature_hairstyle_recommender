@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from src.logger import get_logger
+log = get_logger(__name__)
 
 _app = None
 
@@ -27,6 +29,6 @@ def detect_gender(img) -> str:
         g = int(face.gender)
         return "Woman" if g == 0 else "Man"
 
-    except Exception as e:
-        print(f"DEBUG error: {e}")
+    except Exception:
+        log.warning("Gender detection failed", exc_info=True)
         return None

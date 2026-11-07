@@ -48,68 +48,60 @@ def _ensure_header(sheet, headers):
         sheet.insert_row(headers, 1)
 
 def save_session(features, quality_score, recs, rating=None, comment=""):
-    try:
-        sheet = _get_sheet("feedback")
-        _ensure_header(sheet, FIELDNAMES)
-        top_styles = recs["top_styles"]
+    sheet = _get_sheet("feedback")
+    _ensure_header(sheet, FIELDNAMES)
+    top_styles = recs["top_styles"]
 
-        row = [
-            datetime.now().isoformat(),
-            round(features.get("face_ratio", 0), 4),
-            round(features.get("jaw_ratio", 0), 4),
-            round(features.get("jaw_to_height", 0), 4),
-            round(features.get("cheekbone_to_jaw", 0), 4),
-            round(features.get("eye_ratio", 0), 4),
-            round(features.get("lip_ratio", 0), 4),
-            round(features.get("nose_position", 0), 4),
-            round(features.get("lower_face_ratio", 0), 4),
-            round(features.get("chin_prominence", 0), 4),
-            round(features.get("symmetry", 0), 4),
-            round(features.get("upper_third", 0), 4),
-            round(features.get("middle_third", 0), 4),
-            round(features.get("lower_third", 0), 4),
-            round(features.get("thirds_balance", 0), 4),
-            round(quality_score, 4),
-            top_styles[0]["name"] if len(top_styles) > 0 else "",
-            top_styles[1]["name"] if len(top_styles) > 1 else "",
-            top_styles[2]["name"] if len(top_styles) > 2 else "",
-            rating or "",
-            comment,
-        ]
-        sheet.append_row(row)
-    except Exception as e:
-        print(f"Google Sheets save_session error: {repr(e)}")
-        raise
+    row = [
+        datetime.now().isoformat(),
+        round(features.get("face_ratio", 0), 4),
+        round(features.get("jaw_ratio", 0), 4),
+        round(features.get("jaw_to_height", 0), 4),
+        round(features.get("cheekbone_to_jaw", 0), 4),
+        round(features.get("eye_ratio", 0), 4),
+        round(features.get("lip_ratio", 0), 4),
+        round(features.get("nose_position", 0), 4),
+        round(features.get("lower_face_ratio", 0), 4),
+        round(features.get("chin_prominence", 0), 4),
+        round(features.get("symmetry", 0), 4),
+        round(features.get("upper_third", 0), 4),
+        round(features.get("middle_third", 0), 4),
+        round(features.get("lower_third", 0), 4),
+        round(features.get("thirds_balance", 0), 4),
+        round(quality_score, 4),
+        top_styles[0]["name"] if len(top_styles) > 0 else "",
+        top_styles[1]["name"] if len(top_styles) > 1 else "",
+        top_styles[2]["name"] if len(top_styles) > 2 else "",
+        rating or "",
+        comment,
+    ]
+    sheet.append_row(row)
 
 
 def save_vote(style_name: str, vote: str, features: dict, gender: str = ""):
-    try:
-        sheet = _get_sheet("votes")
-        _ensure_header(sheet, VOTE_FIELDS)
-        row = [
-            datetime.now().isoformat(),
-            style_name,
-            vote,
-            round(features.get("face_ratio", 0), 4),
-            round(features.get("jaw_ratio", 0), 4),
-            round(features.get("jaw_to_height", 0), 4),
-            round(features.get("cheekbone_to_jaw", 0), 4),
-            round(features.get("eye_ratio", 0), 4),
-            round(features.get("lip_ratio", 0), 4),
-            round(features.get("nose_position", 0), 4),
-            round(features.get("lower_face_ratio", 0), 4),
-            round(features.get("chin_prominence", 0), 4),
-            round(features.get("symmetry", 0), 4),
-            round(features.get("upper_third", 0), 4),
-            round(features.get("middle_third", 0), 4),
-            round(features.get("lower_third", 0), 4),
-            round(features.get("thirds_balance", 0), 4),
-            gender,
-        ]
-        sheet.append_row(row)
-    except Exception as e:
-        print(f"Google Sheets save_vote error: {repr(e)}")
-        raise
+    sheet = _get_sheet("votes")
+    _ensure_header(sheet, VOTE_FIELDS)
+    row = [
+        datetime.now().isoformat(),
+        style_name,
+        vote,
+        round(features.get("face_ratio", 0), 4),
+        round(features.get("jaw_ratio", 0), 4),
+        round(features.get("jaw_to_height", 0), 4),
+        round(features.get("cheekbone_to_jaw", 0), 4),
+        round(features.get("eye_ratio", 0), 4),
+        round(features.get("lip_ratio", 0), 4),
+        round(features.get("nose_position", 0), 4),
+        round(features.get("lower_face_ratio", 0), 4),
+        round(features.get("chin_prominence", 0), 4),
+        round(features.get("symmetry", 0), 4),
+        round(features.get("upper_third", 0), 4),
+        round(features.get("middle_third", 0), 4),
+        round(features.get("lower_third", 0), 4),
+        round(features.get("thirds_balance", 0), 4),
+        gender,
+    ]
+    sheet.append_row(row)
 
 def load_feedback():
     try:

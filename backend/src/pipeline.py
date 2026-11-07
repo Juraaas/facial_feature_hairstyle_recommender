@@ -67,29 +67,7 @@ def run_pipeline(img, detector, gender=None, lang="pl", debug_rules=False):
     if debug_rules:
         debug_result = apply_rules(traits, gender=gender or "Man", debug=True)
         scores = debug_result["scores"]
-        trace = debug_result["trace"]
-
-        print("\n" + "=" * 60)
-        print(f"RULES DEBUG | gender={gender or 'Man'}")
-        print("Traits:", traits)
-
-        for stage in (
-            "base",
-            "after_interactions",
-            "after_symmetry",
-            "after_constraints",
-            "after_clamp",
-        ):
-            print(f"\n{stage}:")
-            print(trace[stage])
-
-        print("\nDELTAS:")
-        for stage, delta in trace["deltas"].items():
-            print(f"{stage}: {delta}")
-
-        print("\nCLAMPED DIMENSIONS:")
-        print(trace["clamped_dimensions"])
-        print("=" * 60)
+        log.debug("RULES gender=%s traits=%s trace=%s", gender or "Man", traits, debug_result["trace"])
 
     else:
         scores = apply_rules(traits, gender=gender or "Man")
