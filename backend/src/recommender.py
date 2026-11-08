@@ -1,8 +1,9 @@
 import json, re
 import os
-from groq import Groq
+from src import groq_client
 from src.fade_recommender import recommend_fade_from_front
 from src.logger import get_logger
+from concurrent.futures import ThreadPoolExecutor
 
 log = get_logger(__name__)
 
@@ -380,8 +381,11 @@ def _build_face_analysis(influences, traits, lang="pl"):
     return explanations
 
 def _build_face_analysis_llm(user_scores, influences, traits, gender="Man", lang="pl"):
-    api_key = os.environ.get("GROQ_API_KEY")
-    if not api_key:
+    client = groq_client.get_client()
+    if client is None:
+        return _build_face_analysis(influences, traits)
+    if not groq_client.available():
+        log.info("GROQ_SKIPPED where=face_analysis lang=%s (pause after rate limit)", lang)
         return _build_face_analysis(influences, traits)
 
     trait_summary = _prepare_trait_summary(user_scores, lang=lang)
@@ -488,7 +492,6 @@ def _build_face_analysis_llm(user_scores, influences, traits, gender="Man", lang
         )
 
     try:
-        client = Groq(api_key=api_key)
         response = client.chat.completions.create(
             model = "qwen/qwen3.8-27b",
             max_tokens = 400,
@@ -532,8 +535,8 @@ def _build_face_analysis_llm(user_scores, influences, traits, gender="Man", lang
         if isinstance(sentences, list) and all(isinstance(s, str) for s in sentences):
             return sentences[:3]
 
-    except Exception:
-        log.exception("LLM face analysis failed")
+    except Exception as e:
+        groq_client.handle_error(e, "face_analysis")
 
     return _build_face_analysis(influences, traits)
 
@@ -682,26 +685,21 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
     results_pl.sort(key=lambda x: x["score"], reverse=True)
     results_en.sort(key=lambda x: x["score"], reverse=True)
 
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        f_pl = ex.submit(_build_face_analysis_llm, user_scores, influences, traits, gender, "pl")
+        f_en = ex.submit(_build_face_analysis_llm, user_scores, influences, traits, gender, "en")
+        face_analysis = {"pl": f_pl.result(), "en": f_en.result()}
+
     return {
         "top_styles": {
             "pl": results_pl[:top_k],
             "en": results_en[:top_k],
         },
-
         "all_styles": {
             "pl": results_pl,
             "en": results_en,
         },
-
-        "face_analysis": {
-            "pl": _build_face_analysis_llm(
-                user_scores, influences, traits, gender, lang="pl"
-            ),
-            "en": _build_face_analysis_llm(
-                user_scores, influences, traits, gender, lang="en"
-            ),
-        },
-
+        "face_analysis": face_analysis,        
         "trait_influences": influences,
         "fade_recommendation": fade_rec,
     }

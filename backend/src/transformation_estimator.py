@@ -1,5 +1,5 @@
 import os, json
-from groq import Groq
+from src import groq_client
 from src.logger import get_logger
 
 log = get_logger(__name__)
@@ -28,7 +28,11 @@ def estimate_transformation(
     lang: str = "pl",
 ) -> dict | None:
     api_key = os.environ.get("GROQ_API_KEY")
-    if not api_key:
+    client = groq_client.get_client()
+    if client is None:
+        return None
+    if not groq_client.available():
+        log.info("GROQ_SKIPPED where=transformation")
         return None
 
     color_note = (
@@ -75,7 +79,6 @@ def estimate_transformation(
             Use an integer from 1-8 for visits, 0-18 for months, difficulty: easy/moderate/challenging."""
 
     try:
-        client = Groq(api_key=api_key)
         response = client.chat.completions.create(
             model = "qwen/qwen3.8-27b",
             messages = [{"role": "user", "content": prompt}],
@@ -114,6 +117,6 @@ def estimate_transformation(
 
         return data
 
-    except Exception:
-        log.exception("Transformation estimation error")
+    except Exception as e:
+        groq_client.handle_error(e, "transformation")
         return None
