@@ -25,6 +25,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
   const [transformation, setTransformation] = useState(null)
   const [previewRating, setPreviewRating] = useState(null)
   const [origUrl, setOrigUrl] = useState(null)
+  const [generationId, setGenerationId] = useState(null)
 
   useEffect(() => {
     if (originalFile) setOrigUrl(URL.createObjectURL(originalFile))
@@ -60,6 +61,7 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
       const json = await res.json()
       const imgSrc = `data:image/jpeg;base64,${json.image_b64}`
       setResult(imgSrc)
+      setGenerationId(json.generation_id ?? null)
       setTransformation(json.transformation ?? null)
     } catch (e) {
       setError(pl ? 'Generowanie nie powiodło się. Spróbuj ponownie.' : 'Generation failed. Please try again.')
@@ -75,8 +77,8 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
                    ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ style_name: selectedStyle,
-                               color_id: selectedColor, gender, rating: v }),
+        body: JSON.stringify({ style_name: selectedStyle, color_id: selectedColor, 
+          gender, rating: v, generation_id: generationId, }),
       })
     } catch {}
   }
