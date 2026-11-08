@@ -31,3 +31,16 @@ def finish_generation(gen_id, status: str, error_code=None, duration_ms=None):
         }).eq("id", gen_id).execute()
     except Exception:
         log.exception("finish_generation failed")
+
+
+def daily_limit_reached() -> bool:
+    try:
+        since = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+        res = (
+            get_supabase().table("generations")
+            .select("id", count="exact").gte("created_at", since).limit(1).execute()
+        )
+        return (res.count or 0) >= DAILY_LIMIT
+    except Exception:
+        log.exception("daily_limit_reached check failed")
+        return False
