@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import pandas as pd
 import io
+import time
 from PIL import Image
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Form, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,6 +30,8 @@ from src.payments import router as payments_router
 from src.pipeline import run_pipeline
 from src.style_generator import generate_preview, STYLE_PROMPTS_MALE, STYLE_PROMPTS_FEMALE, COLOR_PROMPTS
 from src.transformation_estimator import estimate_transformation
+from uuid import UUID
+from src.generations import start_generation, finish_generation, daily_limit_reached
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "face_landmarker.task")
@@ -68,6 +71,7 @@ class PreviewRatingBody(BaseModel):
     color_id: Literal["natural", "blonde", "dark", "black", "auburn"]
     gender: Literal["Man", "Woman"]
     rating: Literal["good", "bad"]
+    generation_id: Optional[UUID] = None
 
 
 def get_detector():
@@ -320,14 +324,24 @@ async def feedback(request: Request, body: FeedbackBody):
 
 @app.post("/preview-rating")
 @limiter.limit("10/minute")
-async def preview_rating(request: Request, body: PreviewRatingBody, user=Depends(require_auth)):
+def preview_rating(request: Request, body: PreviewRatingBody, user=Depends(require_auth)):
     try:
-        get_supabase().table("preview_ratings").insert({
+        sb = get_supabase()
+        gen_id = None
+        if body.generation_id:
+            owned = (
+                sb.table("generations").select("id")
+                .eq("id", str(body.generation_id)).eq("user_id", str(user.id))
+                .limit(1).execute()
+            )
+            gen_id = str(body.generation_id) if owned.data else None
+        sb.table("preview_ratings").insert({
             "user_id": str(user.id),
             "style_name": body.style_name,
             "color_id": body.color_id,
             "gender": body.gender,
             "rating": body.rating,
+            "generation_id": gen_id,
         }).execute()
     except Exception:
         log.exception("Preview rating error")
@@ -369,22 +383,42 @@ async def style_preview(
             raise http_error("INVALID_IMAGE", "Cannot encode image", 400)
         processed_bytes = buf.tobytes()
 
-        preview_bytes, transformation = await asyncio.gather(
-            generate_preview(processed_bytes, style_name, color_id, gender),
-            asyncio.to_thread(
-                estimate_transformation,
-                current_length=estimate_hair_length(hair_coverage),
-                current_hair_type=hair_type or "straight",
-                target_style=style_name,
-                color_change=color_id,
-                gender=gender,
-                lang=lang,
-            ),
+        if await asyncio.to_thread(daily_limit_reached):
+            raise http_error("CAPACITY_REACHED", "Daily capacity reached - try again tomorrow", 503)
+
+        gen_id = await asyncio.to_thread(
+            start_generation, str(user.id), style_name, color_id, gender
+        )
+        t0 = time.perf_counter()
+        try:
+            preview_bytes, transformation = await asyncio.gather(
+                generate_preview(processed_bytes, style_name, color_id, gender),
+                asyncio.to_thread(
+                    estimate_transformation,
+                    current_length=estimate_hair_length(hair_coverage),
+                    current_hair_type=hair_type or "straight",
+                    target_style=style_name,
+                    color_change=color_id,
+                    gender=gender,
+                    lang=lang,
+                ),
+            )
+        except Exception:
+            await asyncio.to_thread(
+                finish_generation, gen_id, "failed", "GENERATION_FAILED", 
+                int((time.perf_counter() - t0) * 1000),
+            )
+            raise
+
+        await asyncio.to_thread(
+            finish_generation, gen_id, "succeeded", None,
+            int((time.perf_counter() - t0) * 1000),
         )
 
         return {
             "image_b64": base64.b64encode(preview_bytes).decode(),
             "transformation": transformation,
+            "generation_id": gen_id,
         }
         
     except HTTPException:
