@@ -66,10 +66,8 @@ export function ErrorBox({error}) {
                 {hint}
             </p>
             {import.meta.env.DEV && msg && msg !== title && (
-                <p style={{
-                    fontSize: 11, color: 'var(--text-hint)',
-                    marginTop: 8, fontFamily: 'monospace'}}>
-                    {msg}
+                <p style={{ fontSize: 10, color: 'var(--text-hint)', marginTop: 8, fontFamily: 'monospace' }}>
+                    {code}{import.meta.env.DEV && msg && msg !== title ? ` · ${msg}` : ''}
                 </p>
             )}
         </div>

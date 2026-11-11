@@ -17,7 +17,6 @@ import { ConsentCheckboxes } from './components/ConsentCheckboxes'
 import { FadeLevel } from './components/FadeLevel'
 import { HairColorSuggestions } from './components/HairColorSuggestions'
 import { BuyCreditsModal } from './components/BuyCreditsModal'
-import { CreditsBar } from './components/CreditsBar'
 import { UnlockCard } from './components/UnlockCard'
 import { creditWord } from './lib/credits'
 import { fetchMe, createCheckout, API_BASE } from './api/client'
@@ -27,7 +26,7 @@ import './App.css'
 const FREE_FIX_MS = 14 * 60 * 1000
 
 function App() {
-  const { result, loading, error, analyse, reset } = useAnalysis()
+  const { result, loading, warming, error, analyse, reset } = useAnalysis()
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
   const [dark] = useDarkMode()
@@ -45,6 +44,7 @@ function App() {
   const [notice, setNotice] = useState(null)
   const [paymentStatus] = useState(() => new URLSearchParams(window.location.search).get('payment'))
   const [paymentDone, setPaymentDone] = useState(false)
+  const [meChecked, setMeChecked] = useState(false)
 
   const { t, i18n } = useTranslation()
   const pl = i18n.language === 'pl'
@@ -55,7 +55,7 @@ function App() {
   const isFull = result?.access === 'full'
   const canFull = !!user && credits !== null && credits >= costs.analysis
   const costWord = creditWord(costs.analysis, pl)
-  const meLoading = !!user && me === null
+  const meLoading = !!user && !meChecked
 
   const analysis = result?.face_analysis?.[i18n.language] || result?.face_analysis?.en || []
   const styles = result?.styles?.[i18n.language] || result?.styles?.en || []
@@ -209,8 +209,8 @@ function App() {
         variant="app"
         onShowPanel={() => setShowPanel(true)}
         onShowTutorial={() => setShowTutorial(true)}
-        onUpgrade={openBuy}
-        isPremium={false}
+        onBuy={openBuy} 
+        credits={user ? credits : null}
       />
       <div className="app">
         <main className="app-main">
@@ -228,8 +228,6 @@ function App() {
               }}><X size={14} /></button>
             </div>
           )}
-
-          {user && me && <CreditsBar credits={credits} costs={costs} onBuy={openBuy} />}
 
           {/* intro */}
           {!result && !loading && tutorialDone && !showTutorial && (
@@ -511,9 +509,9 @@ function App() {
       {showPanel && (
         <UserPanel
           user={user}
-          isPremium={false}
+          credits={credits ?? 0}
           onClose={() => setShowPanel(false)}
-          onUpgrade={openBuy}
+          onBuy={() => { setShowPanel(false); openBuy() }}
         />
       )}
 

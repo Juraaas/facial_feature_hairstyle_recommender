@@ -3,18 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useDarkMode } from '../hooks/useDarkMode'
 import { useAuth } from '../hooks/useAuth'
-import { History, Sparkles, Camera, LogOut, User, Languages, ChevronDown, Scissors, Sun, Moon } from 'lucide-react'
+import { History, Coins, Camera, LogOut, User, Languages, ChevronDown, Scissors, Sun, Moon } from 'lucide-react'
 import { btnAccent, btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob } from '../styles/shared'
 import { AuthModal } from './AuthModal'
+import { creditWord } from '../lib/credits'
 
 
-export function NavBar({
-  variant = 'landing',
-  onShowPanel,
-  onShowTutorial,
-  onUpgrade,
-  isPremium = false,
-}) {
+export function NavBar({ variant = 'landing', onShowPanel, onShowTutorial, onBuy, credits = null }) {
   const { i18n } = useTranslation()
   const navigate = useNavigate()
   const pl = i18n.language === 'pl'
@@ -39,10 +34,10 @@ export function NavBar({
       label: t('Analysis history', 'Historia analiz'),
       action: () => { onShowPanel?.(); setShowUserMenu(false) },
     },
-    !isPremium && {
-      Icon: Sparkles,
-      label: t('Get Premium', 'Kup Premium'),
-      action: () => { onUpgrade?.(); setShowUserMenu(false) },
+    variant === 'app' && {
+      Icon: Coins,
+      label: t('Buy credits', 'Kup kredyty'),
+      action: () => { onBuy?.(); setShowUserMenu(false) },
       accent: true,
     },
     {
@@ -143,6 +138,20 @@ export function NavBar({
           {/* separator */}
           <div style={{ width: 1, height: 16, background: 'var(--border)' }} />
 
+          {user && variant === 'app' && credits !== null && (
+            <button
+              onClick={() => onBuy?.()}
+              title={t('Buy credits', 'Kup kredyty')}
+              style={{
+                ...btnOutline, display: 'inline-flex', alignItems: 'center', gap: 6,
+                color: 'var(--accent)', borderColor: 'var(--accent)', background: 'var(--accent-soft)',
+              }}
+            >
+              <Coins size={13} strokeWidth={1.5} />
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{credits}</span>
+            </button>
+          )}
+
           {/* user menu or sign in */}
           <div style={{ position: 'relative' }}>
             <button
@@ -156,7 +165,7 @@ export function NavBar({
                 <>
                   <div style={{
                     width: 18, height: 18, borderRadius: '50%',
-                    background: isPremium ? 'var(--accent)' : 'var(--border)',
+                    background: 'var(--accent)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 9, color: '#fff', fontWeight: 600, flexShrink: 0,
                   }}>
@@ -212,7 +221,13 @@ export function NavBar({
                         fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2,
                         color: isPremium ? 'var(--accent)' : 'var(--text-hint)',
                       }}>
-                        {isPremium ? '✦ Premium' : '○ Free'}
+                        {credits !== null && (
+                          <p style={{
+                            fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2, color: 'var(--accent)',
+                          }}>
+                            {credits} {creditWord(credits, pl)}
+                          </p>
+                        )}
                       </p>
                     </div>
                   )}
