@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X, Scissors, WandSparkles } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { creditWord } from '../lib/credits'
 
 const BASE = import.meta.env.VITE_API_URL
 
@@ -13,9 +14,11 @@ const HAIR_COLORS = [
   { id: 'auburn', label_pl: 'Rudy', label_en: 'Auburn', prompt: 'auburn red hair color' },
 ]
 
-export function StylePlayground({ styles, originalFile, onClose, isPremium, onUpgrade, gender, analysisResult }) {
+export function StylePlayground({ styles, originalFile, onClose, gender, analysisResult,
+                                  credits, previewCost, onCreditsChange, onNeedCredits }) {
   const { i18n } = useTranslation()
   const pl = i18n.language === 'pl'
+  const enough = credits >= previewCost
 
   const [selectedStyle, setSelectedStyle] = useState(styles[0]?.name || '')
   const [selectedColor, setSelectedColor] = useState('natural')
@@ -28,12 +31,14 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
   const [generationId, setGenerationId] = useState(null)
 
   useEffect(() => {
-    if (originalFile) setOrigUrl(URL.createObjectURL(originalFile))
-    return () => { if (origUrl) URL.revokeObjectURL(origUrl) }
+    if (!originalFile) return
+    const url = URL.createObjectURL(originalFile)
+    setOrigUrl(url)
+    return () => URL.revokeObjectURL(url)
   }, [originalFile])
 
   async function handleGenerate() {
-    if (!isPremium) { onUpgrade(); return }
+    if (credits < previewCost) { onNeedCredits(); return }
     if (!originalFile) return
 
     setGenerating(true); setError(null); setResult(null);
@@ -57,15 +62,26 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
 
-      if (!res.ok) throw new Error('Generation failed')
+      if (!res.ok) {
+        const err = await res.json().catch(() => null)
+        throw new Error(err?.detail?.code ?? err?.code ?? 'GENERATION_FAILED')
+      }
       const json = await res.json()
-      const imgSrc = `data:image/jpeg;base64,${json.image_b64}`
-      setResult(imgSrc)
-      setGenerationId(json.generation_id ?? null)
+      setResult(`data:image/jpeg;base64,${json.image_b64}`)
       setTransformation(json.transformation ?? null)
+      setGenerationId(json.generation_id ?? null)
+      onCreditsChange?.(json.credits)
     } catch (e) {
-      setError(pl ? 'Generowanie nie powiodło się. Spróbuj ponownie.' : 'Generation failed. Please try again.')
-    } finally { setGenerating(false) }
+    if (e.message === 'INSUFFICIENT_CREDITS') { onNeedCredits(); return }
+    const msgs = {
+      CAPACITY_REACHED: pl ? 'Dzisiejszy limit generacji został wyczerpany. Spróbuj jutro.'
+                          : 'Daily generation capacity reached. Please try again tomorrow.',
+      RATE_LIMITED: pl ? 'Za dużo prób. Poczekaj kilka minut.' : 'Too many attempts. Wait a minute.',
+    }
+    setError(msgs[e.message] ?? (pl
+      ? 'Generowanie nie powiodło się. Kredyty zostały zwrócone. Spróbuj ponownie za chwilę.'
+      : 'Generation failed. Your credits were refunded. Please try again shortly.'))
+  } finally { setGenerating(false) }
   }
 
   async function handlePreviewRating(v) {
@@ -189,7 +205,9 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
                 }} />
                 {pl ? 'Generowanie…' : 'Generating…'}
               </>
-            ) : `✨ ${pl ? 'Generuj podgląd' : 'Generate preview'}`}
+            ) : enough
+              ? `✨ ${pl ? 'Generuj podgląd' : 'Generate preview'} · ${previewCost} ${creditWord(previewCost, pl)}`
+              : (pl ? `Brakuje kredytów (potrzeba ${previewCost})` : `Buy credits (${previewCost} needed)`)}
           </button>
 
           {error && (
@@ -378,28 +396,24 @@ export function StylePlayground({ styles, originalFile, onClose, isPremium, onUp
 
                   <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12 }}>
                     {[
-                      { key: pl ? 'note_pl' : 'note_en',   label: null },
-                      { key: 'recommendation_pl', key_en: 'recommendation_en', label: pl?'Rekomendacja':'Recommendation'},
-                      { key: 'first_step_pl', key_en: 'first_step_en', label: pl?'Pierwszy krok':'First step'},
-                      { key: 'maintenance_pl', key_en: 'maintenance_en', label: pl?'Pielęgnacja':'Maintenance'},
-                    ].filter(f => transformation[pl ? f.key_pl : f.key_en]).map(f => {
-                      const key = pl ? f.key_pl : f.key_en
-                      return (
-                        <div key={f.key} style={{ marginBottom: 10 }}>
+                      { id: 'note',  pl_key: 'note_pl', en_key: 'note_en', label: null },
+                      { id: 'reco',  pl_key: 'recommendation_pl', en_key: 'recommendation_en', label: pl ? 'Rekomendacja' : 'Recommendation' },
+                      { id: 'first', pl_key: 'first_step_pl', en_key: 'first_step_en', label: pl ? 'Pierwszy krok' : 'First step' },
+                      { id: 'maint', pl_key: 'maintenance_pl', en_key: 'maintenance_en', label: pl ? 'Pielęgnacja' : 'Maintenance' },
+                    ]
+                      .map(f => ({ ...f, text: transformation[pl ? f.pl_key : f.en_key] }))
+                      .filter(f => f.text)
+                      .map(f => (
+                        <div key={f.id} style={{ marginBottom: 10 }}>
                           {f.label && (
-                            <p style={{ fontSize: 9, fontWeight: 600,
-                              color: 'var(--accent)', textTransform: 'uppercase',
-                              letterSpacing: '.06em', marginBottom: 3,
-                              fontFamily: 'var(--font-body)',
-                            }}>{f.label}</p>
+                            <p style={{ fontSize: 9, fontWeight: 600, color: 'var(--accent)',
+                              textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 3,
+                              fontFamily: 'var(--font-body)' }}>{f.label}</p>
                           )}
                           <p style={{ fontSize: 12, color: 'var(--text-muted)',
-                            fontWeight: 300, lineHeight: 1.65 }}>
-                            {transformation[f.key]}
-                          </p>
+                            fontWeight: 300, lineHeight: 1.65 }}>{f.text}</p>
                         </div>
-                      )
-                    })}
+                      ))}
                   </div>
                 </div>
               )}
