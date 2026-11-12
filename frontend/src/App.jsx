@@ -18,7 +18,7 @@ import { FadeLevel } from './components/FadeLevel'
 import { HairColorSuggestions } from './components/HairColorSuggestions'
 import { BuyCreditsModal } from './components/BuyCreditsModal'
 import { UnlockCard } from './components/UnlockCard'
-import { creditWord } from './lib/credits'
+import { creditWord, plural } from './lib/credits'
 import { fetchMe, createCheckout, API_BASE } from './api/client'
 import { X, Scissors, ArrowRight, ScanFace, Waves, ScanLine, Brush, LogIn } from 'lucide-react'
 import './App.css'
@@ -86,7 +86,6 @@ function App() {
   }, [uid])
 
   useEffect(() => { setMeChecked(false); refreshMe() }, [refreshMe])
-  useEffect(() => { refreshMe() }, [refreshMe])
 
   useEffect(() => {
     if (result?.credits != null) setMe(m => (m ? { ...m, credits: result.credits } : m))
@@ -201,15 +200,30 @@ function App() {
             : `A full analysis costs ${costs.analysis} ${costWord}. You will get the basic version now.`)
       : ''
 
-  const lacking = user && (credits ?? 0) < costs.analysis
+  const lockedStyles = result?.locked_styles ?? 0
+  const lacking = !!user && (credits ?? 0) < costs.analysis
+  const benefits = pl
+    ? [
+        'opis dopasowania',
+        lockedStyles > 0 ? `jeszcze ${lockedStyles} ${plural(lockedStyles, 'fryzurę', 'fryzury', 'fryzur')} z uzasadnieniami` : null,
+        result?.gender === 'Man' ? 'poziom fade' : null,
+        'pełną paletę kolorów',
+      ].filter(Boolean).join(', ')
+    : [
+        'a personal fit summary',
+        lockedStyles > 0 ? `${lockedStyles} more ${lockedStyles === 1 ? 'hairstyle' : 'hairstyles'} with explanations` : null,
+        result?.gender === 'Man' ? 'your fade level' : null,
+        'the full color palette',
+      ].filter(Boolean).join(', ')
+
   const unlockText = !user
-    ? (pl ? 'Zaloguj się, aby odblokować pełną analizę, wszystkie rekomendacje i uzasadnienia. Pierwsza analiza jest za darmo.'
-          : 'Sign in to unlock the full analysis, all recommendations and explanations. Your first analysis is free.')
+    ? (pl ? `Zaloguj się i odblokuj: ${benefits}. Pierwsza analiza jest za darmo.`
+          : `Sign in to unlock: ${benefits}. Your first analysis is free.`)
     : lacking
-      ? (pl ? `Pełna analiza kosztuje ${costs.analysis} ${costWord}. Kup kredyty, aby ją odblokować.`
-            : `A full analysis costs ${costs.analysis} ${costWord}. Buy credits to unlock it.`)
-      : (pl ? `Odblokuj pełną analizę za ${costs.analysis} ${costWord}: opis dopasowania, wszystkie fryzury i uzasadnienia.`
-            : `Unlock the full analysis for ${costs.analysis} ${costWord}: fit summary, all hairstyles and explanations.`)
+      ? (pl ? `Pełna analiza kosztuje ${costs.analysis} ${costWord}. Kup kredyty, aby odblokować: ${benefits}.`
+            : `A full analysis costs ${costs.analysis} ${costWord}. Buy credits to unlock: ${benefits}.`)
+      : (pl ? `Odblokuj za ${costs.analysis} ${costWord}: ${benefits}.`
+            : `Unlock for ${costs.analysis} ${costWord}: ${benefits}.`)
   const unlockCta = !user ? (pl ? 'Zaloguj się' : 'Sign in')
     : lacking ? (pl ? 'Kup kredyty' : 'Buy credits')
     : (pl ? 'Odblokuj' : 'Unlock')
@@ -221,7 +235,7 @@ function App() {
         variant="app"
         onShowPanel={() => setShowPanel(true)}
         onShowTutorial={() => setShowTutorial(true)}
-        onBuy={openBuy} 
+        onBuy={openBuy}
         credits={user ? credits : null}
       />
       <div className="app">
@@ -317,7 +331,12 @@ function App() {
           {loading && (
             <div className="loading">
               <div className="spinner" />
-              <p style={{ fontSize: 13, fontWeight: 300 }}>{t('btn_loading')}</p>
+              <p style={{ fontSize: 13, fontWeight: 300 }}>
+                {warming
+                  ? (pl ? 'Serwer się uruchamia, to może potrwać do minuty…'
+                        : 'The server is starting up, this can take up to a minute…')
+                  : t('btn_loading')}
+              </p>
             </div>
           )}
 
@@ -395,16 +414,7 @@ function App() {
                 </div>
               </div>
 
-              {isFull ? (
-                <FaceAnalysis analysis={analysis} />
-              ) : (
-                <UnlockCard
-                  title={pl ? 'Pełna analiza' : 'Full analysis'}
-                  text={unlockText}
-                  cta={unlockCta}
-                  onClick={handleUnlock}
-                />
-              )}
+              {isFull && analysis.length > 0 && <FaceAnalysis analysis={analysis} />}
 
               <HairColorSuggestions recommendation={result.color_recommendation} />
 
@@ -417,6 +427,15 @@ function App() {
                 unlocked={isFull}
                 onUnlock={handleUnlock}
               />
+
+              {!isFull && (
+                <UnlockCard
+                  title={pl ? 'Pełna analiza' : 'Full analysis'}
+                  text={unlockText}
+                  cta={unlockCta}
+                  onClick={handleUnlock}
+                />
+              )}
 
               {result.fade_recommendation && result.gender === 'Man' && (
                 <FadeLevel recommendation={result.fade_recommendation} />
