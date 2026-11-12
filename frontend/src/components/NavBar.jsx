@@ -217,18 +217,13 @@ export function NavBar({ variant = 'landing', onShowPanel, onShowTutorial, onBuy
                       }}>
                         {user.email}
                       </p>
-                      <p style={{
-                        fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2,
-                        color: isPremium ? 'var(--accent)' : 'var(--text-hint)',
-                      }}>
-                        {credits !== null && (
-                          <p style={{
-                            fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2, color: 'var(--accent)',
-                          }}>
-                            {credits} {creditWord(credits, pl)}
-                          </p>
+                      {credits !== null && (
+                        <p style={{
+                          fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2, color: 'var(--accent)',
+                        }}>
+                          {credits} {creditWord(credits, pl)}
+                        </p>
                         )}
-                      </p>
                     </div>
                   )}
 

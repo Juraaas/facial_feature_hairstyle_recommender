@@ -43,6 +43,7 @@ export function ErrorBox({error}) {
     const code = typeof error === "object" ? error.code : "INTERNAL_ERROR"
     const msg = typeof error === "object" ? error.message : error
     const config = ERROR_CONFIG[code] || ERROR_CONFIG.INTERNAL_ERROR
+    const showDetails = import.meta.env.DEV || new URLSearchParams(window.location.search).has('debug')
 
     const title = t(config.titleKey)
     const hint = t(config.hintKey)
@@ -70,6 +71,9 @@ export function ErrorBox({error}) {
                     {code}{import.meta.env.DEV && msg && msg !== title ? ` · ${msg}` : ''}
                 </p>
             )}
+            <p style={{ fontSize: 10, color: 'var(--text-hint)', marginTop: 8, fontFamily: 'monospace' }}>
+                {code}{showDetails && msg && msg !== title ? ` · ${msg}` : ''}
+            </p>
         </div>
     )
 }

@@ -69,11 +69,23 @@ function App() {
     }
   }, [])
 
-  const refreshMe = useCallback(async () => {
-    if (!user) { setMe(null); return null }
-    try { const data = await fetchMe(); setMe(data); return data } catch { return null }
-  }, [user])
+  const uid = user?.id ?? null
 
+  const refreshMe = useCallback(async () => {
+    if (!uid) { setMe(null); setMeChecked(false); return null }
+    try {
+      const data = await fetchMe()
+      setMe(data)
+      return data
+    } catch (e) {
+      console.error('fetchMe failed', e)
+      return null
+    } finally {
+      setMeChecked(true)
+    }
+  }, [uid])
+
+  useEffect(() => { setMeChecked(false); refreshMe() }, [refreshMe])
   useEffect(() => { refreshMe() }, [refreshMe])
 
   useEffect(() => {
@@ -81,7 +93,7 @@ function App() {
   }, [result])
 
   useEffect(() => {
-    if (paymentStatus !== 'success' || !user || paymentDone) return
+    if (paymentStatus !== 'success' || !uid || paymentDone) return
     const before = Number(sessionStorage.getItem('credits_before') ?? -1)
     setNotice({ type: 'info', text: pl ? 'Księgujemy płatność…' : 'Processing payment…' })
     let tries = 0
@@ -102,7 +114,7 @@ function App() {
       }
     }, 2000)
     return () => clearInterval(timer)
-  }, [paymentStatus, user, paymentDone, refreshMe, pl])
+  }, [paymentStatus, uid, paymentDone, refreshMe, pl])
 
   function openBuy() {
     if (!user) { setShowAuth(true); return }

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useTranslation } from 'react-i18next'
-import { Sparkles, X, Trash } from 'lucide-react'
+import { Coins, X, Trash } from 'lucide-react'
 import { btnAccent } from '../styles/shared'
+import { creditWord } from '../lib/credits'
 
 const BASE = import.meta.env.VITE_API_URL || '/api'
 
@@ -62,7 +63,7 @@ const TRAIT_VALUES_PL = {
   lower: 'dolna tercja',
 }
 
-export function UserPanel({ user, onClose, isPremium, onUpgrade }) {
+export function UserPanel({ user, onClose, credits = 0, onBuy }) {
   const [analyses, setAnalyses] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedAnalysis, setSelectedAnalysis] = useState(null)
@@ -129,9 +130,8 @@ export function UserPanel({ user, onClose, isPremium, onUpgrade }) {
             fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>
             {pl ? 'Twoje konto' : 'Your account'}
           </h2>
-          <p style={{ fontSize: 11, color: isPremium ? 'var(--accent)' : 'var(--text-hint)',
-            fontFamily: 'var(--font-mono)' }}>
-            {user.email} · {isPremium ? '✦ Premium' : '○ Free'}
+          <p style={{ fontSize: 11, color: 'var(--text-hint)', fontFamily: 'var(--font-mono)' }}>
+            {user.email} · {credits} {creditWord(credits, pl)}
           </p>
           <button onClick={onClose} style={{
             position: 'absolute', top: 16, right: 16,
@@ -140,16 +140,13 @@ export function UserPanel({ user, onClose, isPremium, onUpgrade }) {
           }}>
             <X size={18} strokeWidth={1.5} />
           </button>
-          {!isPremium && (
-            <button onClick={onUpgrade} style={{
-              ...btnAccent, fontSize: 11, padding: '5px 12px',
-              minWidth: 'auto', marginTop: 10,
-              display: 'inline-flex', alignItems: 'center', gap: 5,
-            }}>
-              <Sparkles size={11} strokeWidth={1.5} />
-              {pl ? 'Kup Premium' : 'Upgrade'}
-            </button>
-          )}
+          <button onClick={onBuy} style={{
+            ...btnAccent, fontSize: 11, padding: '5px 12px', minWidth: 'auto', marginTop: 10,
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+          }}>
+            <Coins size={11} strokeWidth={1.5} />
+            {pl ? 'Kup kredyty' : 'Buy credits'}
+          </button>
         </div>
 
         {/* body */}
