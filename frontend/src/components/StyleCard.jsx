@@ -5,7 +5,7 @@ import { TriangleAlert, LockKeyhole, ThumbsUp, ThumbsDown } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export function StyleCard({style, rank, features, gender, unlocked = false }) {
+export function StyleCard({style, rank, features, gender}) {
     const { t, i18n } = useTranslation()
     const [voted, setVoted] = useState(null)
     const score = style.display_score ?? 0
@@ -100,7 +100,7 @@ export function StyleCard({style, rank, features, gender, unlocked = false }) {
             )}
 
             {/* why it works */}
-            {(unlocked || rank === 0) && style.contributions?.length > 0 && (
+            {style.contributions?.length > 0 && (
             <div>
                 <p style={{fontSize: 9, fontWeight: 600, color: 'var(--text-hint)',
                 textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8, 
@@ -128,28 +128,6 @@ export function StyleCard({style, rank, features, gender, unlocked = false }) {
                 ))}
             </div>
             )}
-
-            {!unlocked && rank > 0 && (
-                <div style={{
-                    position: 'relative', padding: '8px 0', marginBottom: 8,
-                }}>
-                    <div style={{
-                    height: 40, borderRadius: 4, opacity: 0.5, marginBottom: 4,
-                    background: 'linear-gradient(90deg, var(--border) 25%, var(--surface-2) 50%, var(--border) 75%)',
-                    }} />
-                    <div style={{
-                    height: 24, width: '60%', borderRadius: 4, opacity: 0.4,
-                    background: 'linear-gradient(90deg, var(--border) 25%, var(--surface-2) 50%, var(--border) 75%)',
-                    }} />
-                    <p style={{
-                    position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', fontSize: 10, color: 'var(--text-hint)',
-                    }}>
-                     <LockKeyhole size={10} strokeWidth={1.5} color="var(--accent)"/>
-                     {pl ? 'Pełna analiza' : 'Full analysis'}
-                    </p>
-                </div>
-                )}
 
             {/* negatives */}
             {style.negatives?.length > 0 && (

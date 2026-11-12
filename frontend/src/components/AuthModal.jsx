@@ -31,13 +31,13 @@ export function AuthModal({ onClose, onSuccess }) {
         await signUpWithEmail(email, password)
         setSuccess(true)
       }
-    } catch (e) {setError(e.message) } 
+    } catch (e) { setError(e.message) }
     finally { setLoading(false) }
   }
 
   async function handleForgot() {
     if (!email) { setError(pl ? 'Wpisz email' : 'Enter your email'); return }
-    setLoading(true)
+    setError(null); setLoading(true)
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/analyse`,
     })
@@ -46,31 +46,30 @@ export function AuthModal({ onClose, onSuccess }) {
     else setForgotSent(true)
   }
 
+  function onFormSubmit(e) {
+    e.preventDefault()
+    if (loading) return
+    return showForgot ? handleForgot() : handleSubmit()
+  }
+
+  const submitDisabled = loading || !email || (!showForgot && !password)
+
   return (
     <>
-      {/* overlay */}
-      <div
-        onClick={onClose}
-        style={{position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 200}}
-      />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 200 }} />
 
-      {/* modal */}
       <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',zIndex: 201,
+        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 201,
         background: 'var(--surface)', borderRadius: isRegister ? 'var(--radius-lg)' : '24px',
         border: '1px solid var(--border)', padding: isRegister ? '32px 28px' : '28px 28px',
         width: 'calc(100% - 32px)', maxWidth: isRegister ? 420 : 380,
         boxShadow: '0 24px 64px rgba(0,0,0,.28)', animation: 'modalIn .2s ease',
         transition: 'max-width .2s, border-radius .2s',
       }}>
-        {/* close */}
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute', top: 12, right: 12, background: 'none', border: 'none',
-            cursor: 'pointer', fontSize: 18, color: 'var(--text-hint)', display: 'flex', padding: 4
-          }}
-        >
+        <button type="button" onClick={onClose} aria-label="close" style={{
+          position: 'absolute', top: 12, right: 12, background: 'none', border: 'none',
+          cursor: 'pointer', fontSize: 18, color: 'var(--text-hint)', display: 'flex', padding: 4,
+        }}>
           <X size={16} strokeWidth={1.5} />
         </button>
 
@@ -79,42 +78,40 @@ export function AuthModal({ onClose, onSuccess }) {
           color: 'var(--text)', marginBottom: 4,
         }}>
           {showForgot
-          ? (pl ? 'Reset hasła' : 'Reset password')
-          : isRegister
-            ? (pl ? 'Utwórz konto' : 'Create account')
-            : (pl ? 'Zaloguj się' : 'Log in')}
+            ? (pl ? 'Reset hasła' : 'Reset password')
+            : isRegister
+              ? (pl ? 'Utwórz konto' : 'Create account')
+              : (pl ? 'Zaloguj się' : 'Log in')}
         </h2>
-        <p style={{fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, marginBottom: 24}}>
+        <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, marginBottom: 24 }}>
           {showForgot
             ? (pl ? 'Wyślemy Ci link do zresetowania hasła' : "We'll send you a reset link")
             : isRegister
-              ? (pl ? 'Bezpłatne' : 'Free')
-              : (pl ? 'Dostęp do historii i funkcji premium' : 'Access your history and premium features')}
+              ? (pl ? 'Bezpłatne konto' : 'Free account')
+              : (pl ? 'Dostęp do historii analiz i kredytów' : 'Access your analysis history and credits')}
         </p>
 
-        {success ? (
+        {success || forgotSent ? (
           <div style={{
-            background: '#f0faf4', border: '1px solid #b7dfc7',
-            borderRadius: 'var(--radius-md)', padding: '14px 16px',
-            fontSize: 13, color: '#2d8f4e', textAlign: 'center',
+            background: '#f0faf4', border: '1px solid #b7dfc7', borderRadius: 'var(--radius-md)',
+            padding: '14px 16px', fontSize: 13, color: '#2d8f4e', textAlign: 'center',
           }}>
-            {pl
-              ? '✓ Sprawdź email aby potwierdzić konto'
-              : '✓ Check your email to confirm your account'}
+            {forgotSent
+              ? (pl ? '✓ Wysłaliśmy link do resetu hasła' : '✓ We sent you a password reset link')
+              : (pl ? '✓ Sprawdź email aby potwierdzić konto' : '✓ Check your email to confirm your account')}
           </div>
         ) : (
-          <>
+          <form onSubmit={onFormSubmit} noValidate>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
               <div style={{ position: 'relative' }}>
                 <Mail size={14} strokeWidth={1.5} color="var(--text-hint)" style={{
                   position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
                 }} />
                 <input
-                  type="email"
+                  type="email" name="email" autoComplete="email"
+                  aria-label={pl ? 'Adres email' : 'Email address'}
                   placeholder={pl ? 'Adres email' : 'Email address'}
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && !showForgot && handleSubmit()}
+                  value={email} onChange={e => setEmail(e.target.value)}
                   style={{ ...inputStyle, paddingLeft: 36 }}
                 />
               </div>
@@ -124,37 +121,31 @@ export function AuthModal({ onClose, onSuccess }) {
                     position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
                   }} />
                   <input
-                    type={showPw ? 'text' : 'password'}
+                    type={showPw ? 'text' : 'password'} name="password"
+                    autoComplete={isRegister ? 'new-password' : 'current-password'}
+                    aria-label={pl ? 'Hasło' : 'Password'}
                     placeholder={isRegister
                       ? (pl ? 'Hasło (min. 8 znaków)' : 'Password (min. 8 chars)')
                       : (pl ? 'Hasło' : 'Password')}
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                    value={password} onChange={e => setPassword(e.target.value)}
                     style={{ ...inputStyle, paddingLeft: 36, paddingRight: 36 }}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPw(p => !p)}
+                  <button type="button" onClick={() => setShowPw(p => !p)}
+                    aria-label={showPw ? 'hide password' : 'show password'}
                     style={{
-                      position: 'absolute', right: 10, top: '50%',
-                      transform: 'translateY(-50%)',
+                      position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
                       background: 'none', border: 'none', cursor: 'pointer',
                       color: 'var(--text-hint)', display: 'flex', padding: 2,
-                    }}
-                  >
-                    {showPw
-                      ? <EyeOff size={14} strokeWidth={1.5} />
-                      : <Eye size={14} strokeWidth={1.5} />}
+                    }}>
+                    {showPw ? <EyeOff size={14} strokeWidth={1.5} /> : <Eye size={14} strokeWidth={1.5} />}
                   </button>
                 </div>
               )}
             </div>
 
-            {/* forgot password link */}
             {mode === 'login' && !showForgot && (
               <div style={{ textAlign: 'right', marginBottom: 14, marginTop: -6 }}>
-                <button onClick={() => { setShowForgot(true); setError(null) }} style={{
+                <button type="button" onClick={() => { setShowForgot(true); setError(null) }} style={{
                   background: 'none', border: 'none', cursor: 'pointer',
                   fontSize: 11, color: 'var(--text-hint)', fontFamily: 'var(--font-body)',
                 }}>
@@ -165,31 +156,24 @@ export function AuthModal({ onClose, onSuccess }) {
 
             {error && (
               <p style={{
-                fontSize: 12, color: '#c0392b',
-                marginBottom: 12, padding: '8px 10px',
-                background: '#fef4f2', borderRadius: 'var(--radius-sm)',
-                border: '1px solid #f5c6bc',
+                fontSize: 12, color: '#c0392b', marginBottom: 12, padding: '8px 10px',
+                background: '#fef4f2', borderRadius: 'var(--radius-sm)', border: '1px solid #f5c6bc',
               }}>{error}</p>
             )}
 
-            <button
-              onClick={showForgot ? handleForgot : handleSubmit}
-              disabled={loading || !email || (!showForgot && !password)}
-              className="analyse-btn"
-              style={{ opacity: (!email || (!showForgot && !password)) ? 0.5 : 1 }}
-            >
+            <button type="submit" disabled={submitDisabled} className="analyse-btn"
+              style={{ opacity: submitDisabled ? 0.5 : 1 }}>
               {loading ? (pl ? 'Ładowanie...' : 'Loading...')
-               : showForgot ? (pl ? 'Wyślij link' : 'Send reset link')
-               : isRegister ? (pl ? 'Utwórz konto' : 'Create account')
-               : (pl ? 'Zaloguj się' : 'Sign in')}
+                : showForgot ? (pl ? 'Wyślij link' : 'Send reset link')
+                : isRegister ? (pl ? 'Utwórz konto' : 'Create account')
+                : (pl ? 'Zaloguj się' : 'Sign in')}
             </button>
 
-            {/* back from forgot / switch mode */}
             <div style={{ textAlign: 'center', marginTop: 14, fontSize: 12, color: 'var(--text-muted)' }}>
               {showForgot ? (
-                <button onClick={() => { setShowForgot(false); setError(null) }} style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize: 12, color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
+                <button type="button" onClick={() => { setShowForgot(false); setError(null) }} style={{
+                  background: 'none', border: 'none', cursor: 'pointer', fontSize: 12,
+                  color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
                   display: 'inline-flex', alignItems: 'center', gap: 4,
                 }}>
                   <ArrowLeft size={12} strokeWidth={1.5} />
@@ -200,17 +184,18 @@ export function AuthModal({ onClose, onSuccess }) {
                   {isRegister
                     ? (pl ? 'Masz już konto? ' : 'Already have an account? ')
                     : (pl ? 'Nie masz konta? ' : "Don't have an account? ")}
-                  <button onClick={() => { setMode(m => m === 'login' ? 'register' : 'login'); setError(null) }} style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    color: 'var(--accent)', fontSize: 12, padding: 0,
-                    fontFamily: 'var(--font-body)',
-                  }}>
+                  <button type="button"
+                    onClick={() => { setMode(m => m === 'login' ? 'register' : 'login'); setError(null) }}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)',
+                      fontSize: 12, padding: 0, fontFamily: 'var(--font-body)',
+                    }}>
                     {isRegister ? (pl ? 'Zaloguj się' : 'Sign in') : (pl ? 'Zarejestruj się' : 'Register')}
                   </button>
                 </>
               )}
             </div>
-          </>
+          </form>
         )}
       </div>
     </>
@@ -218,13 +203,7 @@ export function AuthModal({ onClose, onSuccess }) {
 }
 
 const inputStyle = {
-  width: '100%',
-  padding: '10px 12px',
-  border: '1px solid var(--border)',
-  borderRadius: 'var(--radius-md)',
-  background: 'var(--surface-2)',
-  color: 'var(--text)',
-  fontSize: 13,
-  fontFamily: 'var(--font-body)',
-  outline: 'none',
+  width: '100%', padding: '10px 12px', border: '1px solid var(--border)',
+  borderRadius: 'var(--radius-md)', background: 'var(--surface-2)', color: 'var(--text)',
+  fontSize: 13, fontFamily: 'var(--font-body)', outline: 'none',
 }

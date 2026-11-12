@@ -20,6 +20,7 @@ import { BuyCreditsModal } from './components/BuyCreditsModal'
 import { UnlockCard } from './components/UnlockCard'
 import { creditWord, plural } from './lib/credits'
 import { fetchMe, createCheckout, API_BASE } from './api/client'
+import { LockedBlock } from './components/LockedBlock'
 import { X, Scissors, ArrowRight, ScanFace, Waves, ScanLine, Brush, LogIn } from 'lucide-react'
 import './App.css'
 
@@ -414,14 +415,28 @@ function App() {
                 </div>
               </div>
 
-              {isFull && analysis.length > 0 && <FaceAnalysis analysis={analysis} />}
+              {isFull
+                ? (analysis.length > 0 && <FaceAnalysis analysis={analysis} />)
+                : result.face_analysis_locked && (
+                    <LockedBlock
+                      title={pl ? 'Analiza dopasowania' : 'Fit analysis'}
+                      text={pl ? 'Dostępne w pełnej analizie' : 'Included in the full analysis'}
+                      lines={3}
+                      onClick={handleUnlock}
+                    />
+                  )}
 
-              <HairColorSuggestions recommendation={result.color_recommendation} />
+              <HairColorSuggestions
+                recommendation={result.color_recommendation}
+                lockedCount={result.locked_colors ?? 0}
+                onUnlock={handleUnlock}
+              />
 
               <FaceProportions features={result.features} norms={result.norms} traits={result.traits} />
 
               <StylesSection
                 styles={styles}
+                lockedCount={result.locked_styles ?? 0}
                 features={result.features}
                 gender={result.gender}
                 unlocked={isFull}
@@ -437,8 +452,17 @@ function App() {
                 />
               )}
 
-              {result.fade_recommendation && result.gender === 'Man' && (
-                <FadeLevel recommendation={result.fade_recommendation} />
+              {result.gender === 'Man' && (
+                isFull
+                  ? (result.fade_recommendation && <FadeLevel recommendation={result.fade_recommendation} />)
+                  : result.fade_locked && (
+                      <LockedBlock
+                        title={pl ? 'Rekomendowany fade' : 'Recommended fade'}
+                        text={pl ? 'Dostępne w pełnej analizie' : 'Included in the full analysis'}
+                        lines={1}
+                        onClick={handleUnlock}
+                      />
+                    )
               )}
 
               <section style={{ marginBottom: 32 }}>
