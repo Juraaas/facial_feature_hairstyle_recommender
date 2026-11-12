@@ -198,7 +198,7 @@ function App() {
     ? (pl ? 'Zaloguj się, aby dostać pierwszą pełną analizę za darmo.' : 'Sign in to get your first full analysis for free.')
     : !canFull
       ? (pl ? `Pełna analiza kosztuje ${costs.analysis} ${costWord}. Teraz zobaczysz wersję podstawową.`
-            : `A full analysis costs ${costs.analysis} ${costWord}. You will get the basic version now.`)
+            : `A full analysis costs ${costs.analysis} ${costWord}. You will get the essential version now.`)
       : ''
 
   const lockedStyles = result?.locked_styles ?? 0
@@ -206,15 +206,13 @@ function App() {
   const benefits = pl
     ? [
         'opis dopasowania',
-        lockedStyles > 0 ? `jeszcze ${lockedStyles} ${plural(lockedStyles, 'fryzurę', 'fryzury', 'fryzur')} z uzasadnieniami` : null,
-        result?.gender === 'Man' ? 'poziom fade' : null,
-        'pełną paletę kolorów',
+        lockedStyles > 0 ? `dodatkowe ${lockedStyles} ${plural(lockedStyles, 'fryzurę', 'fryzury', 'fryzur')} z uzasadnieniami` : null,
+        result?.gender === 'Man' ? 'rekomendację wysokości fade' : null,
       ].filter(Boolean).join(', ')
     : [
         'a personal fit summary',
         lockedStyles > 0 ? `${lockedStyles} more ${lockedStyles === 1 ? 'hairstyle' : 'hairstyles'} with explanations` : null,
         result?.gender === 'Man' ? 'your fade level' : null,
-        'the full color palette',
       ].filter(Boolean).join(', ')
 
   const unlockText = !user
