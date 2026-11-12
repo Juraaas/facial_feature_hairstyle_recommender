@@ -19,7 +19,7 @@ from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 from starlette.middleware.base import BaseHTTPMiddleware
-from src.auth import require_premium, require_auth, get_current_user, get_supabase
+from src.auth import require_auth, get_current_user, get_supabase
 from src.color_recommender import analyze_skin_tone
 from src.exceptions import INVALID_IMAGE, NO_FACE_DETECTED, INTERNAL_ERROR
 from src.feedback import save_session, save_vote
@@ -30,8 +30,9 @@ from src.payments import router as payments_router
 from src.pipeline import run_pipeline
 from src.style_generator import generate_preview, STYLE_PROMPTS_MALE, STYLE_PROMPTS_FEMALE, COLOR_PROMPTS
 from src.transformation_estimator import estimate_transformation
-from uuid import UUID
+from uuid import UUID, uuid4
 from src.generations import start_generation, finish_generation, daily_limit_reached
+from src import billing
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "face_landmarker.task")
@@ -44,6 +45,8 @@ ALLOWED_ORIGINS = [
 MAX_FILE_SIZE = 10 * 1024 * 1024
 MAX_PIXELS = 40_000_000
 HAIR_TYPES = {"straight", "wavy", "curly", "coily"}
+LIMITED_STYLES = 1
+LIMITED_COLORS = 1
 
 log = get_logger(__name__)
 limiter = Limiter(key_func=get_remote_address)
@@ -105,9 +108,11 @@ def get_norms():
         _female_norms = pd.read_csv(female_path, index_col=0)
     return _norms, _female_norms
 
+
 def get_gender(img):
     from src.gender import detect_gender
     return detect_gender(img) or "Unknown"
+
 
 def preprocess_image(contents: bytes, target: int = 512) -> Optional[np.ndarray]:
     try:
@@ -127,31 +132,63 @@ def preprocess_image(contents: bytes, target: int = 512) -> Optional[np.ndarray]
     crop = img[y0:y0+side, x0:x0+side]
     return cv2.resize(crop, (target, target), interpolation=cv2.INTER_LANCZOS4)
 
+
 def validate_image_bytes(contents: bytes) -> bool:
     return contents[:2] == b"\xff\xd8" or contents[:4] == b"\x89PNG"
+
 
 def http_error(code: str, message: str, status: int = 422) -> HTTPException:
     return HTTPException(status_code=status, detail={"code": code, "message": message})
 
+
 def norm_lang(lang: str) -> str:
     return "pl" if (lang or "").lower().startswith("pl") else "en"
 
-def save_analysis(user, traits, recs, gender):
+
+def limit_response(resp: dict) -> dict:
+    out = dict(resp)
+    out["face_analysis"] = {"pl": [], "en": []}
+    out["fade_recommendation"] = None
+
+    def trim(lst):
+        return [dict(s) for s in lst[:LIMITED_STYLES]]
+
+    styles = resp["styles"]
+    if isinstance(styles, dict):
+        total = len(next(iter(styles.values()), []))
+        out["styles"] = {k: trim(v) for k, v in styles.items()}
+    else:
+        total = len(styles)
+        out["styles"] = trim(styles)
+    out["locked_styles"] = max(0, total - LIMITED_STYLES)
+
+    color = resp.get("color_recommendation")
+    if color:
+        color = dict(color)
+        color["colors"] = (color.get("colors") or [])[:LIMITED_COLORS]
+        out["color_recommendation"] = color
+    return out
+
+
+def save_analysis(user, traits, recs, gender, analysis_id=None, update_existing=False, top_n=3):
     try:
         all_styles = recs["all_styles"]
         styles_list = all_styles.get("pl", []) if isinstance(all_styles, dict) else all_styles
-        top3 = [
+        top = [
             {"name": s.get("name"), "score": s.get("display_score", 0)}
-            for s in styles_list[:3]
+            for s in styles_list[:top_n]
         ]
-        get_supabase().table("analyses").insert({
-            "user_id": str(user.id),
-            "traits": traits,
-            "top_styles": top3,
-            "gender": gender,
-        }).execute()
+        row = {"traits": traits, "top_styles": top, "gender": gender}
+        sb = get_supabase()
+        if update_existing and analysis_id:
+            sb.table("analyses").update(row).eq("id", analysis_id).eq("user_id", str(user.id)).execute()
+            return analysis_id
+        new_id = analysis_id or str(uuid4())
+        sb.table("analyses").insert({**row, "id": new_id, "user_id": str(user.id)}).execute()
+        return new_id
     except Exception:
         log.exception("Failed to save analysis")
+        return None
 
 app = FastAPI(
     docs_url="/docs" if DEBUG_ENABLED else None,
@@ -215,10 +252,14 @@ def analyse(request: Request,
             file: UploadFile = File(...),
             lang: str = Query("pl"),
             gender: str = Query(None),
+            full: bool = Query(False),                    
+            analysis_id: Optional[UUID] = Query(None),
             debug: bool = Query(False),
             compact_debug: bool = Query(False),
             user = Depends(get_current_user)):
     lang = norm_lang(lang)
+    uid = str(user.id) if user else None
+    charged = None
     try:
         contents = file.file.read(MAX_FILE_SIZE + 1)
         if len(contents) > MAX_FILE_SIZE:
@@ -229,13 +270,18 @@ def analyse(request: Request,
         if img is None:
             raise http_error(INVALID_IMAGE, "Could not decode image - try a JPG or PNG file", status=400)
 
+        may_be_full = bool(
+            user and full
+            and (analysis_id or billing.get_balance(uid) >= billing.COSTS["analysis"])
+        )
+
         with _model_lock:
             detector = get_detector()
             norms, female_norms = get_norms()
             detected = get_gender(img)
             final_gender = gender if gender in ("Man", "Woman") else (detected if detected in ("Man", "Woman") else "Man")
             result = run_pipeline(
-                img, detector, gender=final_gender, lang=lang, debug_rules=False
+                img, detector, gender=final_gender, lang=lang, debug_rules=False, use_llm=may_be_full,
             )
 
         landmarks, features, traits, scores, recs, quality, hair_mask = result
@@ -283,14 +329,46 @@ def analyse(request: Request,
             if compact_debug:
                 response["styles"] = payload["compact_ranking"]
 
+        access, saved_id, balance, reused = "limited", None, None, False
+
+        if user and full:
+            if (gender in ("Man", "Woman") and analysis_id
+                    and billing.claim_gender_fix(uid, str(analysis_id))):
+                access, saved_id, reused = "full", str(analysis_id), True   
+            else:
+                new_id = str(uuid4())
+                bal = billing.spend(uid, "analysis", "analysis", new_id)
+                if bal >= 0:
+                    access, saved_id, balance = "full", new_id, bal
+                    charged = new_id
+
         if user:
-            save_analysis(user, traits, recs, final_gender)
+            saved_id = save_analysis(user, traits, recs, final_gender,
+                                     analysis_id=saved_id, update_existing=reused,
+                                     top_n=3 if access == "full" else LIMITED_STYLES) or saved_id
+            if balance is None:
+                balance = billing.get_balance(uid)
+
+        if access == "limited":
+            response = limit_response(response)
+        response["access"] = access
+        response["analysis_id"] = saved_id if access == "full" else None
+        response["credits"] = balance
+        response["analysis_cost"] = billing.COSTS["analysis"]
+        if user and full and access == "limited":
+            response["reason"] = "NO_CREDITS"
 
         return response
     except HTTPException:
         raise
     except Exception:
         log.exception("Unexpected error in /analyse")
+        if charged:
+            try:
+                billing.grant(uid, billing.COSTS["analysis"], "refund_failed",
+                              "analysis", charged, "auto refund")
+            except Exception:
+                log.error("REFUND_FAILED analysis=%s", charged, exc_info=True)
         raise http_error(INTERNAL_ERROR, "Something went wrong - please try again", status=500)
 
 
@@ -353,15 +431,16 @@ def preview_rating(request: Request, body: PreviewRatingBody, user=Depends(requi
 async def style_preview(
     request: Request,
     file: UploadFile = File(...),
-    style_name: str = Form(...),
+    style_name: str = Form(..., max_length=80),
     color_id: str = Form("natural"),
     gender: Literal["Man", "Woman"] = Form("Man"),
     hair_type: str = Form(None),
     hair_coverage: float = Form(0.05, ge=0, le=1),
-    lang: Literal["pl", "en"] = Form("pl"),
-    user = Depends(require_premium),
+    lang: str = Form("pl"),
+    user = Depends(require_auth),
 ):
     lang = norm_lang(lang)
+    uid = str(user.id)
 
     prompts = STYLE_PROMPTS_FEMALE if gender == "Woman" else STYLE_PROMPTS_MALE
     if style_name not in prompts or color_id not in COLOR_PROMPTS:
@@ -383,12 +462,21 @@ async def style_preview(
             raise http_error("INVALID_IMAGE", "Cannot encode image", 400)
         processed_bytes = buf.tobytes()
 
+        if await asyncio.to_thread(billing.get_balance, uid) < billing.COSTS["preview"]:
+            raise http_error("INSUFFICIENT_CREDITS", "Not enough credits", 402)
+
         if await asyncio.to_thread(daily_limit_reached):
             raise http_error("CAPACITY_REACHED", "Daily capacity reached - try again tomorrow", 503)
 
-        gen_id = await asyncio.to_thread(
-            start_generation, str(user.id), style_name, color_id, gender
-        )
+        gen_id = await asyncio.to_thread(start_generation, uid, style_name, color_id, gender)
+        if not gen_id:
+            raise http_error("SERVICE_UNAVAILABLE", "Cannot start generation right now", 503)
+
+        balance = await asyncio.to_thread(billing.spend, uid, "preview", "generation", gen_id)
+        if balance < 0:
+            await asyncio.to_thread(finish_generation, gen_id, "failed", "INSUFFICIENT_CREDITS", 0)
+            raise http_error("INSUFFICIENT_CREDITS", "Not enough credits", 402)
+
         t0 = time.perf_counter()
         try:
             preview_bytes, transformation = await asyncio.gather(
@@ -404,21 +492,19 @@ async def style_preview(
                 ),
             )
         except Exception:
-            await asyncio.to_thread(
-                finish_generation, gen_id, "failed", "GENERATION_FAILED", 
-                int((time.perf_counter() - t0) * 1000),
-            )
+            ms = int((time.perf_counter() - t0) * 1000)
+            await asyncio.to_thread(billing.refund_generation, gen_id)
+            await asyncio.to_thread(finish_generation, gen_id, "failed", "GENERATION_FAILED", ms)
             raise
 
-        await asyncio.to_thread(
-            finish_generation, gen_id, "succeeded", None,
-            int((time.perf_counter() - t0) * 1000),
-        )
+        ms = int((time.perf_counter() - t0) * 1000)
+        await asyncio.to_thread(finish_generation, gen_id, "succeeded", None, ms)
 
         return {
             "image_b64": base64.b64encode(preview_bytes).decode(),
             "transformation": transformation,
             "generation_id": gen_id,
+            "credits": balance,
         }
         
     except HTTPException:
@@ -459,3 +545,15 @@ async def delete_analysis(analysis_id: str, user=Depends(require_auth)):
     except Exception:
         log.exception("Delete error")
         raise http_error(INTERNAL_ERROR, "Delete failed", 500)
+
+
+@app.get("/me")
+@limiter.limit("60/minute")
+def me(request: Request, user=Depends(require_auth)):
+    uid = str(user.id)
+    billing.ensure_signup_bonus(uid)
+    return {
+        "credits": billing.get_balance(uid),
+        "costs": billing.COSTS,
+        "packs": billing.list_packs(),
+    }

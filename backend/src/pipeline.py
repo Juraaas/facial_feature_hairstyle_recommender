@@ -11,7 +11,7 @@ from src.hair_classifier import classify_hair
 
 log = get_logger(__name__) 
 
-def run_pipeline(img, detector, gender=None, lang="pl", debug_rules=False):
+def run_pipeline(img, detector, gender=None, lang="pl", debug_rules=False, use_llm=True):
     landmarks = detector.detect(img)
     lm_check = validate_landmarks(landmarks)
 
@@ -73,8 +73,8 @@ def run_pipeline(img, detector, gender=None, lang="pl", debug_rules=False):
         scores = apply_rules(traits, gender=gender or "Man")
 
     if gender == "Woman":
-        recs = generate_recommendations(scores, traits, gender="Woman", hairstyles_path="data/hairstyles_female.json", lang=lang)
+        recs = generate_recommendations(scores, traits, gender="Woman", hairstyles_path="data/hairstyles_female.json", lang=lang, use_llm=use_llm)
     else:
-        recs = generate_recommendations(scores, traits, gender="Man", hairstyles_path="data/hairstyles.json", lang=lang)
+        recs = generate_recommendations(scores, traits, gender="Man", hairstyles_path="data/hairstyles.json", lang=lang, use_llm=use_llm)
 
     return landmarks, features, traits, scores, recs, quality, hair_mask

@@ -1,5 +1,4 @@
 import json, re
-import os
 from src import groq_client
 from src.fade_recommender import recommend_fade_from_front
 from src.logger import get_logger
@@ -651,7 +650,7 @@ def calculate_display_score(user_scores, style):
     )
 
 def generate_recommendations(user_scores, traits, gender="Man", top_k=3, 
-                             hairstyles_path="data/hairstyles.json", lang="pl"):
+                             hairstyles_path="data/hairstyles.json", lang="pl", use_llm=True):
     styles = load_hairstyles(hairstyles_path)
     influences = compute_traits_influences(traits, gender)
     fade_rec = recommend_fade_from_front(traits, gender)
@@ -660,7 +659,7 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
     results_en = []
 
     for style in styles:
-        score = score_hairstyle(user_scores, style, traits)
+        score = score_hairstyle(user_scores, style)
 
         results_pl.append(
             _build_style_result(
@@ -688,7 +687,10 @@ def generate_recommendations(user_scores, traits, gender="Man", top_k=3,
     with ThreadPoolExecutor(max_workers=2) as ex:
         f_pl = ex.submit(_build_face_analysis_llm, user_scores, influences, traits, gender, "pl")
         f_en = ex.submit(_build_face_analysis_llm, user_scores, influences, traits, gender, "en")
-        face_analysis = {"pl": f_pl.result(), "en": f_en.result()}
+        if use_llm:
+            face_analysis = {"pl": f_pl.result(), "en": f_en.result()}
+        else:
+            face_analysis = {"pl": [], "en": []}
 
     return {
         "top_styles": {
