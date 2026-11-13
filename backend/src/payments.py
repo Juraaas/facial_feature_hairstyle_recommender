@@ -30,11 +30,16 @@ async def create_checkout(body: CheckoutBody, user=Depends(require_auth)):
     pack = await asyncio.to_thread(billing.get_pack, body.pack_id)
     if not pack or not pack.get("stripe_price_id"):
         raise HTTPException(400, detail={"code": "INVALID_PACK", "message": "Unknown pack"})
+    price_id = str(pack.get("stripe_price_id") or "")
+    if not price_id.startswith("price_"):
+        log.error("PACK_MISCONFIGURED pack=%s stripe_price_id=%r (expected price_...)",
+                  pack.get("id"), price_id)
+        raise HTTPException(500, detail={
+            "code": "PAYMENT_MISCONFIGURED", "message": "Checkout is not available right now"})
     try:
         session = await asyncio.to_thread(
             stripe.checkout.Session.create,
             mode="payment",
-            payment_method_types=["card"],
             line_items=[{"price": pack["stripe_price_id"], "quantity": 1}],
             success_url=f"{FRONTEND_URL}/analyse?payment=success",
             cancel_url=f"{FRONTEND_URL}/analyse?payment=cancelled",
