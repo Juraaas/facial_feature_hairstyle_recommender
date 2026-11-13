@@ -15,9 +15,7 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from huggingface_hub import hf_hub_download
 from pydantic import BaseModel, Field
-from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 from starlette.middleware.base import BaseHTTPMiddleware
 from src.auth import require_auth, get_current_user, get_supabase
 from src.color_recommender import analyze_skin_tone
@@ -33,6 +31,8 @@ from src.transformation_estimator import estimate_transformation
 from uuid import UUID, uuid4
 from src.generations import start_generation, finish_generation, daily_limit_reached
 from src import billing
+from src.limits import limiter
+from src.account import router as account_router
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "face_landmarker.task")
@@ -49,7 +49,6 @@ LIMITED_STYLES = 1
 LIMITED_COLORS = 1
 
 log = get_logger(__name__)
-limiter = Limiter(key_func=get_remote_address)
 
 _detector = None
 _norms = None
@@ -148,6 +147,8 @@ def norm_lang(lang: str) -> str:
 def limit_response(resp: dict) -> dict:
     out = dict(resp)
     out["face_analysis"] = {"pl": [], "en": []}
+    out["face_analysis_locked"] = True
+    out["fade_locked"] = bool(resp.get("fade_recommendation"))
     out["fade_recommendation"] = None
 
     def trim(lst):
@@ -162,11 +163,15 @@ def limit_response(resp: dict) -> dict:
         out["styles"] = trim(styles)
     out["locked_styles"] = max(0, total - LIMITED_STYLES)
 
+    locked_colors = 0
     color = resp.get("color_recommendation")
     if color:
         color = dict(color)
-        color["colors"] = (color.get("colors") or [])[:LIMITED_COLORS]
+        all_colors = color.get("colors") or []
+        color["colors"] = all_colors[:LIMITED_COLORS]
+        locked_colors = max(0, len(all_colors) - LIMITED_COLORS)
         out["color_recommendation"] = color
+    out["locked_colors"] = locked_colors
     return out
 
 
@@ -214,6 +219,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(SecurityHeadersMiddleware)
 app.include_router(payments_router)
+app.include_router(account_router)
 app.state.limiter = limiter
 app.mount("/images", StaticFiles(directory=os.path.join(BASE_DIR, "images")), name="images")
 
