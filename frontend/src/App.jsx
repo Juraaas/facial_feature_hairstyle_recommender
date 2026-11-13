@@ -202,27 +202,31 @@ function App() {
       : ''
 
   const lockedStyles = result?.locked_styles ?? 0
+  const lockedColors = result?.locked_colors ?? 0
   const lacking = !!user && (credits ?? 0) < costs.analysis
-  const benefits = pl
+
+  const unlockItems = (pl
     ? [
-        'opis dopasowania',
-        lockedStyles > 0 ? `dodatkowe ${lockedStyles} ${plural(lockedStyles, 'fryzurę', 'fryzury', 'fryzur')} z uzasadnieniami` : null,
-        result?.gender === 'Man' ? 'rekomendację wysokości fade' : null,
-      ].filter(Boolean).join(', ')
+        result?.face_analysis_locked ? 'Spersonalizowany opis dopasowania' : null,
+        lockedStyles > 0 ? `${lockedStyles} ${plural(lockedStyles, 'dodatkowa fryzura', 'dodatkowe fryzury', 'dodatkowych fryzur')} z uzasadnieniami` : null,
+        result?.fade_locked ? 'Rekomendowany poziom fade' : null,
+        lockedColors > 0 ? `${lockedColors} ${plural(lockedColors, 'dodatkowy kolor włosów', 'dodatkowe kolory włosów', 'dodatkowych kolorów włosów')}` : null,
+      ]
     : [
-        'a personal fit summary',
+        result?.face_analysis_locked ? 'A personal fit summary' : null,
         lockedStyles > 0 ? `${lockedStyles} more ${lockedStyles === 1 ? 'hairstyle' : 'hairstyles'} with explanations` : null,
-        result?.gender === 'Man' ? 'your fade level' : null,
-      ].filter(Boolean).join(', ')
+        result?.fade_locked ? 'Your recommended fade level' : null,
+        lockedColors > 0 ? `${lockedColors} more hair ${lockedColors === 1 ? 'color' : 'colors'}` : null,
+      ]
+  ).filter(Boolean)
 
   const unlockText = !user
-    ? (pl ? `Zaloguj się i odblokuj: ${benefits}. Pierwsza analiza jest za darmo.`
-          : `Sign in to unlock: ${benefits}. Your first analysis is free.`)
+    ? (pl ? 'Zaloguj się, a pierwszą pełną analizę dostaniesz za darmo.' : 'Sign in and get your first full analysis for free.')
     : lacking
-      ? (pl ? `Pełna analiza kosztuje ${costs.analysis} ${costWord}. Kup kredyty, aby odblokować: ${benefits}.`
-            : `A full analysis costs ${costs.analysis} ${costWord}. Buy credits to unlock: ${benefits}.`)
-      : (pl ? `Odblokuj za ${costs.analysis} ${costWord}: ${benefits}.`
-            : `Unlock for ${costs.analysis} ${costWord}: ${benefits}.`)
+      ? (pl ? `Pełna analiza kosztuje ${costs.analysis} ${costWord}. Dokup kredyty, aby ją odblokować.`
+            : `A full analysis costs ${costs.analysis} ${costWord}. Buy credits to unlock it.`)
+      : (pl ? `Odblokuj pełną analizę za ${costs.analysis} ${costWord}.`
+            : `Unlock the full analysis for ${costs.analysis} ${costWord}.`)
   const unlockCta = !user ? (pl ? 'Zaloguj się' : 'Sign in')
     : lacking ? (pl ? 'Kup kredyty' : 'Buy credits')
     : (pl ? 'Odblokuj' : 'Unlock')
@@ -447,6 +451,7 @@ function App() {
                   text={unlockText}
                   cta={unlockCta}
                   onClick={handleUnlock}
+                  items={unlockItems}
                 />
               )}
 
