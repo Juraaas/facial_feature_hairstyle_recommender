@@ -31,6 +31,7 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
   const [origUrl, setOrigUrl] = useState(null)
   const [generationId, setGenerationId] = useState(null)
   const [showTicket, setShowTicket] = useState(false)
+  const [ticketSent, setTicketSent] = useState(false)
 
   useEffect(() => {
     if (!originalFile) return
@@ -44,7 +45,7 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
     if (!originalFile) return
 
     setGenerating(true); setError(null); setResult(null);
-    setTransformation(null); setPreviewRating(null)
+    setTransformation(null); setPreviewRating(null); setGenerationId(null); setTicketSent(false)
 
     try {
       const { data } = await supabase.auth.getSession()
@@ -345,14 +346,19 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
                 </p>
               )}
 
-              {generationId && (
+              {generationId && (ticketSent ? (
+                <p style={{ fontSize: 11, color: 'var(--text-hint)', textAlign: 'center', marginBottom: 16 }}>
+                  {pl ? 'Zgłoszenie wysłane. Status zobaczysz w panelu konta (zakładka Konto).'
+                      : 'Request sent. You can follow its status in your account panel (Account tab).'}
+                </p>
+              ) : (
                 <button onClick={() => setShowTicket(true)} style={{
                   display: 'block', margin: '0 auto 16px', background: 'none', border: 'none', cursor: 'pointer',
                   fontSize: 11, color: 'var(--text-hint)', textDecoration: 'underline', fontFamily: 'var(--font-body)',
                 }}>
-                  {pl ? 'Coś nie tak z podglądem? Zgłoś nam problem' : 'Something wrong with the preview? Report a problem'}
+                  {pl ? 'Coś nie tak z podglądem? Zgłoś problem' : 'Something wrong with the preview? Report a problem'}
                 </button>
-              )}
+              ))}
 
               {/* transformation */}
               {transformation && (
@@ -435,7 +441,8 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
 
       {showTicket && (
         <TicketModal generationId={generationId} styleLabel={selectedStyle}
-          onClose={() => setShowTicket(false)} />
+          onClose={() => setShowTicket(false)}
+          onCreated={() => setTicketSent(true)} />
       )}
 
       {/* CSS */}

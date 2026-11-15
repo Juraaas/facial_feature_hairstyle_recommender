@@ -40,7 +40,7 @@ export function TicketModal({ generationId = null, styleLabel = '', onClose, onC
     } catch (err) {
       const code = parseError(err).code
       const msgs = {
-        TICKET_EXISTS: pl ? 'Dla tego podglądu masz już otwarte zgłoszenie.' : 'You already have an open request for this preview.',
+        TICKET_EXISTS: pl ? 'Dla tego podglądu zgłoszenie zostało już złożone.' : 'A request for this preview has already been submitted.',
         TOO_MANY_TICKETS: pl ? 'Wykorzystałeś dzisiejszy limit zgłoszeń. Spróbuj jutro.' : 'You have used today\'s request limit. Please try tomorrow.',
         RATE_LIMITED: pl ? 'Za dużo prób. Spróbuj za chwilę.' : 'Too many attempts. Please try again shortly.',
         INVALID_GENERATION: pl ? 'Nie znaleziono tego podglądu.' : 'This preview was not found.',

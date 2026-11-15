@@ -192,9 +192,8 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
     }
   }
 
-  const openTicketGens = new Set(
-    (tickets || []).filter(t => t.generation_id && (t.status === 'open' || t.status === 'in_progress'))
-      .map(t => t.generation_id))
+  const ticketByGen = new Map(
+    (tickets || []).filter(t => t.generation_id).map(t => [t.generation_id, t]))
   const emailMatches = confirmEmail.trim().toLowerCase() === (user.email || '').toLowerCase()
 
   const tabs = [
@@ -385,6 +384,8 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
                 <p style={sectionLabel}>{pl ? 'Historia podglądów' : 'Preview history'}</p>
                 {gens.map(g => {
                   const st = GEN_STATUS[g.status] || GEN_STATUS.pending
+                  const tk = ticketByGen.get(g.id)
+                  const autoRefunded = g.status === 'failed' || g.status === 'refunded'
                   return (
                     <div key={g.id} style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12,
@@ -398,14 +399,20 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                         <Chip st={st} pl={pl} />
-                        {openTicketGens.has(g.id)
-                          ? <span style={{ fontSize: 10, color: 'var(--text-hint)' }}>{pl ? 'Zgłoszono' : 'Reported'}</span>
-                          : g.status !== 'pending' && (
-                              <button onClick={() => setTicketFor({ id: g.id, label: g.style_name })} style={smallBtn}
-                                title={pl ? 'Zgłoś problem z tym podglądem' : 'Report a problem with this preview'}>
-                                {pl ? 'Zgłoś' : 'Report'}
-                              </button>
-                            )}
+                        {tk ? (
+                          <span style={{ fontSize: 10, color: 'var(--text-hint)' }}>
+                            {pl ? 'Zgłoszono' : 'Reported'} · {(TICKET_STATUS[tk.status] || TICKET_STATUS.open).l[pl ? 0 : 1]}
+                          </span>
+                        ) : autoRefunded ? (
+                          <span style={{ fontSize: 10, color: 'var(--text-hint)' }}>
+                            {pl ? 'Kredyty zwrócone' : 'Credits refunded'}
+                          </span>
+                        ) : g.status !== 'pending' && (
+                          <button onClick={() => setTicketFor({ id: g.id, label: g.style_name })} style={smallBtn}
+                            title={pl ? 'Zgłoś problem z tym podglądem' : 'Report a problem with this preview'}>
+                            {pl ? 'Zgłoś' : 'Report'}
+                          </button>
+                        )}
                       </div>
                     </div>
                   )
