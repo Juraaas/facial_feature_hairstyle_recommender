@@ -45,10 +45,15 @@ def create_ticket(request: Request, body: TicketBody, user=Depends(require_auth)
         gen_id = str(body.generation_id)
 
     since = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
-    recent = (
-        sb.table("support_tickets").select("id", count="exact")
-        .eq("user_id", uid).gte("created_at", since).limit(1).execute()
-    )
+    try:
+        recent = (
+            sb.table("support_tickets").select("id", count="exact")
+            .eq("user_id", uid).gte("created_at", since).limit(1).execute()
+        )
+    except Exception:
+        log.exception("create_ticket: daily count failed")
+        raise _err("INTERNAL_ERROR", "Something went wrong - please try again", 500)
+    
     if (recent.count or 0) >= MAX_TICKETS_PER_DAY:
         raise _err("TOO_MANY_TICKETS", "Daily ticket limit reached", 429)
 
@@ -80,7 +85,7 @@ def list_tickets(user=Depends(require_auth)):
         return {"tickets": res.data or []}
     except Exception:
         log.exception("list_tickets failed")
-        return {"tickets": []}
+        raise _err("INTERNAL_ERROR", "Could not load tickets", 500)
 
 
 @router.get("/account/export")
@@ -90,8 +95,13 @@ def export_account(request: Request, user=Depends(require_auth)):
     sb = get_supabase()
 
     def rows(table: str, cols: str):
-        return sb.table(table).select(cols).eq("user_id", uid).order("created_at", desc=True).execute().data or []
-
+            try:
+                return (sb.table(table).select(cols).eq("user_id", uid)
+                        .order("created_at", desc=True).execute().data or [])
+            except Exception as e:
+                log.error("EXPORT_TABLE_FAILED table=%s code=%s message=%s",
+                          table, getattr(e, "code", None), getattr(e, "message", None))
+                raise
     try:
         profile = sb.table("profiles").select("email,credits,created_at").eq("id", uid).limit(1).execute().data
         payload = {
