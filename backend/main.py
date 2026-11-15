@@ -33,6 +33,7 @@ from src.generations import start_generation, finish_generation, daily_limit_rea
 from src import billing
 from src.limits import limiter
 from src.account import router as account_router
+from src.admin import router as admin_router
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "face_landmarker.task")
@@ -220,6 +221,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 app.add_middleware(SecurityHeadersMiddleware)
 app.include_router(payments_router)
 app.include_router(account_router)
+app.include_router(admin_router)
 app.state.limiter = limiter
 app.mount("/images", StaticFiles(directory=os.path.join(BASE_DIR, "images")), name="images")
 
