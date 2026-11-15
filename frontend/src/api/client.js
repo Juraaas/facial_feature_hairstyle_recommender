@@ -112,3 +112,45 @@ export async function sendFeedback(features, qualityScore, topStyles, rating, co
     }),
   })
 }
+
+export async function createTicket({ category, message, generationId = null }) {
+  const headers = { ...(await getAuthHeaders()), 'Content-Type': 'application/json' }
+  const res = await safeFetch(`${BASE}/tickets`, {
+    method: 'POST', headers,
+    body: JSON.stringify({ category, message, generation_id: generationId }),
+  })
+  if (!res.ok) throw await apiError(res)
+  return readJson(res)
+}
+
+export async function fetchTickets() {
+  const headers = await getAuthHeaders()
+  const res = await safeFetch(`${BASE}/tickets`, { headers })
+  if (!res.ok) throw await apiError(res)
+  const d = await readJson(res)
+  return d.tickets || []
+}
+
+export async function exportAccountData() {
+  const headers = await getAuthHeaders()
+  const res = await safeFetch(`${BASE}/account/export`, { headers })
+  if (!res.ok) throw await apiError(res)
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'stylizzer-data.json'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+export async function deleteAccount(email) {
+  const headers = { ...(await getAuthHeaders()), 'Content-Type': 'application/json' }
+  const res = await safeFetch(`${BASE}/account/delete`, {
+    method: 'POST', headers, body: JSON.stringify({ email }),
+  })
+  if (!res.ok) throw await apiError(res)
+  return readJson(res)
+}

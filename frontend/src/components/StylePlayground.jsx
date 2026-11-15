@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { X, Scissors, WandSparkles } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { creditWord } from '../lib/credits'
+import { TicketModal } from './TicketModal'
 
 const BASE = import.meta.env.VITE_API_URL
 
@@ -29,6 +30,7 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
   const [previewRating, setPreviewRating] = useState(null)
   const [origUrl, setOrigUrl] = useState(null)
   const [generationId, setGenerationId] = useState(null)
+  const [showTicket, setShowTicket] = useState(false)
 
   useEffect(() => {
     if (!originalFile) return
@@ -343,6 +345,15 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
                 </p>
               )}
 
+              {generationId && (
+                <button onClick={() => setShowTicket(true)} style={{
+                  display: 'block', margin: '0 auto 16px', background: 'none', border: 'none', cursor: 'pointer',
+                  fontSize: 11, color: 'var(--text-hint)', textDecoration: 'underline', fontFamily: 'var(--font-body)',
+                }}>
+                  {pl ? 'Coś nie tak z podglądem? Zgłoś nam problem' : 'Something wrong with the preview? Report a problem'}
+                </button>
+              )}
+
               {/* transformation */}
               {transformation && (
                 <div style={{
@@ -421,6 +432,11 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
           )}
         </div>
       </div>
+
+      {showTicket && (
+        <TicketModal generationId={generationId} styleLabel={selectedStyle}
+          onClose={() => setShowTicket(false)} />
+      )}
 
       {/* CSS */}
       <style>{`
