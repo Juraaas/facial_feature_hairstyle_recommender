@@ -560,8 +560,15 @@ async def delete_analysis(analysis_id: str, user=Depends(require_auth)):
 def me(request: Request, user=Depends(require_auth)):
     uid = str(user.id)
     billing.ensure_signup_bonus(uid)
+    is_admin = False
+    try:
+        r = get_supabase().table("profiles").select("is_admin").eq("id", uid).limit(1).execute().data
+        is_admin = bool(r and r[0].get("is_admin"))
+    except Exception:
+        log.exception("me: is_admin lookup failed")
     return {
         "credits": billing.get_balance(uid),
         "costs": billing.COSTS,
         "packs": billing.list_packs(),
+        "is_admin": is_admin,
     }
