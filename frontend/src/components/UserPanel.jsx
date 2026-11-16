@@ -254,7 +254,7 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
         </div>
 
         {/* body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 16, minHeight: 0 }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: 16, minHeight: 0, textAlign: 'left' }}>
 
           {tab === 'analyses' && (
             analyses === null ? <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{pl ? 'Ładowanie…' : 'Loading…'}</p>
@@ -362,9 +362,9 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12,
                     padding: '10px 2px', borderBottom: '1px solid var(--border)',
                   }}>
-                    <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: 13, color: 'var(--text)' }}>{ledgerLabel(r, pl)}</p>
-                      <p style={{ fontSize: 11, color: 'var(--text-hint)' }}>{date(r.created_at)} · {time(r.created_at)}</p>
+                    <div style={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
+                      <p style={{ fontSize: 13, color: 'var(--text)', textAlign: 'left' }}>{ledgerLabel(r, pl)}</p>
+                      <p style={{ fontSize: 11, color: 'var(--text-hint)', textAlign: 'left' }}>{date(r.created_at)} · {time(r.created_at)}</p>
                     </div>
                     <span style={{
                       fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 600, flexShrink: 0,
@@ -391,7 +391,7 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12,
                       padding: '10px 2px', borderBottom: '1px solid var(--border)',
                     }}>
-                      <div style={{ minWidth: 0 }}>
+                      <div style={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
                         <p style={{ fontSize: 13, color: 'var(--text)' }}>
                           {g.style_name} · {(COLORS[g.color_id] || [g.color_id, g.color_id])[pl ? 0 : 1]}
                         </p>

@@ -450,10 +450,10 @@ export function Admin() {
   }[access]
 
   return (
-    <div data-theme={dark ? 'dark' : 'light'} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+    <div data-theme={dark ? 'dark' : 'light'} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', textAlign: 'left'}}>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 24px',
         borderBottom: '1px solid var(--border)', background: 'var(--surface)', position: 'sticky', top: 0, zIndex: 10 }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 500 }}>Stylizzer · Panel admina</h1>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 500, color: 'var(--text)', margin: 0 }}>Stylizzer Panel admina</h1>
         <Link to="/analyse" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none' }}>← Wróć do aplikacji</Link>
       </header>
 
