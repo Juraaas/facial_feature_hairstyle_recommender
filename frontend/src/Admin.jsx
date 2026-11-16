@@ -91,7 +91,6 @@ function Empty({ children }) {
 
 function useLoad(fn, deps = []) {
   const [state, setState] = useState({ data: null, loading: true, error: null })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const run = useCallback(async () => {
     setState(s => ({ ...s, loading: true, error: null }))
     try {
@@ -100,6 +99,7 @@ function useLoad(fn, deps = []) {
     } catch (e) {
       setState({ data: null, loading: false, error: parseError(e) })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
   useEffect(() => { run() }, [run])
   return { ...state, reload: run }
@@ -430,7 +430,10 @@ export function Admin() {
   let access = 'ok'
   if (!uid) access = waited ? 'login' : 'checking'
   else if (stats.loading && !stats.data) access = 'checking'
-  else if (stats.error) access = ['FORBIDDEN', 'UNAUTHORIZED'].includes(stats.error.code) ? 'denied' : 'error'
+  else if (stats.error) {
+    access = stats.error.code === 'FORBIDDEN' ? 'denied'
+           : stats.error.code === 'UNAUTHORIZED' ? 'login' : 'error'
+  }
 
   const tabs = [
     { id: 'overview', label: 'Przegląd' },
