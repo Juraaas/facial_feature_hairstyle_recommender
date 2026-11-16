@@ -7,12 +7,38 @@ import { TicketModal } from './TicketModal'
 
 const BASE = import.meta.env.VITE_API_URL
 
+const isMobileDevice = () =>
+  /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+  (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.platform))
+
+async function savePreview(dataUrl, filename) {
+  try {
+    const blob = await (await fetch(dataUrl)).blob()
+    const file = new File([blob], filename, { type: 'image/jpeg' })
+    if (isMobileDevice() && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Stylizzer' })
+      return
+    }
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+  } catch (e) {
+    if (e && e.name === 'AbortError') return
+    window.open(dataUrl, '_blank')
+  }
+}
+
 const HAIR_COLORS = [
-  { id: 'natural', label_pl: 'Naturalny', label_en: 'Natural', prompt: 'keep the natural hair color' },
-  { id: 'blonde', label_pl: 'Blond', label_en: 'Blonde', prompt: 'platinum blonde hair color' },
-  { id: 'dark', label_pl: 'Ciemny brąz', label_en: 'Dark brown', prompt: 'dark brown hair color' },
-  { id: 'black', label_pl: 'Czarny', label_en: 'Black', prompt: 'jet black hair color' },
-  { id: 'auburn', label_pl: 'Rudy', label_en: 'Auburn', prompt: 'auburn red hair color' },
+  { id: 'natural', label_pl: 'Naturalny', label_en: 'Natural'},
+  { id: 'blonde', label_pl: 'Blond', label_en: 'Blonde'},
+  { id: 'dark', label_pl: 'Ciemny brąz', label_en: 'Dark brown'},
+  { id: 'black', label_pl: 'Czarny', label_en: 'Black'},
+  { id: 'auburn', label_pl: 'Rudy', label_en: 'Auburn'},
 ]
 
 export function StylePlayground({ styles, originalFile, onClose, gender, analysisResult,
@@ -75,16 +101,16 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
       setGenerationId(json.generation_id ?? null)
       onCreditsChange?.(json.credits)
     } catch (e) {
-    if (e.message === 'INSUFFICIENT_CREDITS') { onNeedCredits(); return }
-    const msgs = {
-      CAPACITY_REACHED: pl ? 'Dzisiejszy limit generacji został wyczerpany. Spróbuj jutro.'
-                          : 'Daily generation capacity reached. Please try again tomorrow.',
-      RATE_LIMITED: pl ? 'Za dużo prób. Poczekaj kilka minut.' : 'Too many attempts. Wait a minute.',
-    }
-    setError(msgs[e.message] ?? (pl
-      ? 'Generowanie nie powiodło się. Kredyty zostały zwrócone. Spróbuj ponownie za chwilę.'
-      : 'Generation failed. Your credits were refunded. Please try again shortly.'))
-  } finally { setGenerating(false) }
+      if (e.message === 'INSUFFICIENT_CREDITS') { onNeedCredits(); return }
+      const msgs = {
+        CAPACITY_REACHED: pl ? 'Dzisiejszy limit generacji został wyczerpany. Spróbuj jutro.'
+                            : 'Daily generation capacity reached. Please try again tomorrow.',
+        RATE_LIMITED: pl ? 'Za dużo prób. Poczekaj kilka minut.' : 'Too many attempts. Wait a minute.',
+      }
+      setError(msgs[e.message] ?? (pl
+        ? 'Generowanie nie powiodło się. Kredyty zostały zwrócone. Spróbuj ponownie za chwilę.'
+        : 'Generation failed. Your credits were refunded. Please try again shortly.'))
+    } finally { setGenerating(false) }
   }
 
   async function handlePreviewRating(v) {
@@ -122,12 +148,17 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
           <WandSparkles size={16} color="var(--accent)" strokeWidth={1.5} />
           {pl ? 'Przymierzalnia' : 'Style Playground'}
         </h2>
-        <button onClick={onClose} style={{
-          background: 'none', border: 'none', cursor: 'pointer',
-          color: 'var(--text-hint)', display: 'flex', padding: 4,
-        }}>
-          <X size={20} strokeWidth={1.5} />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+            {pl ? 'Kredyty' : 'Credits'}: <b style={{ color: 'var(--text)' }}>{credits}</b>
+          </span>
+          <button onClick={onClose} aria-label="close" style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: 'var(--text-hint)', display: 'flex', padding: 4,
+          }}>
+            <X size={20} strokeWidth={1.5} />
+          </button>
+        </div>
       </div>
 
       {/* ── body ── */}
@@ -210,7 +241,7 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
               </>
             ) : enough
               ? `✨ ${pl ? 'Generuj podgląd' : 'Generate preview'} · ${previewCost} ${creditWord(previewCost, pl)}`
-              : (pl ? `Brakuje kredytów (potrzeba ${previewCost})` : `Buy credits (${previewCost} needed)`)}
+              : (pl ? `Kup kredyty (potrzeba ${previewCost})` : `Buy credits (${previewCost} needed)`)}
           </button>
 
           {error && (
@@ -287,18 +318,23 @@ export function StylePlayground({ styles, originalFile, onClose, gender, analysi
                 ))}
               </div>
 
+              <p style={{ fontSize: 11, color: 'var(--text-hint)', fontWeight: 300, textAlign: 'center',
+                lineHeight: 1.5, marginBottom: 16 }}>
+                {pl ? 'Wizualizacja poglądowa wygenerowana przez AI. Rzeczywisty efekt u fryzjera może się różnić.'
+                    : 'AI-generated preview for illustration only. Real-life results may differ.'}
+              </p>
+
               {/* actions */}
               <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                <a href={result}
-                  download={`stylizzer-${selectedStyle.toLowerCase().replace(/ /g,'-')}.jpg`}
+                <button
+                  onClick={() => savePreview(result, `stylizzer-${selectedStyle.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.jpg`)}
                   style={{
-                    flex: 1, textAlign: 'center', padding: '11px',
-                    background: 'var(--accent)', color: '#fff',
-                    borderRadius: 8, textDecoration: 'none',
-                    fontSize: 13, fontFamily: 'var(--font-body)', fontWeight: 500,
+                    flex: 1, textAlign: 'center', padding: '11px', background: 'var(--accent)', color: '#fff',
+                    border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 13,
+                    fontFamily: 'var(--font-body)', fontWeight: 500,
                   }}>
-                  {pl ? '↓ Pobierz' : '↓ Download'}
-                </a>
+                  {pl ? '↓ Zapisz' : '↓ Save'}
+                </button>
                 <button
                   onClick={() => { setResult(null); setTransformation(null); setPreviewRating(null) }}
                   style={{
