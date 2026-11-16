@@ -8,6 +8,7 @@ import { PrivacyPolicy } from './PrivacyPolicy'
 import { TermsOfService } from './TermsOfService'
 import { NotFound } from './NotFound'
 import { ErrorBoundary } from './components/ErrorBoundary.jsx'
+import { Admin } from './Admin'
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/analyse" element={<App />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/admin" element={<Admin />} /> 
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

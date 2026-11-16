@@ -154,3 +154,26 @@ export async function deleteAccount(email) {
   if (!res.ok) throw await apiError(res)
   return readJson(res)
 }
+
+async function adminCall(method, path, body) {
+  const headers = { ...(await getAuthHeaders()) }
+  const opts = { method, headers }
+  if (body !== undefined) {
+    headers['Content-Type'] = 'application/json'
+    opts.body = JSON.stringify(body)
+  }
+  const res = await safeFetch(`${BASE}${path}`, opts)
+  if (!res.ok) throw await apiError(res)
+  return readJson(res)
+}
+
+export const adminApi = {
+  stats: () => adminCall('GET', '/admin/stats'),
+  users: (q = '') => adminCall('GET', `/admin/users?q=${encodeURIComponent(q)}`),
+  user: id => adminCall('GET', `/admin/users/${id}`),
+  adjustCredits: (id, amount, note) => adminCall('POST', `/admin/users/${id}/credits`, { amount, note }),
+  tickets: (status = 'open') => adminCall('GET', `/admin/tickets?status=${status}`),
+  resolveTicket: (id, body) => adminCall('POST', `/admin/tickets/${id}/resolve`, body),
+  stuck: () => adminCall('GET', '/admin/generations/stuck'),
+  failStuck: id => adminCall('POST', `/admin/generations/${id}/fail`),
+}

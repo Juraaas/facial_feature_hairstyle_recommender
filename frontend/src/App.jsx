@@ -240,6 +240,7 @@ function App() {
         onShowTutorial={() => setShowTutorial(true)}
         onBuy={openBuy}
         credits={user ? credits : null}
+        isAdmin={!!me?.is_admin}
       />
       <div className="app">
         <main className="app-main">

@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useDarkMode } from '../hooks/useDarkMode'
 import { useAuth } from '../hooks/useAuth'
-import { History, Coins, Camera, LogOut, User, Languages, ChevronDown, Scissors, Sun, Moon } from 'lucide-react'
+import { History, Coins, Camera, LogOut, User, Languages, ChevronDown, Scissors, Sun, Moon, Shield } from 'lucide-react'
 import { btnAccent, btnOutline, darkToggleBtn, darkToggleTrack, darkToggleKnob } from '../styles/shared'
 import { AuthModal } from './AuthModal'
 import { creditWord } from '../lib/credits'
 
 
-export function NavBar({ variant = 'landing', onShowPanel, onShowTutorial, onBuy, credits = null }) {
+export function NavBar({ variant = 'landing', onShowPanel, onShowTutorial, onBuy, credits = null, isAdmin = false }) {
   const { i18n } = useTranslation()
   const navigate = useNavigate()
   const pl = i18n.language === 'pl'
@@ -33,6 +33,11 @@ export function NavBar({ variant = 'landing', onShowPanel, onShowTutorial, onBuy
       Icon: History,
       label: t('Analysis history', 'Historia analiz'),
       action: () => { onShowPanel?.(); setShowUserMenu(false) },
+    },
+    variant === 'app' && isAdmin && {
+      Icon: Shield,
+      label: 'Panel admina',
+      action: () => { navigate('/admin'); setShowUserMenu(false) },
     },
     variant === 'app' && {
       Icon: Coins,
