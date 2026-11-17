@@ -11,13 +11,32 @@ _REASONS = {"analysis": "spend_analysis", "preview": "spend_preview"}
 def _rpc(fn: str, params: dict):
     return get_supabase().rpc(fn, params).execute().data
 
+_DISPOSABLE = {
+    "mailinator.com", "guerrillamail.com", "guerrillamail.net", "sharklasers.com", "10minutemail.com",
+    "tempmail.com", "temp-mail.org", "yopmail.com", "trashmail.com", "getnada.com", "dispostable.com",
+    "maildrop.cc", "throwawaymail.com", "fakeinbox.com", "mailnesia.com", "mintemail.com",
+}
+_bonus_done: set[str] = set() 
 
-def ensure_signup_bonus(user_id: str):
+
+def is_disposable(email) -> bool:
+    domain = (email or "").rsplit("@", 1)[-1].strip().lower()
+    return bool(domain) and (domain in _DISPOSABLE or any(domain.endswith("." + d) for d in _DISPOSABLE))
+
+
+def ensure_signup_bonus(user_id: str, email=None):
+    if user_id in _bonus_done:
+        return
+    if is_disposable(email):
+        log.info("SIGNUP_BONUS_SKIPPED disposable email domain")
+        _bonus_done.add(user_id)
+        return
     try:
         _rpc("grant_credits", {
             "p_user": user_id, "p_amount": SIGNUP_BONUS, "p_reason": "signup_bonus",
             "p_ref_type": "user", "p_ref_id": user_id,
         })
+        _bonus_done.add(user_id)
     except Exception:
         log.exception("signup bonus failed for %s", user_id)
 

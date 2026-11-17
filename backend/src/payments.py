@@ -1,13 +1,12 @@
 import asyncio
 import os
-
 import stripe
 from fastapi import APIRouter, Request, HTTPException, Depends
 from pydantic import BaseModel, Field
-
 from src import billing
 from src.auth import require_auth
 from src.logger import get_logger
+from src.limits import limiter
 
 log = get_logger(__name__)
 
@@ -26,7 +25,8 @@ class CheckoutBody(BaseModel):
 
 
 @router.post("/create-checkout")
-async def create_checkout(body: CheckoutBody, user=Depends(require_auth)):
+@limiter.limit("10/hour")
+async def create_checkout(request: Request, body: CheckoutBody, user=Depends(require_auth)):
     pack = await asyncio.to_thread(billing.get_pack, body.pack_id)
     if not pack or not pack.get("stripe_price_id"):
         raise HTTPException(400, detail={"code": "INVALID_PACK", "message": "Unknown pack"})

@@ -30,10 +30,11 @@ from src.style_generator import generate_preview, STYLE_PROMPTS_MALE, STYLE_PROM
 from src.transformation_estimator import estimate_transformation
 from uuid import UUID, uuid4
 from src.generations import start_generation, finish_generation, daily_limit_reached
-from src import billing
 from src.limits import limiter
 from src.account import router as account_router
 from src.admin import router as admin_router
+from src.limits import limiter, client_ip
+from src import billing, quota
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "face_landmarker.task")
@@ -282,6 +283,11 @@ def analyse(request: Request,
             user and full
             and (analysis_id or billing.get_balance(uid) >= billing.COSTS["analysis"])
         )
+
+        if not may_be_full:
+            allowed, code = quota.allow_limited_analysis(uid, client_ip(request))
+            if not allowed:
+                raise http_error(code, "Daily limit reached for analyses without a paid result", 429)
 
         with _model_lock:
             detector = get_detector()
@@ -559,7 +565,7 @@ async def delete_analysis(analysis_id: str, user=Depends(require_auth)):
 @limiter.limit("60/minute")
 def me(request: Request, user=Depends(require_auth)):
     uid = str(user.id)
-    billing.ensure_signup_bonus(uid)
+    billing.ensure_signup_bonus(uid, user.email)
     is_admin = False
     try:
         r = get_supabase().table("profiles").select("is_admin").eq("id", uid).limit(1).execute().data

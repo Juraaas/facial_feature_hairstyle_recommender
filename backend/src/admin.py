@@ -1,4 +1,4 @@
-import re
+import re, os
 from datetime import datetime, timedelta, timezone
 from typing import Literal, Optional
 from uuid import UUID, uuid4
@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from src import billing
 from src.auth import require_auth, get_supabase
 from src.generations import finish_generation
-from src.limits import limiter
+from src.limits import limiter, client_ip, TRUSTED_PROXY_HOPS
 from src.logger import get_logger
 
 log = get_logger(__name__)
@@ -65,9 +65,10 @@ def stats(request: Request, admin=Depends(require_admin)):
     stuck_before = (now - timedelta(minutes=STUCK_AFTER_MINUTES)).isoformat()
     try:
         sb = get_supabase()
+        prefix = os.getenv("REVENUE_SESSION_PREFIX", "cs_")
         purchases = (sb.table("credit_ledger").select("delta,note")
-                     .eq("reason", "purchase").gte("created_at", d30).limit(2000).execute().data or [])
-        revenue_cents = 0
+                     .eq("reason", "purchase").like("ref_id", f"{prefix}%")
+                     .gte("created_at", d30).limit(2000).execute().data or [])
         for p in purchases:
             m = re.match(r"(\d+)\s+pln", p.get("note") or "")
             if m:
@@ -309,3 +310,14 @@ def fail_stuck_generation(request: Request, gen_id: UUID, admin=Depends(require_
         raise
     except Exception as e:
         raise _fail("fail_stuck_generation", e)
+
+
+@router.get("/whoami-ip")
+def whoami_ip(request: Request, admin=Depends(require_admin)):
+    return {
+        "peer": request.client.host if request.client else None,
+        "x_forwarded_for": request.headers.get("x-forwarded-for"),
+        "x_real_ip": request.headers.get("x-real-ip"),
+        "detected": client_ip(request),
+        "hops": TRUSTED_PROXY_HOPS,
+    }
