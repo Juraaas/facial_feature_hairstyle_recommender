@@ -94,6 +94,12 @@ export default {
   error_invalid_input_hint: 'Odśwież stronę i spróbuj ponownie.',
   error_server_unavailable: 'Serwer jest niedostępny',
   error_server_unavailable_hint: 'Serwer może się właśnie uruchamiać. Spróbuj ponownie za minutę.',
+  error_daily_limit_anon: 'Limit analiz bez konta',
+error_daily_limit_anon_hint: 'Wykorzystałeś dzisiejszy limit analiz bez logowania. Zaloguj się, aby kontynuować, albo wróć jutro.',
+error_daily_limit_user: 'Dzienny limit analiz podstawowych',
+error_daily_limit_user_hint: 'Wykonałeś dziś bardzo wiele analiz w wersji podstawowej. Spróbuj jutro albo odblokuj pełną analizę za kredyty.',
+error_capacity: 'Duże obciążenie serwera',
+error_capacity_hint: 'Analizy bez konta są dziś chwilowo niedostępne. Zaloguj się lub spróbuj ponownie później.',
 
   trait_face_shape: "Kształt twarzy",
   trait_jaw_width: "Szerokość szczęki",

@@ -18,16 +18,6 @@ export function useAuth() {
     return () => listener.subscription.unsubscribe()
   }, [])
 
-  async function signInWithEmail(email, password) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
-  }
-
-  async function signUpWithEmail(email, password) {
-    const { error } = await supabase.auth.signUp({ email, password })
-    if (error) throw error
-  }
-
   async function signOut() {
     await supabase.auth.signOut()
   }
@@ -37,5 +27,5 @@ export function useAuth() {
     return data.session?.access_token ?? null
   }
 
-  return { user, loading, signInWithEmail, signUpWithEmail, signOut, getToken }
+  return { user, loading, signOut, getToken }
 }

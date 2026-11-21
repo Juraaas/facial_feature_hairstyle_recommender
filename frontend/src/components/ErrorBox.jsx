@@ -34,6 +34,15 @@ const ERROR_CONFIG = {
   SERVER_UNAVAILABLE: {
     icon: "🔌", titleKey: "error_server_unavailable", hintKey: "error_server_unavailable_hint",
   },
+  DAILY_LIMIT_ANON: { 
+    icon: "🔒", titleKey: "error_daily_limit_anon", hintKey: "error_daily_limit_anon_hint" 
+  },
+  DAILY_LIMIT_USER: { 
+    icon: "⏳", titleKey: "error_daily_limit_user", hintKey: "error_daily_limit_user_hint" 
+  },
+  CAPACITY_REACHED: { 
+    icon: "📈", titleKey: "error_capacity", hintKey: "error_capacity_hint" 
+  },
 }
 
 export function ErrorBox({error}) {

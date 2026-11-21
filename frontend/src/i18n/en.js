@@ -93,6 +93,12 @@ export default {
   error_invalid_input_hint: 'Reload the page and try again.',
   error_server_unavailable: 'Server unavailable',
   error_server_unavailable_hint: 'The server may be starting up. Try again in a minute.',
+  error_daily_limit_anon: 'Daily limit without an account',
+  error_daily_limit_anon_hint: 'You have used today\'s limit of analyses without signing in. Sign in to continue or come back tomorrow.',
+  error_daily_limit_user: 'Daily limit of basic analyses',
+  error_daily_limit_user_hint: 'You have run a lot of basic analyses today. Try again tomorrow or unlock a full analysis with credits.',
+  error_capacity: 'High server load',
+  error_capacity_hint: 'Analyses without an account are temporarily unavailable today. Sign in or try again later.',
 
   trait_face_shape: "Face shape",
   trait_jaw_width: "Jaw width",

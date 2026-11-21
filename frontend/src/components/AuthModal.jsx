@@ -1,13 +1,14 @@
-import { useState } from 'react'
-import { useAuth } from '../hooks/useAuth'
+import { useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { X, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react'
 
+const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
+
 export function AuthModal({ onClose, onSuccess }) {
-  const { signInWithEmail, signUpWithEmail } = useAuth()
   const { i18n } = useTranslation()
-  const pl = i18n.language === 'pl'
+  const pl = i18n.language?.startsWith('pl')
 
   const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
@@ -18,32 +19,57 @@ export function AuthModal({ onClose, onSuccess }) {
   const [success, setSuccess] = useState(false)
   const [showForgot, setShowForgot] = useState(false)
   const [forgotSent, setForgotSent] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState(null)
+  const captchaRef = useRef(null)
 
   const isRegister = mode === 'register'
+
+  function resetCaptcha() {
+    setCaptchaToken(null)
+    captchaRef.current?.reset()
+  }
+
+  function friendlyError(e) {
+    const m = String(e?.message || '')
+    if (/captcha/i.test(m)) {
+      return pl ? 'Weryfikacja nie powiodła się. Odśwież stronę i spróbuj ponownie.'
+                : 'Bot verification failed. Reload the page and try again.'
+    }
+    if (/rate limit|too many/i.test(m)) {
+      return pl ? 'Zbyt wiele prób. Spróbuj za chwilę.' : 'Too many attempts. Please try again shortly.'
+    }
+    return m
+  }
 
   async function handleSubmit() {
     setError(null); setLoading(true)
     try {
+      const options = captchaToken ? { captchaToken } : undefined
       if (mode === 'login') {
-        await signInWithEmail(email, password)
+        const { error } = await supabase.auth.signInWithPassword({ email, password, options })
+        if (error) throw error
         onSuccess?.(); onClose()
       } else {
-        await signUpWithEmail(email, password)
+        const { error } = await supabase.auth.signUp({ email, password, options })
+        if (error) throw error
         setSuccess(true)
       }
-    } catch (e) { setError(e.message) }
-    finally { setLoading(false) }
+    } catch (e) { setError(friendlyError(e)) }
+    finally { setLoading(false); resetCaptcha() }
   }
 
   async function handleForgot() {
     if (!email) { setError(pl ? 'Wpisz email' : 'Enter your email'); return }
     setError(null); setLoading(true)
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/analyse`,
-    })
-    setLoading(false)
-    if (error) setError(error.message)
-    else setForgotSent(true)
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/analyse`,
+        ...(captchaToken ? { captchaToken } : {}),
+      })
+      if (error) throw error
+      setForgotSent(true)
+    } catch (e) { setError(friendlyError(e)) }
+    finally { setLoading(false); resetCaptcha() }
   }
 
   function onFormSubmit(e) {
@@ -52,7 +78,8 @@ export function AuthModal({ onClose, onSuccess }) {
     return showForgot ? handleForgot() : handleSubmit()
   }
 
-  const submitDisabled = loading || !email || (!showForgot && !password)
+  const waitingForCaptcha = !!SITE_KEY && !captchaToken
+  const submitDisabled = loading || !email || (!showForgot && !password) || waitingForCaptcha
 
   return (
     <>
@@ -62,7 +89,7 @@ export function AuthModal({ onClose, onSuccess }) {
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 201,
         background: 'var(--surface)', borderRadius: isRegister ? 'var(--radius-lg)' : '24px',
         border: '1px solid var(--border)', padding: isRegister ? '32px 28px' : '28px 28px',
-        width: 'calc(100% - 32px)', maxWidth: isRegister ? 420 : 380,
+        width: 'calc(100% - 32px)', maxWidth: isRegister ? 420 : 380, maxHeight: '92vh', overflowY: 'auto',
         boxShadow: '0 24px 64px rgba(0,0,0,.28)', animation: 'modalIn .2s ease',
         transition: 'max-width .2s, border-radius .2s',
       }}>
@@ -154,6 +181,20 @@ export function AuthModal({ onClose, onSuccess }) {
               </div>
             )}
 
+            {SITE_KEY && (
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+                <Turnstile
+                  key={`${mode}-${showForgot}`}
+                  ref={captchaRef}
+                  siteKey={SITE_KEY}
+                  onSuccess={setCaptchaToken}
+                  onExpire={() => setCaptchaToken(null)}
+                  onError={() => setCaptchaToken(null)}
+                  options={{ theme: 'auto' }}
+                />
+              </div>
+            )}
+
             {error && (
               <p style={{
                 fontSize: 12, color: '#c0392b', marginBottom: 12, padding: '8px 10px',
@@ -164,6 +205,7 @@ export function AuthModal({ onClose, onSuccess }) {
             <button type="submit" disabled={submitDisabled} className="analyse-btn"
               style={{ opacity: submitDisabled ? 0.5 : 1 }}>
               {loading ? (pl ? 'Ładowanie...' : 'Loading...')
+                : waitingForCaptcha ? (pl ? 'Weryfikacja…' : 'Verifying…')
                 : showForgot ? (pl ? 'Wyślij link' : 'Send reset link')
                 : isRegister ? (pl ? 'Utwórz konto' : 'Create account')
                 : (pl ? 'Zaloguj się' : 'Sign in')}
