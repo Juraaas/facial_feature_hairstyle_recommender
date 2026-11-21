@@ -142,6 +142,8 @@ celerybeat.pid
 env/
 venv/
 venv_norms/
+venv311/
+venv313/
 ENV/
 env.bak/
 venv.bak/
@@ -209,6 +211,8 @@ marimo/_lsp/
 __marimo__/
 
 # Data & Models
+backend/reports/
+backend/sql/
 dataset/
 models/*
 backend/models/hair_classifier.onnx.data
@@ -233,3 +237,6 @@ backend/data/norms/*.csv
 frontend/node_modules/
 frontend/dist/
 frontend/.env
+
+email_templates/
+*.ps1
