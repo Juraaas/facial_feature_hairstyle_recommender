@@ -1,5 +1,7 @@
 from src.auth import get_supabase
 from src.logger import get_logger
+from datetime import datetime, timedelta, timezone
+
 
 log = get_logger(__name__)
 
@@ -88,3 +90,25 @@ def get_pack(pack_id: str):
     res = (get_supabase().table("credit_packs").select("*")
            .eq("id", pack_id).eq("active", True).limit(1).execute())
     return res.data[0] if res.data else None
+
+
+def can_gender_fix(user_id: str, analysis_id: str) -> bool:
+    try:
+        sb = get_supabase()
+        rows = (sb.table("analyses").select("gender_fixes,created_at")
+                .eq("id", analysis_id).eq("user_id", user_id).limit(1).execute().data)
+        if not rows:
+            return False
+        row = rows[0]
+        if int(row.get("gender_fixes") or 0) >= 2:
+            return False
+        created = datetime.fromisoformat(str(row["created_at"]).replace("Z", "+00:00"))
+        if datetime.now(timezone.utc) - created > timedelta(minutes=15):
+            return False
+        paid = (sb.table("credit_ledger").select("id")
+                .eq("reason", "spend_analysis").eq("ref_type", "analysis").eq("ref_id", analysis_id)
+                .limit(1).execute().data)
+        return bool(paid)
+    except Exception:
+        log.exception("can_gender_fix failed")
+        return False

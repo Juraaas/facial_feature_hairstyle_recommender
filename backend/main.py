@@ -279,9 +279,14 @@ def analyse(request: Request,
         if img is None:
             raise http_error(INVALID_IMAGE, "Could not decode image - try a JPG or PNG file", status=400)
 
+        
+        fix_possible = bool(
+            user and full and analysis_id and gender in ("Man", "Woman")
+            and billing.can_gender_fix(uid, str(analysis_id))
+        )
         may_be_full = bool(
             user and full
-            and (analysis_id or billing.get_balance(uid) >= billing.COSTS["analysis"])
+            and (fix_possible or billing.get_balance(uid) >= billing.COSTS["analysis"])
         )
 
         if not may_be_full:
