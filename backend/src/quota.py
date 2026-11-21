@@ -1,17 +1,17 @@
-import os 
+import os
 import threading
 from datetime import datetime, timezone
 
-ANON_PER_IP = int(os.getenv("ANON_ANALYSES_PER_IP_DAY", 8))
+ANON_PER_IP = int(os.getenv("ANON_ANALYSES_PER_IP_DAY", "8"))
 ANON_GLOBAL = int(os.getenv("ANON_ANALYSES_GLOBAL_DAY", "600"))
-FREE_PER_USER = int(os.getenv("FREE_ANALYSES_PER_USER_DAY", "30"))
+FREE_PER_USER = int(os.getenv("FREE_ANALYSES_PER_USER_DAY", "30")) 
 
 
 class DailyCounter:
     def __init__(self):
         self._lock = threading.Lock()
         self._day = None
-        self._counts = dict[str, int] = {}
+        self._counts: dict[str, int] = {}
 
     def hit(self, key: str, limit: int) -> bool:
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
