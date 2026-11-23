@@ -73,7 +73,7 @@ export function TicketModal({ generationId = null, styleLabel = '', onClose, onC
               width: 44, height: 44, borderRadius: '50%', margin: '0 auto 14px', background: '#f0faf4',
               border: '1.5px solid #2d8f4e', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}><Check size={20} color="#2d8f4e" strokeWidth={2} /></div>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 500, marginBottom: 8 }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 500, marginBottom: 8, color: 'var(--text)'}}>
               {pl ? 'Zgłoszenie przyjęte' : 'Request received'}
             </h3>
             <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6, marginBottom: 18 }}>
@@ -88,7 +88,7 @@ export function TicketModal({ generationId = null, styleLabel = '', onClose, onC
           <form onSubmit={submit} noValidate>
             <h3 style={{
               fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 500, margin: '0 28px 4px 0',
-              display: 'flex', alignItems: 'center', gap: 8,
+              display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text)'
             }}>
               <LifeBuoy size={17} color="var(--accent)" strokeWidth={1.5} />
               {pl ? 'Zgłoś problem' : 'Report a problem'}

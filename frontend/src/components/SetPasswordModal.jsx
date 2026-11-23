@@ -81,7 +81,7 @@ export function SetPasswordModal({ mode = 'change', onClose }) {
               width: 44, height: 44, borderRadius: '50%', margin: '0 auto 14px', background: '#f0faf4',
               border: '1.5px solid #2d8f4e', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}><Check size={20} color="#2d8f4e" strokeWidth={2} /></div>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 500, marginBottom: 8 }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 500, marginBottom: 8, color: 'var(--text)' }}>
               {pl ? 'Hasło zapisane' : 'Password saved'}
             </h2>
             <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6, marginBottom: 18 }}>
@@ -94,7 +94,7 @@ export function SetPasswordModal({ mode = 'change', onClose }) {
           </div>
         ) : (
           <form onSubmit={submit} noValidate>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 500, marginBottom: 4, marginRight: 24 }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 500, marginBottom: 4, marginRight: 24, color: 'var(--text)' }}>
               {recovery ? (pl ? 'Ustaw nowe hasło' : 'Set a new password')
                         : (pl ? 'Ustaw lub zmień hasło' : 'Set or change password')}
             </h2>

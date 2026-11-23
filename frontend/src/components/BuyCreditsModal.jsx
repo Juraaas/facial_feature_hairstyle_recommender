@@ -13,7 +13,7 @@ const CSS = `
 .bc-grab { display: none; }
 .bc-close { position: absolute; top: 12px; right: 12px; background: none; border: none;
   cursor: pointer; color: var(--text-hint); display: flex; padding: 6px; }
-.bc-title { font-family: var(--font-display); font-size: 20px; font-weight: 500; margin: 0 28px 6px 0; }
+.bc-title { font-family: var(--font-display); font-size: 20px; font-weight: 500; margin: 0 28px 6px 0; color: 'var(--text)'; }
 .bc-lead { font-size: 13px; color: var(--text-muted); font-weight: 300; line-height: 1.5; margin: 0; }
 .bc-consent { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; margin: 16px 0 4px;
   padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
@@ -45,7 +45,7 @@ const CSS = `
   .bc-grab { display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--border);
     margin: 0 auto 14px; }
   .bc-close { top: 18px; }
-  .bc-title { font-size: 18px; }
+  .bc-title { font-size: 18px; color: 'var(--text)'; }
   .bc-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 14px; }
   .bc-card { flex-direction: row; align-items: center; justify-content: space-between;
     text-align: left; gap: 12px; padding: 12px 14px; }
