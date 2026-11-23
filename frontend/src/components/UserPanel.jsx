@@ -5,7 +5,7 @@ import { API_BASE, fetchTickets, exportAccountData, deleteAccount, parseError } 
 import { creditWord } from '../lib/credits'
 import { TRAIT_GROUPS, traitLabel, traitValue } from '../lib/traitLabels'
 import { TicketModal } from './TicketModal'
-import { X, Trash, Coins, History, WandSparkles, User, Download, LifeBuoy, KeyRound } from 'lucide-react'
+import { X, Trash, Coins, History, WandSparkles, User, Download, LifeBuoy, KeyRound, LogOut } from 'lucide-react'
 import { btnAccent } from '../styles/shared'
 import { SetPasswordModal } from './SetPasswordModal'
 
