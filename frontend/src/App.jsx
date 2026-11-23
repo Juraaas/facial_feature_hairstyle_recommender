@@ -12,6 +12,7 @@ import { useDarkMode } from './hooks/useDarkMode'
 import { StylePlayground } from './components/StylePlayground'
 import { UserPanel } from './components/UserPanel'
 import { AuthModal } from './components/AuthModal'
+import { SetPasswordModal } from './components/SetPasswordModal'
 import { NavBar } from './components/NavBar'
 import { ConsentCheckboxes } from './components/ConsentCheckboxes'
 import { FadeLevel } from './components/FadeLevel'
@@ -49,7 +50,7 @@ function App() {
 
   const { t, i18n } = useTranslation()
   const pl = i18n.language === 'pl'
-  const { user } = useAuth()
+  const { user, recovery, clearRecovery } = useAuth()
 
   const credits = me?.credits ?? null
   const costs = me?.costs ?? { analysis: 1, preview: 3 }
@@ -67,6 +68,12 @@ function App() {
     if (paymentStatus) window.history.replaceState({}, '', window.location.pathname)
     if (paymentStatus === 'cancelled') {
       setNotice({ type: 'info', text: pl ? 'Płatność została anulowana.' : 'Payment was cancelled.' })
+    }
+    if (sessionStorage.getItem('auth_link_error')) {
+      sessionStorage.removeItem('auth_link_error')
+      setNotice({ type: 'error', text: pl
+        ? 'Link z e-maila wygasł lub został już użyty. Poproś o nowy.'
+        : 'The email link has expired or was already used. Please request a new one.' })
     }
   }, [])
 
@@ -576,6 +583,10 @@ function App() {
 
       {showAuth && (
         <AuthModal onClose={() => setShowAuth(false)} onSuccess={() => setShowAuth(false)} />
+      )}
+      
+      {recovery && user && (
+        <SetPasswordModal mode="recovery" onClose={clearRecovery} />
       )}
     </div>
   )

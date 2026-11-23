@@ -7,6 +7,7 @@ import { TRAIT_GROUPS, traitLabel, traitValue } from '../lib/traitLabels'
 import { TicketModal } from './TicketModal'
 import { X, Trash, Coins, History, WandSparkles, User, Download, LifeBuoy } from 'lucide-react'
 import { btnAccent } from '../styles/shared'
+import { SetPasswordModal } from './SetPasswordModal'
 
 const COLORS = {
   natural: ['Naturalny', 'Natural'], blonde: ['Blond', 'Blonde'], dark: ['Ciemny brąz', 'Dark brown'],
@@ -103,6 +104,7 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
   const [confirmEmail, setConfirmEmail] = useState('')
   const [delState, setDelState] = useState('idle')
   const [delError, setDelError] = useState(null)
+  const [pwOpen, setPwOpen] = useState(false)
 
   const date = iso => new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })
   const time = iso => new Date(iso).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
@@ -171,6 +173,16 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
         ? (pl ? 'Eksport jest dostępny kilka razy na godzinę. Spróbuj później.' : 'Export is limited to a few times per hour. Try again later.')
         : (pl ? 'Nie udało się wyeksportować danych. Spróbuj ponownie później.' : 'Could not export your data. Please try again later.') })
     } finally { setExporting(false) }
+  }
+
+  async function handleSignOutOthers() {
+    if (!window.confirm(pl
+      ? 'Wylogować wszystkie inne urządzenia? To urządzenie pozostanie zalogowane.'
+      : 'Sign out all other devices? This device will stay signed in.')) return
+    const { error } = await supabase.auth.signOut({ scope: 'others' })
+    setNotice(error
+      ? { ok: false, text: pl ? 'Nie udało się wylogować innych urządzeń.' : 'Could not sign out other devices.' }
+      : { ok: true,  text: pl ? 'Inne urządzenia zostały wylogowane.' : 'Other devices have been signed out.' })
   }
 
   async function handleDeleteAccount() {
@@ -469,7 +481,7 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
                   ))}
               </div>
 
-              {/* data export*/}
+              {/* data export */}
               <div>
                 <p style={sectionLabel}>{pl ? 'Twoje dane' : 'Your data'}</p>
                 <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6, marginBottom: 10 }}>
@@ -480,6 +492,23 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
                   <Download size={12} strokeWidth={1.5} />
                   {exporting ? (pl ? 'Pobieranie…' : 'Downloading…') : (pl ? 'Pobierz moje dane' : 'Download my data')}
                 </button>
+              </div>
+
+              {/* security */}
+              <div>
+                <p style={sectionLabel}>{pl ? 'Bezpieczeństwo' : 'Security'}</p>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 300, lineHeight: 1.6, marginBottom: 10 }}>
+                  {pl ? 'Jeśli konto powstało przez link z e-maila, nie ma jeszcze hasła. Ustaw je tutaj, aby logować się hasłem.'
+                      : 'If your account was created via an email link, it has no password yet. Set one here to sign in with a password.'}
+                </p>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button onClick={() => setPwOpen(true)} style={smallBtn}>
+                    <KeyRound size={12} strokeWidth={1.5} />{pl ? 'Ustaw lub zmień hasło' : 'Set or change password'}
+                  </button>
+                  <button onClick={handleSignOutOthers} style={smallBtn}>
+                    <LogOut size={12} strokeWidth={1.5} />{pl ? 'Wyloguj inne urządzenia' : 'Sign out other devices'}
+                  </button>
+                </div>
               </div>
 
               {/* account deleting */}
@@ -531,6 +560,8 @@ export function UserPanel({ user, onClose, credits = 0, onBuy }) {
           onCreated={loadTickets}
         />
       )}
+
+      {pwOpen && <SetPasswordModal mode="change" onClose={() => setPwOpen(false)} />}
 
       <style>{`
         .up-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }

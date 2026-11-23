@@ -11,6 +11,10 @@ import { ErrorBoundary } from './components/ErrorBoundary.jsx'
 import { Admin } from './Admin'
 import App from './App.jsx'
 
+const authUrl = window.location.hash + window.location.search
+if (/type=recovery/.test(authUrl)) sessionStorage.setItem('pw_recovery', '1')
+if (/error_code=otp_expired|error=access_denied/.test(authUrl)) sessionStorage.setItem('auth_link_error', '1')
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>

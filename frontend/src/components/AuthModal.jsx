@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
+import { isPwned, MIN_PASSWORD } from '../lib/pwned'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { X, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react'
 
@@ -10,19 +11,21 @@ export function AuthModal({ onClose, onSuccess }) {
   const { i18n } = useTranslation()
   const pl = i18n.language?.startsWith('pl')
 
-  const [mode, setMode] = useState('login')
+  const [view, setView] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [showForgot, setShowForgot] = useState(false)
-  const [forgotSent, setForgotSent] = useState(false)
+  const [sent, setSent] = useState(null)
+  const [code, setCode] = useState('')
   const [captchaToken, setCaptchaToken] = useState(null)
   const captchaRef = useRef(null)
 
-  const isRegister = mode === 'register'
+  const isRegister = view === 'register'
+  const needsPassword = view === 'login' || view === 'register'
+
+  function go(next) { setView(next); setError(null); setSent(null); setCode('') }
 
   function resetCaptcha() {
     setCaptchaToken(null)
@@ -30,56 +33,120 @@ export function AuthModal({ onClose, onSuccess }) {
   }
 
   function friendlyError(e) {
+    const c = e?.code || ''
     const m = String(e?.message || '')
-    if (/captcha/i.test(m)) {
-      return pl ? 'Weryfikacja nie powiodła się. Odśwież stronę i spróbuj ponownie.'
+    if (/captcha/i.test(m))
+      return pl ? 'Weryfikacja antybotowa nie powiodła się. Odśwież stronę i spróbuj ponownie.'
                 : 'Bot verification failed. Reload the page and try again.'
-    }
-    if (/rate limit|too many/i.test(m)) {
+    if (/rate limit|too many|security purposes/i.test(`${c} ${m}`))
       return pl ? 'Zbyt wiele prób. Spróbuj za chwilę.' : 'Too many attempts. Please try again shortly.'
-    }
+    if (c === 'invalid_credentials' || /invalid login credentials/i.test(m))
+      return pl ? 'Nieprawidłowy e-mail lub hasło. Jeśli konto powstało bez hasła (np. przez link z e-maila), użyj logowania linkiem.'
+                : 'Incorrect email or password. If your account was created without a password (e.g. via an email link), use the sign-in link option.'
+    if (c === 'email_not_confirmed' || /not confirmed/i.test(m))
+      return pl ? 'Potwierdź adres e-mail: sprawdź skrzynkę i kliknij link z wiadomości.'
+                : 'Please confirm your email: check your inbox and click the link.'
+    if (c === 'weak_password' || /weak|password should/i.test(`${c} ${m}`))
+      return pl ? `Hasło jest zbyt słabe. Użyj co najmniej ${MIN_PASSWORD} znaków.`
+                : `The password is too weak. Use at least ${MIN_PASSWORD} characters.`
+    if (c === 'otp_expired' || /expired|invalid.*token|token.*invalid/i.test(m))
+      return pl ? 'Kod jest nieprawidłowy lub wygasł. Poproś o nowy.' : 'The code is invalid or has expired. Request a new one.'
     return m
   }
 
-  async function handleSubmit() {
-    setError(null); setLoading(true)
+  async function submit() {
+    setError(null)
+    if (isRegister && password.length < MIN_PASSWORD) {
+      setError(pl ? `Hasło musi mieć co najmniej ${MIN_PASSWORD} znaków.` : `The password must be at least ${MIN_PASSWORD} characters.`)
+      return
+    }
+    setLoading(true)
     try {
-      const options = captchaToken ? { captchaToken } : undefined
-      if (mode === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password, options })
+      const withCaptcha = captchaToken ? { captchaToken } : {}
+      if (view === 'login') {
+        const { error } = await supabase.auth.signInWithPassword({ email, password, options: withCaptcha })
         if (error) throw error
         onSuccess?.(); onClose()
-      } else {
-        const { error } = await supabase.auth.signUp({ email, password, options })
+      } else if (view === 'register') {
+        if (await isPwned(password)) {
+          setError(pl ? 'To hasło pojawiło się w publicznych wyciekach danych. Wybierz inne.'
+                      : 'This password has appeared in public data breaches. Choose a different one.')
+          return
+        }
+        const { error } = await supabase.auth.signUp({ email, password, options: withCaptcha })
         if (error) throw error
-        setSuccess(true)
+        setSent('register')
+      } else if (view === 'forgot') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/analyse`, ...withCaptcha,
+        })
+        if (error) throw error
+        setSent('forgot')
+      } else {
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: { shouldCreateUser: false, emailRedirectTo: `${window.location.origin}/analyse`, ...withCaptcha },
+        })
+        if (error && !/not allowed|otp_disabled|signups/i.test(`${error.code} ${error.message}`)) throw error
+        setSent('magic')
       }
-    } catch (e) { setError(friendlyError(e)) }
-    finally { setLoading(false); resetCaptcha() }
+    } catch (e) {
+      setError(friendlyError(e))
+    } finally {
+      setLoading(false)
+      resetCaptcha()
+    }
   }
 
-  async function handleForgot() {
-    if (!email) { setError(pl ? 'Wpisz email' : 'Enter your email'); return }
-    setError(null); setLoading(true)
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/analyse`,
-        ...(captchaToken ? { captchaToken } : {}),
-      })
-      if (error) throw error
-      setForgotSent(true)
-    } catch (e) { setError(friendlyError(e)) }
-    finally { setLoading(false); resetCaptcha() }
-  }
-
-  function onFormSubmit(e) {
+  async function verifyCode(e) {
     e.preventDefault()
-    if (loading) return
-    return showForgot ? handleForgot() : handleSubmit()
+    if (!code.trim() || loading) return
+    setLoading(true); setError(null)
+    try {
+      const { error } = await supabase.auth.verifyOtp({ email, token: code.trim(), type: 'email' })
+      if (error) throw error
+      onSuccess?.(); onClose()
+    } catch (err) {
+      setError(friendlyError(err))
+    } finally {
+      setLoading(false)
+    }
   }
+
+  function onFormSubmit(e) { e.preventDefault(); if (!loading) submit() }
 
   const waitingForCaptcha = !!SITE_KEY && !captchaToken
-  const submitDisabled = loading || !email || (!showForgot && !password) || waitingForCaptcha
+  const submitDisabled = loading || !email || (needsPassword && !password) || waitingForCaptcha
+
+  const titles = {
+    login: pl ? 'Zaloguj się' : 'Log in',
+    register: pl ? 'Utwórz konto' : 'Create account',
+    forgot: pl ? 'Reset hasła' : 'Reset password',
+    magic: pl ? 'Logowanie linkiem' : 'Sign in with a link',
+  }
+  const subtitles = {
+    login: pl ? 'Dostęp do historii analiz i kredytów' : 'Access your analysis history and credits',
+    register: pl ? 'Bezpłatne konto' : 'Free account',
+    forgot: pl ? 'Wyślemy Ci link do zresetowania hasła' : "We'll send you a reset link",
+    magic: pl ? 'Wyślemy Ci link i kod do jednorazowego logowania' : "We'll email you a one-time sign-in link and code",
+  }
+  const buttonLabels = {
+    login: pl ? 'Zaloguj się' : 'Sign in',
+    register: pl ? 'Utwórz konto' : 'Create account',
+    forgot: pl ? 'Wyślij link' : 'Send reset link',
+    magic: pl ? 'Wyślij link do logowania' : 'Email me a sign-in link',
+  }
+  const sentMessages = {
+    register: pl ? '✓ Sprawdź email aby potwierdzić konto' : '✓ Check your email to confirm your account',
+    forgot: pl ? '✓ Jeśli konto istnieje, wysłaliśmy link do resetu hasła' : '✓ If the account exists, we sent a password reset link',
+    magic: pl ? '✓ Jeśli konto istnieje, wysłaliśmy link do logowania. Kliknij go albo wpisz kod z wiadomości.'
+              : '✓ If the account exists, we sent a sign-in link. Click it or enter the code from the email.',
+  }
+
+  const linkBtn = {
+    background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+    fontSize: 11, color: 'var(--text-hint)', fontFamily: 'var(--font-body)',
+  }
 
   return (
     <>
@@ -95,7 +162,7 @@ export function AuthModal({ onClose, onSuccess }) {
       }}>
         <button type="button" onClick={onClose} aria-label="close" style={{
           position: 'absolute', top: 12, right: 12, background: 'none', border: 'none',
-          cursor: 'pointer', fontSize: 18, color: 'var(--text-hint)', display: 'flex', padding: 4,
+          cursor: 'pointer', color: 'var(--text-hint)', display: 'flex', padding: 4,
         }}>
           <X size={16} strokeWidth={1.5} />
         </button>
@@ -103,30 +170,45 @@ export function AuthModal({ onClose, onSuccess }) {
         <h2 style={{
           fontFamily: 'var(--font-display)', fontSize: isRegister ? 22 : 20, fontWeight: 500,
           color: 'var(--text)', marginBottom: 4,
-        }}>
-          {showForgot
-            ? (pl ? 'Reset hasła' : 'Reset password')
-            : isRegister
-              ? (pl ? 'Utwórz konto' : 'Create account')
-              : (pl ? 'Zaloguj się' : 'Log in')}
-        </h2>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, marginBottom: 24 }}>
-          {showForgot
-            ? (pl ? 'Wyślemy Ci link do zresetowania hasła' : "We'll send you a reset link")
-            : isRegister
-              ? (pl ? 'Bezpłatne konto' : 'Free account')
-              : (pl ? 'Dostęp do historii analiz i kredytów' : 'Access your analysis history and credits')}
-        </p>
+        }}>{titles[view]}</h2>
+        <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 300, marginBottom: 24 }}>{subtitles[view]}</p>
 
-        {success || forgotSent ? (
-          <div style={{
-            background: '#f0faf4', border: '1px solid #b7dfc7', borderRadius: 'var(--radius-md)',
-            padding: '14px 16px', fontSize: 13, color: '#2d8f4e', textAlign: 'center',
-          }}>
-            {forgotSent
-              ? (pl ? '✓ Wysłaliśmy link do resetu hasła' : '✓ We sent you a password reset link')
-              : (pl ? '✓ Sprawdź email aby potwierdzić konto' : '✓ Check your email to confirm your account')}
-          </div>
+        {sent ? (
+          <>
+            <div style={{
+              background: '#f0faf4', border: '1px solid #b7dfc7', borderRadius: 'var(--radius-md)',
+              padding: '14px 16px', fontSize: 13, color: '#2d8f4e', textAlign: 'center', lineHeight: 1.6,
+            }}>{sentMessages[sent]}</div>
+
+            {sent === 'magic' && (
+              <form onSubmit={verifyCode} noValidate style={{ marginTop: 16 }}>
+                <input
+                  value={code} onChange={e => setCode(e.target.value.replace(/\s/g, ''))}
+                  inputMode="numeric" autoComplete="one-time-code" maxLength={10}
+                  aria-label={pl ? 'Kod z e-maila' : 'Code from email'}
+                  placeholder={pl ? 'Kod z e-maila' : 'Code from email'}
+                  style={{ ...inputStyle, textAlign: 'center', letterSpacing: 4, marginBottom: 10 }}
+                />
+                {error && (
+                  <p style={{
+                    fontSize: 12, color: '#c0392b', marginBottom: 10, padding: '8px 10px',
+                    background: '#fef4f2', borderRadius: 'var(--radius-sm)', border: '1px solid #f5c6bc',
+                  }}>{error}</p>
+                )}
+                <button type="submit" className="analyse-btn" disabled={!code || loading}
+                  style={{ opacity: !code || loading ? 0.5 : 1 }}>
+                  {loading ? (pl ? 'Ładowanie...' : 'Loading...') : (pl ? 'Zaloguj kodem' : 'Sign in with code')}
+                </button>
+              </form>
+            )}
+
+            <div style={{ textAlign: 'center', marginTop: 14 }}>
+              <button type="button" onClick={() => go('login')} style={{ ...linkBtn, fontSize: 12, color: 'var(--text-muted)' }}>
+                <ArrowLeft size={12} strokeWidth={1.5} style={{ verticalAlign: '-2px', marginRight: 4 }} />
+                {pl ? 'Wróć do logowania' : 'Back to sign in'}
+              </button>
+            </div>
+          </>
         ) : (
           <form onSubmit={onFormSubmit} noValidate>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
@@ -142,7 +224,7 @@ export function AuthModal({ onClose, onSuccess }) {
                   style={{ ...inputStyle, paddingLeft: 36 }}
                 />
               </div>
-              {!showForgot && (
+              {needsPassword && (
                 <div style={{ position: 'relative' }}>
                   <Lock size={14} strokeWidth={1.5} color="var(--text-hint)" style={{
                     position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
@@ -152,7 +234,7 @@ export function AuthModal({ onClose, onSuccess }) {
                     autoComplete={isRegister ? 'new-password' : 'current-password'}
                     aria-label={pl ? 'Hasło' : 'Password'}
                     placeholder={isRegister
-                      ? (pl ? 'Hasło (min. 8 znaków)' : 'Password (min. 8 chars)')
+                      ? (pl ? `Hasło (min. ${MIN_PASSWORD} znaków)` : `Password (min. ${MIN_PASSWORD} chars)`)
                       : (pl ? 'Hasło' : 'Password')}
                     value={password} onChange={e => setPassword(e.target.value)}
                     style={{ ...inputStyle, paddingLeft: 36, paddingRight: 36 }}
@@ -170,12 +252,12 @@ export function AuthModal({ onClose, onSuccess }) {
               )}
             </div>
 
-            {mode === 'login' && !showForgot && (
-              <div style={{ textAlign: 'right', marginBottom: 14, marginTop: -6 }}>
-                <button type="button" onClick={() => { setShowForgot(true); setError(null) }} style={{
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize: 11, color: 'var(--text-hint)', fontFamily: 'var(--font-body)',
-                }}>
+            {view === 'login' && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 14, marginTop: -6 }}>
+                <button type="button" onClick={() => go('magic')} style={linkBtn}>
+                  {pl ? 'Zaloguj się linkiem z e-maila' : 'Sign in with an email link'}
+                </button>
+                <button type="button" onClick={() => go('forgot')} style={linkBtn}>
                   {pl ? 'Zapomniałeś hasła?' : 'Forgot password?'}
                 </button>
               </div>
@@ -184,7 +266,7 @@ export function AuthModal({ onClose, onSuccess }) {
             {SITE_KEY && (
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
                 <Turnstile
-                  key={`${mode}-${showForgot}`}
+                  key={view}
                   ref={captchaRef}
                   siteKey={SITE_KEY}
                   onSuccess={setCaptchaToken}
@@ -206,19 +288,13 @@ export function AuthModal({ onClose, onSuccess }) {
               style={{ opacity: submitDisabled ? 0.5 : 1 }}>
               {loading ? (pl ? 'Ładowanie...' : 'Loading...')
                 : waitingForCaptcha ? (pl ? 'Weryfikacja…' : 'Verifying…')
-                : showForgot ? (pl ? 'Wyślij link' : 'Send reset link')
-                : isRegister ? (pl ? 'Utwórz konto' : 'Create account')
-                : (pl ? 'Zaloguj się' : 'Sign in')}
+                : buttonLabels[view]}
             </button>
 
             <div style={{ textAlign: 'center', marginTop: 14, fontSize: 12, color: 'var(--text-muted)' }}>
-              {showForgot ? (
-                <button type="button" onClick={() => { setShowForgot(false); setError(null) }} style={{
-                  background: 'none', border: 'none', cursor: 'pointer', fontSize: 12,
-                  color: 'var(--text-muted)', fontFamily: 'var(--font-body)',
-                  display: 'inline-flex', alignItems: 'center', gap: 4,
-                }}>
-                  <ArrowLeft size={12} strokeWidth={1.5} />
+              {view === 'forgot' || view === 'magic' ? (
+                <button type="button" onClick={() => go('login')} style={{ ...linkBtn, fontSize: 12, color: 'var(--text-muted)' }}>
+                  <ArrowLeft size={12} strokeWidth={1.5} style={{ verticalAlign: '-2px', marginRight: 4 }} />
                   {pl ? 'Wróć do logowania' : 'Back to sign in'}
                 </button>
               ) : (
@@ -226,12 +302,8 @@ export function AuthModal({ onClose, onSuccess }) {
                   {isRegister
                     ? (pl ? 'Masz już konto? ' : 'Already have an account? ')
                     : (pl ? 'Nie masz konta? ' : "Don't have an account? ")}
-                  <button type="button"
-                    onClick={() => { setMode(m => m === 'login' ? 'register' : 'login'); setError(null) }}
-                    style={{
-                      background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)',
-                      fontSize: 12, padding: 0, fontFamily: 'var(--font-body)',
-                    }}>
+                  <button type="button" onClick={() => go(isRegister ? 'login' : 'register')}
+                    style={{ ...linkBtn, fontSize: 12, color: 'var(--accent)' }}>
                     {isRegister ? (pl ? 'Zaloguj się' : 'Sign in') : (pl ? 'Zarejestruj się' : 'Register')}
                   </button>
                 </>
