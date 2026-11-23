@@ -63,12 +63,15 @@ def stats(request: Request, admin=Depends(require_admin)):
     d7 = (now - timedelta(days=7)).isoformat()
     d30 = (now - timedelta(days=30)).isoformat()
     stuck_before = (now - timedelta(minutes=STUCK_AFTER_MINUTES)).isoformat()
+    prefix = os.getenv("REVENUE_SESSION_PREFIX", "cs_")
     try:
         sb = get_supabase()
-        prefix = os.getenv("REVENUE_SESSION_PREFIX", "cs_")
-        purchases = (sb.table("credit_ledger").select("delta,note")
-                     .eq("reason", "purchase").like("ref_id", f"{prefix}%")
-                     .gte("created_at", d30).limit(2000).execute().data or [])
+        purchases = (
+            sb.table("credit_ledger").select("delta,note")
+            .eq("reason", "purchase").like("ref_id", f"{prefix}%")
+            .gte("created_at", d30).limit(2000).execute().data or []
+        )
+        revenue_cents = 0
         for p in purchases:
             m = re.match(r"(\d+)\s+pln", p.get("note") or "")
             if m:
@@ -83,7 +86,8 @@ def stats(request: Request, admin=Depends(require_admin)):
                 "last_24h": {s: _count("generations", d1, status=s) for s in ("succeeded", "failed", "pending")},
                 "stuck": stuck,
             },
-            "tickets": {"open": _count("support_tickets", status="open") + _count("support_tickets", status="in_progress")},
+            "tickets": {"open": _count("support_tickets", status="open")
+                                + _count("support_tickets", status="in_progress")},
             "ratings_7d": {"good": _count("preview_ratings", d7, rating="good"),
                            "bad": _count("preview_ratings", d7, rating="bad")},
             "sales_30d": {"purchases": len(purchases),
