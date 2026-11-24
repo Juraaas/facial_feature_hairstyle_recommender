@@ -1,9 +1,13 @@
 import { Component } from 'react'
+import * as Sentry from '@sentry/react'
 
 export class ErrorBoundary extends Component {
   state = { hasError: false }
   static getDerivedStateFromError() { return { hasError: true } }
-  componentDidCatch(error, info) { console.error(error, info) }
+  componentDidCatch(error, info) {
+    console.error(error, info)
+    Sentry.captureException(error, { extra: { componentStack: info?.componentStack } })
+  }
   render() {
     if (!this.state.hasError) return this.props.children
     return (

@@ -24,3 +24,4 @@ stripe==16.1.0
 slowapi==0.1.10
 pydantic==2.14.3
 starlette==1.10.0
+sentry-sdk[fastapi]>=2.20,<3

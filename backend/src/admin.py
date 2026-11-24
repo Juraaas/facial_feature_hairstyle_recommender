@@ -325,3 +325,9 @@ def whoami_ip(request: Request, admin=Depends(require_admin)):
         "detected": client_ip(request),
         "hops": TRUSTED_PROXY_HOPS,
     }
+
+
+@router.post("/sentry-test")
+def sentry_test(admin=Depends(require_admin)):
+    log.error("SENTRY_TEST logged error (powinien pojawić się w Sentry jako problem)")
+    raise RuntimeError("SENTRY_TEST unhandled exception")

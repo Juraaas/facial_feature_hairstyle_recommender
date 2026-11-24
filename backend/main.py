@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import io
 import time
+import sentry_sdk
 from PIL import Image
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Form, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -196,6 +197,24 @@ def save_analysis(user, traits, recs, gender, analysis_id=None, update_existing=
     except Exception:
         log.exception("Failed to save analysis")
         return None
+
+def scrub_event(event, hint):
+    req = event.get("request") or {}
+    for k in ("headers", "cookies", "data", "query_string"):
+        req.pop(k, None)
+    event.pop("user", None)
+    return event
+
+
+if os.getenv("SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=os.environ["SENTRY_DSN"],
+        environment=os.getenv("APP_ENV", "production"),
+        send_default_pii=False,
+        max_request_body_size="never",
+        traces_sample_rate=0.0,
+        before_send=scrub_event,
+    )
 
 app = FastAPI(
     docs_url="/docs" if DEBUG_ENABLED else None,
