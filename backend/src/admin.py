@@ -328,6 +328,13 @@ def whoami_ip(request: Request, admin=Depends(require_admin)):
 
 
 @router.post("/sentry-test")
-def sentry_test(admin=Depends(require_admin)):
-    log.error("SENTRY_TEST logged error (powinien pojawić się w Sentry jako problem)")
+def sentry_test(kind: Literal["basic", "critical", "groq"] = "basic", admin=Depends(require_admin)):
+    if kind == "critical":
+        log.error("REFUND_FAILED synthetic test (to jest test alertu, nie prawdziwy problem)")
+        return {"sent": "REFUND_FAILED"}
+    if kind == "groq":
+        from src import groq_client
+        groq_client.report_rate_limit()
+        return {"sent": "GROQ_RATE_LIMITED"}
+    log.error("SENTRY_TEST logged error")
     raise RuntimeError("SENTRY_TEST unhandled exception")

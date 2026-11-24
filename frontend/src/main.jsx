@@ -47,6 +47,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
       return event
     },
   })
+  if (new URLSearchParams(window.location.search).has('debug')) window.Sentry = Sentry
 }
 
 createRoot(document.getElementById('root')).render(

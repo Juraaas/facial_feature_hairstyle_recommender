@@ -50,6 +50,7 @@ MAX_PIXELS = 40_000_000
 HAIR_TYPES = {"straight", "wavy", "curly", "coily"}
 LIMITED_STYLES = 1
 LIMITED_COLORS = 1
+CRITICAL_KEYS = ("REFUND_FAILED", "PAYMENT_UNPROCESSABLE")
 
 log = get_logger(__name__)
 
@@ -203,6 +204,11 @@ def scrub_event(event, hint):
     for k in ("headers", "cookies", "data", "query_string"):
         req.pop(k, None)
     event.pop("user", None)
+
+    logentry = event.get("logentry") or {}
+    text = " ".join(str(x) for x in (event.get("message"), logentry.get("message"), logentry.get("formatted")) if x)
+    if any(k in text for k in CRITICAL_KEYS):
+        event["fingerprint"] = ["critical", uuid4().hex]
     return event
 
 

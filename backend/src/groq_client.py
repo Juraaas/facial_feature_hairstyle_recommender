@@ -36,12 +36,20 @@ def handle_error(e: Exception, where: str):
             wait = 30
         _paused_until = time.monotonic() + wait
         log.warning("GROQ_RATE_LIMITED where=%s retry_after=%s pause=%ss", where, retry, wait)
-        try:
-            import sentry_sdk
-            sentry_sdk.capture_message("GROQ_RATE_LIMITED", level="warning")
-        except Exception:
-            pass
+        report_rate_limit()
     elif isinstance(e, (APIConnectionError, APITimeoutError)):
         log.warning("GROQ_UNAVAILABLE where=%s", where)
     else:
         log.exception("GROQ_ERROR where=%s", where)
+
+
+def report_rate_limit():
+    try:
+        import sentry_sdk
+        from datetime import datetime, timezone
+        hour = datetime.now(timezone.utc).strftime("%Y%m%d%H")
+        with sentry_sdk.new_scope() as scope:
+            scope.fingerprint = ["groq-rate-limit", hour]
+            sentry_sdk.capture_message("GROQ_RATE_LIMITED", level="warning")
+    except Exception:
+        pass
